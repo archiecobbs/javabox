@@ -12,10 +12,16 @@
     </parent>
     <artifactId>javabox</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
 
-    <name>JavaBox Scripting Container</name>
-    <description>A scripting container written in Java for scripts written in Java</description>
+    <name>JavaBox Java Scripting Container</name>
+    <description>Scripting in Java, by Java, for Java</description>
     <url>https://github.com/archiecobbs/javabox</url>
+
+    <modules>
+        <module>execution</module>
+        <module>main</module>
+    </modules>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -39,13 +45,14 @@
             <email>archie.cobbs@gmail.com</email>
         </developer>
     </developers>
-
     <properties>
 
         <!-- Basic stuff -->
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <automatic.module.name>org.dellroad.javabox</automatic.module.name>
+
+        <!-- Root package name -->
+        <javabox.package.root>org.dellroad.javabox</javabox.package.root>
 
         <!-- Dependency versions -->
         <testng.version>7.7.1</testng.version>
@@ -53,46 +60,34 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- TestNG -->
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
             </dependency>
+
+            <!-- DellRoad Stuff Test (missing from dellroad-dependencies) -->
+            <dependency>
+                <groupId>org.dellroad</groupId>
+                <artifactId>dellroad-stuff-test</artifactId>
+                <version>${dellroad-stuff.version}</version>
+            </dependency>
+
+            <!-- Sibling JARs -->
+            <dependency>
+                <groupId>org.dellroad</groupId>
+                <artifactId>javabox-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dellroad</groupId>
+                <artifactId>javabox-execution</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dellroad</groupId>
-            <artifactId>dellroad-stuff-main</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.dellroad</groupId>
-            <artifactId>dellroad-stuff-test</artifactId>
-            <version>${dellroad-stuff.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-reload4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <distributionManagement>
         <downloadUrl>https://github.com/archiecobbs/javabox</downloadUrl>
