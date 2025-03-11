@@ -329,6 +329,39 @@
             </extension>
         </extensions>
     </build>
+    <reporting>
+        <plugins>
+
+            <!-- Aggregated Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <source>${java.version}</source>
+                    <notimestamp>true</notimestamp>
+                    <validateLinks>true</validateLinks>
+                    <doclint>-missing</doclint>
+                    <additionalJOption>--allow-script-in-comments</additionalJOption>
+                    <aggregate>true</aggregate>
+                    <inherited>false</inherited>
+                    <links>
+                        <link>https://guava.dev/releases/${guava.version}/api/docs/</link>
+                        <link>https://www.slf4j.org/apidocs/</link>
+                    </links>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
     <profiles>
 
         <!-- Maven Central requires signed artifacts -->
