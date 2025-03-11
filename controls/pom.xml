@@ -10,8 +10,8 @@
         <artifactId>javabox</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>javabox-main</artifactId>
-    <name>JavaBox Scripting Container Main</name>
+    <artifactId>javabox-controls</artifactId>
+    <name>JavaBox Scripting Container Controls</name>
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>
@@ -19,7 +19,7 @@
         </site>
     </distributionManagement>
     <properties>
-        <automatic.module.name>${javabox.package.root}.main</automatic.module.name>
+        <automatic.module.name>${javabox.package.root}.controls</automatic.module.name>
     </properties>
     <dependencies>
         <dependency>
@@ -27,16 +27,8 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.dellroad</groupId>
-            <artifactId>dellroad-stuff-main</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>${project.parent.artifactId}-execution</artifactId>
+            <artifactId>${project.parent.artifactId}-main</artifactId>
         </dependency>
 
         <!-- Test -->

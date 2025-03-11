@@ -31,20 +31,20 @@ public class JavaBoxExecutionControl extends LocalContextExecutionControl {
 
     @Override
     public void load(ClassBytecodes[] cbcs) throws ClassInstallException, NotImplementedException, EngineTerminationException {
-        for (ClassBytecodes cbc : cbcs) {
-            cbcs = this.box.filter(cbc).toArray(ClassBytecodes[]::new);
-            super.load(cbcs);
-        }
+        cbcs = cbcs.clone();                        // just in case it matters
+        for (int i = 0; i < cbcs.length; i++)
+            cbcs[i] = this.box.applyControls(cbcs[i]);
+        super.load(cbcs);
     }
 
     @Override
     protected void enterContext() {
-        this.box.enterContext();
+        this.box.startExecution();
     }
 
     @Override
     protected void leaveContext(Object result, Throwable error) {
-        this.box.leaveContext(result, error);
+        this.box.finishExecution(result, error);
     }
 
     // We don't ever actually use the string form of the result, so don't bother

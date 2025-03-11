@@ -7,39 +7,24 @@ package org.dellroad.javabox;
 
 import com.google.common.base.Preconditions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import jdk.jshell.JShell;
 
 /**
  * Configuration object for {@link JavaBox} instances.
+ *
+ * @param jshellBuilder The {@link JShell.Builder} associated with this instance
+ * @param delegateLoader The delegate {@link ClassLoader} associated with this instance
+ * @param controls The list of {@link Control}s associated with this instance
  */
-public record Config(
-
-    /**
-     * The {@link JShell.Builder} associated with this instance.
-     *
-     * @return {@link JShell} builder
-     */
-    JShell.Builder jshellBuilder,
-
-    /**
-     * The delegate {@link ClassLoader} associated with this instance.
-     *
-     * @return delegate {@link ClassLoader}
-     */
-    ClassLoader delegateLoader,
-
-    /**
-     * The {@link ScriptFilter} associated with this instance.
-     *
-     * @return script filter
-     */
-    ScriptFilter scriptFilter
-    ) {
+public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, List<Control> controls) {
 
     private Config(Builder builder) {
-        this(builder.jshellBuilder, builder.delegateLoader, builder.scriptFilter);
+        this(builder.jshellBuilder, builder.delegateLoader, Collections.unmodifiableList(builder.controls));
     }
 
     /**
@@ -61,7 +46,7 @@ public record Config(
 
         private volatile JShell.Builder jshellBuilder = JShell.builder();
         private volatile ClassLoader delegateLoader = Thread.currentThread().getContextClassLoader();
-        private volatile ScriptFilter scriptFilter = ScriptFilter.identity();
+        private volatile List<Control> controls = new ArrayList<>();
 
         Builder() {
             this.jshellBuilder.executionEngine(new JavaBoxExecutionControlProvider(), Map.of());
@@ -107,17 +92,34 @@ public record Config(
         }
 
         /**
-         * Configure a {@link ScriptFilter}.
+         * Configure the {@link Control}s.
          *
          * <p>
-         * The default value is {@link ScriptFilter#identity}.
+         * In general, controls are applied in the order the appear in the list. For example, if a control
+         * modifies bytecode, it will see the modifications of all controls earlier in the list.
          *
-         * @param scriptFilter script filter
-         * @throws IllegalArgumentException if {@code scriptFilter} is null
+         * <p>
+         * The default value is an empty list.
+         *
+         * @param controls list of controls
+         * @throws IllegalArgumentException if {@code controls} or any element therein is null
          */
-        public Builder withScriptFilter(ScriptFilter scriptFilter) {
-            Preconditions.checkArgument(scriptFilter != null, "null scriptFilter");
-            this.scriptFilter = scriptFilter;
+        public Builder withControls(List<Control> controls) {
+            Preconditions.checkArgument(controls != null, "null controls");
+            this.controls = new ArrayList<>(controls);
+            this.controls.forEach(control -> Preconditions.checkArgument(control != null, "null control"));
+            return this;
+        }
+
+        /**
+         * Add a {@link Control} to the current list of {@link Control}s.
+         *
+         * @param control script control
+         * @throws IllegalArgumentException if {@code control} is null
+         */
+        public Builder withControl(Control control) {
+            Preconditions.checkArgument(control != null, "null control");
+            this.controls.add(control);
             return this;
         }
     }

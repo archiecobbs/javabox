@@ -6,7 +6,7 @@
 package org.dellroad.javabox;
 
 /**
- * Thrown when some error occurs during a {@link JavaBox} operation.
+ * Thrown when some unexpected error occurs during a {@link JavaBox} operation.
  */
 @SuppressWarnings("serial")
 public class JavaBoxException extends RuntimeException {

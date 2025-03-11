@@ -6,6 +6,9 @@
 package org.dellroad.javabox.execution;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,9 +80,17 @@ public class MemoryLoaderDelegate implements LoaderDelegate {
             throw new IllegalArgumentException("null path");
         try {
             for (String component : this.splitClassPath(path)) {
-                this.loader.addURL(component.startsWith(JAR_FILE_PREFIX) ?
-                  new URL(component) :
-                  new File(component).toURI().toURL());
+                URL url = null;
+                if (component.startsWith(JAR_FILE_PREFIX)) {
+                    try {
+                        url = new URI(component).toURL();
+                    } catch (MalformedURLException | URISyntaxException e) {
+                        // ignore
+                    }
+                }
+                if (url == null)
+                    url = new File(component).toURI().toURL();
+                this.loader.addURL(url);
             }
         } catch (Exception e) {
             throw this.wrapCause(e, new InternalException(e.getMessage()));

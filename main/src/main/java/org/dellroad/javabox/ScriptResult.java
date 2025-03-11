@@ -7,22 +7,23 @@ package org.dellroad.javabox;
 
 import com.google.common.base.Preconditions;
 
-import java.util.Set;
+import java.util.List;
 
 import jdk.jshell.Snippet;
 
 /**
- * A script that has been applied to a {@link JavaBox}.
+ * The result from executing a script in a {@link JavaBox}.
  *
  * <p>
  * Instances are thread safe.
+ *
+ * @see JavaBox#execute JavaBox.execute()
  */
-public class Script {
+public class ScriptResult {
 
     private final JavaBox box;
     private final String source;
-    private final Set<Snippet> snippets;
-    private final Object returnValue;
+    private final List<SnippetOutcome> snippetOutcomes;
 
     /**
      * Constructor.
@@ -30,14 +31,13 @@ public class Script {
      * @param source the Java source for the script
      * @throws IllegalArgumentException if {@code source} is null
      */
-    Script(JavaBox box, String source, Set<Snippet> snippets, Object returnValue) {
+    ScriptResult(JavaBox box, String source, List<SnippetOutcome> snippetOutcomes) {
         Preconditions.checkArgument(box != null, "null box");
         Preconditions.checkArgument(source != null, "null source");
-        Preconditions.checkArgument(snippets != null, "null snippets");
+        Preconditions.checkArgument(snippetOutcomes != null, "null snippets");
         this.box = box;
         this.source = source;
-        this.snippets = snippets;
-        this.returnValue = returnValue;
+        this.snippetOutcomes = snippetOutcomes;
     }
 
 // Properties
@@ -61,21 +61,11 @@ public class Script {
     }
 
     /**
-     * Get the names of any unresolved dependencies in this script.
+     * Get the outcomes of the individual JShell {@link Snippet}s created from the script.
      *
-     * <p>
-     * This returns an up-to-date view, which can change as new scripts are added to the associated container.
+     * @return script snippet outcomes
      */
-    public Set<String> unresolvedDependencies() {
-        return this.box.unresolvedDependencies(this.snippets);
-    }
-
-    /**
-     * Get the return value from this script.
-     *
-     * @return script return value
-     */
-    public Object returnValue() {
-        return this.returnValue;
+    public List<SnippetOutcome> snippetOutcomes() {
+        return this.snippetOutcomes;
     }
 }
