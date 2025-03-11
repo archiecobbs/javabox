@@ -92,7 +92,7 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
         }
 
         /**
-         * Configure the {@link Control}s.
+         * Configure the list of {@link Control}s.
          *
          * <p>
          * In general, controls are applied in the order the appear in the list. For example, if a control

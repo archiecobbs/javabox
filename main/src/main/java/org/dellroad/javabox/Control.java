@@ -16,9 +16,14 @@ package org.dellroad.javabox;
  * Controls may create per-container and per-execution contexts. The lifecycle methods
  * {@link #initialize initialize()} and {@link #shutdown shutdown()} are for per-container context,
  * and {@link #startExecution startExecution()} and {@link #finishExecution finishExecution()} are
- * for per-execution context. Note however that if the return value from a script execution is an
- * invokable object, then any subsequent invocations into it will not have any per-execution context
- * since they are executing outside of the container.
+ * for per-execution context. An "execution" happens with script snippets that contain statements or
+ * expressions; snippets that simply declare classes, etc., do not (immediately) execute.
+ *
+ * <p>
+ * Note that if the return value from a script execution is an invokable object, then any subsequent
+ * invocations into that object's methods it will not have any per-execution context, since they will
+ * executing outside of the container. Of course, a control can always use other tricks to add such
+ * context, e.g., bytecode modification, automatically wrapping return values in a proxy interface, etc.
  */
 public interface Control {
 
@@ -88,7 +93,7 @@ public interface Control {
      *
      * <p>
      * The current thread will be the thread that is actually executing the script snippet.
-     * An {@link ExecutionContext} will be created using the returned private context and made
+     * A {@link ExecutionContext} will be created using the returned private context and made
      * available in this thread via {@link JavaBox#executionContextFor JavaBox.executionContextFor()},
      * and also provided to {@link #finishExecution finishExecution()}.
      *

@@ -34,7 +34,7 @@ import jdk.jshell.execution.LocalExecutionControl;
  *
  * <p>
  * The methods a subclass can use to bracket snippet execution and {@link String} result decoding are {@link #enterContext}
- * and {@code #leaveContext leaveContext()}; the latter method also provides access the actual snippet return value, rather
+ * and {@link #leaveContext leaveContext()}; the latter method also provides access the actual snippet return value, rather
  * than just its {@link String} representation.
  */
 public class LocalContextExecutionControl extends LocalExecutionControl {

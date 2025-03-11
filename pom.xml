@@ -346,6 +346,7 @@
                     <aggregate>true</aggregate>
                     <inherited>false</inherited>
                     <links>
+                        <link>https://archiecobbs.github.io/dellroad-stuff/site/apidocs/</link>
                         <link>https://guava.dev/releases/${guava.version}/api/docs/</link>
                         <link>https://www.slf4j.org/apidocs/</link>
                     </links>
