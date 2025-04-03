@@ -7,10 +7,13 @@ package org.dellroad.javabox;
 
 import com.google.common.base.Preconditions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import jdk.jshell.JShell;
 
@@ -24,7 +27,7 @@ import jdk.jshell.JShell;
 public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, List<Control> controls) {
 
     private Config(Builder builder) {
-        this(builder.jshellBuilder, builder.delegateLoader, Collections.unmodifiableList(builder.controls));
+        this(builder.createJShellBuilder(), builder.delegateLoader, Collections.unmodifiableList(builder.controls));
     }
 
     /**
@@ -44,12 +47,12 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
      */
     public static class Builder {
 
-        private volatile JShell.Builder jshellBuilder = JShell.builder();
-        private volatile ClassLoader delegateLoader = Thread.currentThread().getContextClassLoader();
-        private volatile List<Control> controls = new ArrayList<>();
+        private JShell.Builder jshellBuilder;
+        private final List<Consumer<? super JShell.Builder>> builderMods = new ArrayList<>();
+        private ClassLoader delegateLoader = Thread.currentThread().getContextClassLoader();
+        private List<Control> controls = new ArrayList<>();
 
         Builder() {
-            this.jshellBuilder.executionEngine(new JavaBoxExecutionControlProvider(), Map.of());
         }
 
         /**
@@ -57,12 +60,28 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
          *
          * @return new {@link Config}
          */
-        public Config build() {
+        public synchronized Config build() {
             return new Config(this);
         }
 
         /**
-         * Configure the {@link JShell.Builder} used to create the {@link JShell} instance used by the {@link JavaBox}.
+         * Apply a modification to the {@link JShell.Builder} that will be used to create the {@link JShell} instance.
+         *
+         * <p>
+         * The given modification will not actually be applied until {@link #build} is invoked. Modifications are
+         * applied in the same order as this method is invoked.
+         *
+         * @param configurer {@link JShell} builder configurer
+         * @throws IllegalArgumentException if {@code jshellBuilder} is null
+         */
+        public synchronized Builder withJShellMods(Consumer<? super JShell.Builder> configurer) {
+            Preconditions.checkArgument(jshellBuilder != null, "null builderConfigurer");
+            this.builderMods.add(configurer);
+            return this;
+        }
+
+        /**
+         * Provide a custom {@link JShell.Builder} to be used to create the {@link JShell} instance.
          *
          * <p>
          * For experts only.
@@ -70,10 +89,31 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
          * @param jshellBuilder {@link JShell} builder
          * @throws IllegalArgumentException if {@code jshellBuilder} is null
          */
-        public Builder withJshellBuilder(JShell.Builder jshellBuilder) {
+        public synchronized Builder withJShellBuilder(JShell.Builder jshellBuilder) {
             Preconditions.checkArgument(jshellBuilder != null, "null jshellBuilder");
             this.jshellBuilder = jshellBuilder;
             return this;
+        }
+
+        private synchronized JShell.Builder createJShellBuilder() {
+
+            // Custom builder?
+            if (this.jshellBuilder != null)
+                return this.jshellBuilder;
+
+            // Apply our default special magic
+            JShell.Builder builder = JShell.builder();
+            builder.executionEngine(new JavaBoxExecutionControlProvider(), Map.of());
+            final String path = JavaBoxExecutionControlProvider.inferClassPath(this.delegateLoader).stream()
+              .collect(Collectors.joining(File.pathSeparator));
+            if (!path.isEmpty())
+                builder.compilerOptions("--class-path", path);
+
+            // Apply modifications
+            builderMods.forEach(mod -> mod.accept(builder));
+
+            // Done
+            return builder;
         }
 
         /**
@@ -86,7 +126,7 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
          *
          * @param delegateLoader delegate {@link ClassLoader}, or null for the system class loader
          */
-        public Builder withDelegateLoader(ClassLoader delegateLoader) {
+        public synchronized Builder withDelegateLoader(ClassLoader delegateLoader) {
             this.delegateLoader = delegateLoader;
             return this;
         }
@@ -104,7 +144,7 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
          * @param controls list of controls
          * @throws IllegalArgumentException if {@code controls} or any element therein is null
          */
-        public Builder withControls(List<Control> controls) {
+        public synchronized Builder withControls(List<Control> controls) {
             Preconditions.checkArgument(controls != null, "null controls");
             this.controls = new ArrayList<>(controls);
             this.controls.forEach(control -> Preconditions.checkArgument(control != null, "null control"));
@@ -117,7 +157,7 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
          * @param control script control
          * @throws IllegalArgumentException if {@code control} is null
          */
-        public Builder withControl(Control control) {
+        public synchronized Builder withControl(Control control) {
             Preconditions.checkArgument(control != null, "null control");
             this.controls.add(control);
             return this;

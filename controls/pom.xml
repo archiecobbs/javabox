@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>${project.parent.artifactId}-main</artifactId>
+            <artifactId>${project.parent.artifactId}-core</artifactId>
         </dependency>
 
         <!-- Test -->

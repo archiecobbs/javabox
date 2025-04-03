@@ -18,7 +18,7 @@ JavaBox is available from [Maven Central](https://search.maven.org/search?q=a:ja
 ```xml
     <dependency>
         <groupId>org.dellroad</groupId>
-        <artifactId>javabox-main</artifactId>
+        <artifactId>javabox-core</artifactId>
     </dependency>
 ```
 

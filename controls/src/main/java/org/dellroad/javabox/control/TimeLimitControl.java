@@ -55,9 +55,9 @@ public record TimeLimitControl(Duration timeLimit) implements Control {
      * Adds time limit checks to the bytecode.
      */
     @Override
-    public byte[] modifyBytecode(String className, byte[] classBytecode) {
+    public byte[] modifyBytecode(ClassDesc name, byte[] bytes) {
         final ClassFile classFile = ClassFile.of();
-        return classFile.transformClass(classFile.parse(classBytecode),
+        return classFile.transformClass(classFile.parse(bytes),
           ClassTransform.transformingMethodBodies(
             CodeTransform.ofStateful(() -> {
               HashSet<Label> priorLabels = new HashSet<>();

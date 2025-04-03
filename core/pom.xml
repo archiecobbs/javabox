@@ -10,7 +10,7 @@
         <artifactId>javabox</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>javabox-main</artifactId>
+    <artifactId>javabox-core</artifactId>
     <name>JavaBox Scripting Container Main</name>
     <distributionManagement>
         <site>
@@ -19,7 +19,7 @@
         </site>
     </distributionManagement>
     <properties>
-        <automatic.module.name>${javabox.package.root}.main</automatic.module.name>
+        <automatic.module.name>${javabox.package.root}.core</automatic.module.name>
     </properties>
     <dependencies>
         <dependency>

@@ -55,9 +55,9 @@ import org.dellroad.stuff.java.MemoryClassLoader;
  * <p>
  * The standard {@link LocalExecutionControl} requires non-standard classes to be explicitly added
  * via the {@code --class-path} command line flag. Moreover, the {@link ClassLoader} that it uses delegates
- * to the system class loader, which means that in certain more complex class loading scenarios (for example,
- * when running as a servlet in the Tomcat web container), compiled snippets classes will fail to load
- * due to resolution errors.
+ * to the system class loader by default, which means that in certain more complex class loading scenarios
+ * (for example, when running as a servlet in the Tomcat web container), compiled snippets classes will fail
+ * to load due to resolution errors.
  *
  * <p>
  * This class tries to workaround these issues as follows:
@@ -103,12 +103,33 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         // Sanity check
         if (flags == null)
             throw new IllegalArgumentException("null flags");
-        if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
 
         // Use our local execution engine, unless another is specified
         if (LocalContextExecutionControlProvider.getExecutionFlag(flags) == null)
             LocalContextExecutionControlProvider.setExecutionFlag(flags, NAME);
+
+        // Infer the classpath from the class loader hierarchy
+        List<String> classpath = LocalContextExecutionControlProvider.inferClassPath(loader);
+
+        // Augment "--class-path" command line flag
+        LocalContextExecutionControlProvider.addToClassPath(flags, new ArrayList<>(classpath));
+    }
+
+    /**
+     * Infer the classpath from the {@code java.class.path} system property and
+     * the given {@link ClassLoader} hierarchy.
+     *
+     * <p>
+     * Works best when the JVM is started with {@code --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED}.
+     *
+     * @param loader loader to copy from, or null for the current thread's context class loader
+     * @return list of class path entries
+     */
+    public static List<String> inferClassPath(ClassLoader loader) {
+
+        // Default to context loader
+        if (loader == null)
+            loader = Thread.currentThread().getContextClassLoader();
 
         // Start by grabbing anything from the "java.class.path" system property
         final LinkedHashSet<String> classpath = new LinkedHashSet<>();
@@ -140,7 +161,7 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
                 }
             }
 
-            // Pass these URLs to JShell by adding to our "--class-path" flag
+            // Convert URLs to class path entries
             for (URL url : urls) {
                 final URI uri;
                 try {
@@ -158,8 +179,8 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
             }
         }
 
-        // Augment "--class-path" command line flag
-        LocalContextExecutionControlProvider.addToClassPath(flags, new ArrayList<>(classpath));
+        // Done
+        return new ArrayList<>(classpath);
     }
 
     /**
@@ -272,10 +293,6 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
 
         // Create our class loader
         final MemoryClassLoader memoryLoader = this.createMemoryClassLoader();
-
-        // Set our class loader as the context loader for the current thread.
-        // Note: this action gets undone in JShellShellSession.doExecute().
-        Thread.currentThread().setContextClassLoader(memoryLoader);
 
         // Create our delegate thingie
         final MemoryLoaderDelegate delegate = this.createMemoryLoaderDelegate(memoryLoader);

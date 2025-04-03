@@ -8,9 +8,12 @@ package org.dellroad.javabox;
 import com.google.common.base.Preconditions;
 
 import java.io.Closeable;
+import java.lang.classfile.ClassFile;
+import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -31,12 +34,12 @@ import jdk.jshell.JShell;
 import jdk.jshell.Snippet;
 import jdk.jshell.SnippetEvent;
 import jdk.jshell.SourceCodeAnalysis;
+import jdk.jshell.SourceCodeAnalysis.Completeness;
 import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
 import jdk.jshell.spi.ExecutionControl.ClassBytecodes;
 
 import org.dellroad.javabox.Control.ContainerContext;
 import org.dellroad.javabox.Control.ExecutionContext;
-import org.dellroad.stuff.java.ThreadLocalHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +60,7 @@ public class JavaBox implements Closeable {
 
     private static final String THREAD_NAME_PREFIX = "JavaBox";
     private static final AtomicLong THREAD_NAME_INDEX = new AtomicLong();
-    private static final ThreadLocalHolder<JavaBox> CURRENT = new ThreadLocalHolder<>();
+    private static final ThreadLocal<JavaBox> CURRENT = new ThreadLocal<>();
     private static final ThreadLocal<ExecutionInfo> EXECUTION_INFO = new ThreadLocal<>();
     private static final int EXECUTE_WAIT_TIME_MILLIS = 100;
 
@@ -71,6 +74,9 @@ public class JavaBox implements Closeable {
 
     private boolean initialized;
     private boolean closed;
+
+    // The value of some variable being set by setVariable()
+    private AtomicReference<Object> variableValue;
 
     // This is the thread in execute() that is waiting on the Future that reports the outcome of doExecute()
     private volatile Thread executeThread;
@@ -134,6 +140,20 @@ public class JavaBox implements Closeable {
         return this.jshell;
     }
 
+    /**
+     * Get the {@link JavaBox} instance associated with the current thread.
+     *
+     * <p>
+     * This method works during {@link JShell} initialization and script execution.
+     *
+     * @throws IllegalStateException if there is no such instance
+     */
+    public static JavaBox getCurrent() {
+        final JavaBox box = CURRENT.get();
+        Preconditions.checkState(box != null, "there is no JavaBox associated with the current thread");
+        return box;
+    }
+
 // Lifecycle
 
     /**
@@ -146,22 +166,24 @@ public class JavaBox implements Closeable {
         // Sanity check
         Preconditions.checkState(!this.initialized, "already initialized");
         Preconditions.checkState(!this.closed, "closed");
+        Preconditions.checkState(CURRENT.get() == null, "reentrant invocation");
+        CURRENT.set(this);
         try {
-
-            // Create our JShell instance
-            assert this.jshell == null;
-            this.jshell = CURRENT.invoke(this, () -> this.config.jshellBuilder().build());
 
             // Create our executor
             this.executor = Executors.newSingleThreadExecutor();
 
-            // Initialize control contexts
-            for (Control control : this.config.controls())
-                this.containerContexts.add(new ContainerContext(this, control, control.initialize(this)));
+            // Create our JShell instance
+            this.jshell = this.config.jshellBuilder().build();
 
+            // Initialize control contexts (including our own, which goes first)
+            this.config.controls().stream()
+              .forEach(control -> this.containerContexts.add(new ContainerContext(this, control, control.initialize(this))));
         } catch (RuntimeException | Error e) {
             this.shutdown();
             throw e;
+        } finally {
+            CURRENT.set(null);
         }
 
         // Done
@@ -212,15 +234,158 @@ public class JavaBox implements Closeable {
             Thread.currentThread().interrupt();
     }
 
+// Variables
+
+    /**
+     * Get the value of a variable in this container.
+     *
+     * @param varName variable name
+     * @return variable value
+     * @throws InterruptedException if the current thread is interrupted
+     * @throws IllegalStateException if this instance is not initialized or closed
+     * @throws IllegalArgumentException if {@code varName} is not found
+     * @throws IllegalArgumentException if {@code varName} is not a valid Java identifier
+     * @throws IllegalArgumentException if {@code varName} is null
+     * @see JShell#variables
+     */
+    public Object getVariable(String varName) throws InterruptedException {
+
+        // Sanity check
+        this.checkVariableName(varName);
+        Preconditions.checkState(this.initialized, "not initialized");
+        Preconditions.checkState(!this.closed, "closed");
+
+        // Get the variable
+        final SnippetOutcome outcome = this.execute(varName).snippetOutcomes().get(0);
+        switch (outcome.type()) {
+        case SUCCESSFUL_WITH_VALUE:
+            return outcome.returnValue();
+        case COMPILER_ERRORS:
+            throw new IllegalArgumentException("no such variable \"" + varName + "\"");
+        default:
+            throw new JavaBoxException("error getting variable: " + outcome);
+        }
+    }
+
+    /**
+     * Declare and assign a variable in this container.
+     *
+     * @param varName variable name
+     * @param varValue variable value
+     * @throws InterruptedException if the current thread is interrupted
+     * @throws IllegalStateException if this instance is not initialized or closed
+     * @throws IllegalArgumentException if {@code varName} is not a valid Java identifier
+     * @throws IllegalArgumentException if {@code varName} is null
+     * @see JShell#variables
+     */
+    public void setVariable(String varName, Object varValue) throws InterruptedException {
+        this.setVariable(varName, null, varValue);
+    }
+
+    /**
+     * Declare and assign a variable in this container.
+     *
+     * <p>
+     * If {@code vartype} is null:
+     * <ul>
+     *  <li>The actual type of {@code varValue} (expressed as a string) will be used;
+     *      this type must be accessible in the generated script
+     *  <li>If {@code varValue} is a non-null primitive wrapper type, the corresponding primitive type is used
+     *  <li>If {@code varValue} is null, {@code var} will be used
+     * </ul>
+     *
+     * @param varName variable name
+     * @param varType variable's declared type, or null to infer from actual type
+     * @param varValue variable value
+     * @throws InterruptedException if the current thread is interrupted
+     * @throws IllegalStateException if this instance is not initialized or closed
+     * @throws IllegalArgumentException if {@code varName} is not a valid Java identifier
+     * @throws IllegalArgumentException if {@code varName} is null
+     * @see JShell#variables
+     */
+    public void setVariable(String varName, String varType, Object varValue) throws InterruptedException {
+
+        // Sanity check
+        this.checkVariableName(varName);
+        Preconditions.checkState(this.initialized, "not initialized");
+        Preconditions.checkState(!this.closed, "closed");
+
+        // Auto-generate type if needed
+        if (varType == null) {
+            varType = switch (varValue) {
+                case null -> Object.class.getName();
+                case Boolean x -> "boolean";
+                case Byte x -> "byte";
+                case Character x -> "char";
+                case Short x -> "short";
+                case Integer x -> "int";
+                case Float x -> "float";
+                case Long x -> "long";
+                case Double x -> "double";
+                default -> varValue.getClass().getName();
+            };
+        }
+
+        // Create a script that sets the variable
+        String script = String.format("%s %s = (%s)%s.variableValue();", varType, varName, varType, JavaBox.class.getName());
+
+        // Wait for our turn
+        synchronized (this) {
+            while (this.variableValue != null)
+                this.wait();
+            this.variableValue = new AtomicReference<>(varValue);
+        }
+
+        // Execute the script
+        try {
+            final SnippetOutcome outcome = this.execute(script).snippetOutcomes().get(0);
+            if (!outcome.type().isSuccessful())
+                throw new JavaBoxException("error setting variable: " + outcome);
+        } finally {
+            synchronized (this) {
+                this.variableValue = null;
+                this.notifyAll();
+            }
+        }
+    }
+
+    /**
+     * Obtain the value of a variable being set by {@link #setVariable setVariable()}.
+     *
+     * <p>
+     * This method is only used internally; it's {@code public} so that it can be accessed
+     * from JShell scripts.
+     *
+     * @return value of variable being set if any, otherwise null
+     */
+    public static Object variableValue() {
+        return JavaBox.getCurrent().variableValue.get();
+    }
+
+    private void checkVariableName(String name) {
+        Preconditions.checkArgument(name != null, "null variable name");
+        boolean first = true;
+        for (Iterator<Integer> i = name.codePoints().iterator(); i.hasNext(); ) {
+            final int codePoint = i.next();
+            final boolean valid = first ?
+              Character.isJavaIdentifierStart(codePoint) :
+              Character.isJavaIdentifierPart(codePoint);
+            if (!valid)
+                throw new IllegalArgumentException("invalid variable name \"" + name + "\"");
+            first = false;
+        }
+        Preconditions.checkArgument(!first, "empty variable name");
+    }
+
 // Script Execution
 
     /**
-     * Execute the given script in this container.
+     * Execute the given script in this container with the specified preset variables.
      *
      * <p>
      * The script is broken into individual snippets, which are executed one-at-a-time. Processing stops
-     * if any snippet fails, otherwise after the last snippet has finished. The results of the execution
-     * of the snippet that were processed are returned in the {@link ScriptResult}.
+     * if any snippet fails, otherwise after the last snippet has finished. The results from the execution
+     * of the snippets that were processed are in the returned {@link ScriptResult}.
      *
      * <p>
      * This method is single threaded: if invoked simultaneously by two different threads, the second thread will
@@ -328,99 +493,56 @@ public class JavaBox implements Closeable {
         final SourceCodeAnalysis sourceCodeAnalysis = this.jshell.sourceCodeAnalysis();
         final LineAndColumn lineCol = new LineAndColumn();
         final List<SnippetOutcome> snippetOutcomes = new ArrayList<>();
-    snippetLoop:
         for (String remain = source; !remain.isEmpty(); ) {
 
             // Check for interrupt of execute() thread
             if (this.executionInterrupted)
                 return null;
 
-            // Scrape off the next snippet from the script source
+            // Scrape off the snippet and analzye
             final CompletionInfo info = sourceCodeAnalysis.analyzeCompletion(remain);
             String snippetSource = info.source();
-            final LineAndColumn snippetLineCol = lineCol.dup();
-//            if (this.log.isDebugEnabled())
-//                this.log.debug("execute: {}: completeness={} source=\"{}\"", lineCol, info.completeness(), source);
-            boolean semicolonAdded = false;
+
+            // Debug
+//            if (this.log.isDebugEnabled()) {
+//                String display = snippetSource.replaceAll("\\s", " ").trim();
+//                if (display.length() > 200)
+//                    display = display.substring(0, 200) + "...";
+//                this.log.debug("execute:\n  snippet=[{}]\n  completeness={}", display, info.completeness());
+//            }
+
+            // Analyze and execute snippet
+            /*final*/ SnippetOutcome outcome;
             switch (info.completeness()) {
             case CONSIDERED_INCOMPLETE:
             case DEFINITELY_INCOMPLETE:
-                snippetOutcomes.add(SnippetOutcome.compilerErrors(this, snippetSource,
-                  Collections.singletonList(lineCol.toError("incomplete trailing statement"))));
-                break snippetLoop;
+                outcome = SnippetOutcome.compilerErrors(this, snippetSource,
+                  Collections.singletonList(lineCol.toError("incomplete trailing statement")));
+                break;
             case UNKNOWN:
                 final List<SnippetEvent> eval = this.jshell.eval(snippetSource);
                 final SnippetEvent event;
                 if (eval.size() != 1 || !Snippet.Status.REJECTED.equals((event = eval.get(0)).status()))
                     throw new JavaBoxException("internal error: " + eval);
-                snippetOutcomes.add(SnippetOutcome.compilerErrors(this, snippetSource,
-                  this.toErrors(snippetSource, snippetLineCol, this.jshell.diagnostics(event.snippet()))));
-                break snippetLoop;
-            case COMPLETE_WITH_SEMI:
-                semicolonAdded = true;
+                outcome = SnippetOutcome.compilerErrors(this, snippetSource,
+                  this.toErrors(snippetSource, lineCol, this.jshell.diagnostics(event.snippet())));
                 break;
+            case COMPLETE_WITH_SEMI:
             case COMPLETE:
             case EMPTY:
+                outcome = this.executeSnippet(snippetSource, lineCol);
                 break;
             default:
                 throw new JavaBoxException("internal error");
             }
 
-            // Execute the snippet
-            final List<SnippetEvent> events;
-            final ExecResult execResult;
-            try {
-                events = this.jshell.eval(snippetSource);
-            } finally {
-                execResult = this.currentExecResult.get();
-                this.currentExecResult.set(null);
-            }
-
-            // Find the snippet event that corresponds to this new snippet; there should be exactly one such event.
-            final SnippetEvent event = events.stream()
-              .filter(e -> e.causeSnippet() == null)
-              .reduce((e1, e2) -> {
-                throw new JavaBoxException(String.format("internal error: multiple events: %s, %s", e1, e2));
-              })
-              .orElseThrow(() -> new JavaBoxException(String.format("internal error: no event in %s", events)));
-            final Snippet snippet = event.snippet();
-
-            // Check snippet status
-            Object returnValue = null;
-            switch (event.status()) {
-            case RECOVERABLE_DEFINED:
-            case RECOVERABLE_NOT_DEFINED:
+            // Add outcome to the list, and bail out if error is severe enough
+            snippetOutcomes.add(outcome);
+            if (outcome.type().isHaltsScript())
                 break;
-            case VALID:
-                Optional<Throwable> error = Optional.ofNullable(execResult)
-                  .map(ExecResult::error)
-                  .or(() -> Optional.of(event).map(SnippetEvent::exception));
-                if (error.isPresent()) {
-                    snippetOutcomes.add(SnippetOutcome.exceptionThrown(this, snippet, error.get()));
-                    break snippetLoop;
-                }
-                switch (snippet.kind()) {
-                case EXPRESSION:
-                case VAR:
-                    returnValue = execResult.result();
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case REJECTED:
-                snippetOutcomes.add(SnippetOutcome.compilerErrors(this, snippet,
-                  this.toErrors(snippetSource, snippetLineCol, this.jshell.diagnostics(snippet))));
-                break snippetLoop;
-            default:
-                throw new JavaBoxException("internal error: " + event);
-            }
 
-            // It was successful
-            snippetOutcomes.add(SnippetOutcome.success(this, snippet, returnValue));
-
-            // Advance line & column
-            if (semicolonAdded) {
+            // Advance line & column to the next snippet
+            if (info.completeness() == Completeness.COMPLETE_WITH_SEMI) {
                 assert !snippetSource.isEmpty() && snippetSource.charAt(snippetSource.length() - 1) == ';';
                 snippetSource = snippetSource.substring(0, snippetSource.length() - 1);
             }
@@ -428,8 +550,88 @@ public class JavaBox implements Closeable {
             remain = info.remaining();
         }
 
+        // Update the status of any snippets that changed due to subsequent snippets
+        for (int i = 0; i < snippetOutcomes.size(); i++) {
+            final SnippetOutcome outcome = snippetOutcomes.get(i);
+            final Snippet snippet = outcome.snippet().orElse(null);
+            if (snippet == null)
+                continue;
+            SnippetOutcome updatedOutcome = null;
+            Snippet.Status status = jshell.status(snippet);
+            if (status == Snippet.Status.OVERWRITTEN) {
+                switch (outcome.type()) {
+                case SUCCESSFUL_NO_VALUE:
+                case SUCCESSFUL_WITH_VALUE:
+                case UNRESOLVED_REFERENCES:
+                    break;
+                default:
+                    throw new JavaBoxException("internal error: " + outcome.type());
+                }
+                updatedOutcome = outcome.toOverwritten();
+            } else if (outcome.type() == SnippetOutcome.Type.UNRESOLVED_REFERENCES && status == Snippet.Status.VALID)
+                updatedOutcome = outcome.toValid();
+            if (updatedOutcome != null)
+                snippetOutcomes.set(i, updatedOutcome);
+        }
+
         // Done
         return new ScriptResult(this, source, Collections.unmodifiableList(snippetOutcomes));
+    }
+
+    private SnippetOutcome executeSnippet(String source, LineAndColumn lineCol) {
+
+        // Invoke JShell with the snippet
+        final List<SnippetEvent> events;
+        final ExecResult execResult;
+        try {
+            events = this.jshell.eval(source);
+            execResult = this.currentExecResult.get();
+        } catch (ControlViolationException e) {
+            return SnippetOutcome.controlViolation(this, source, e);
+        } finally {
+            this.currentExecResult.set(null);
+        }
+
+        // Find the snippet event that corresponds to the new snippet; there should be exactly one such event
+        final SnippetEvent event = events.stream()
+          .filter(e -> e.causeSnippet() == null)
+          .reduce((e1, e2) -> {
+            throw new JavaBoxException(String.format("internal error: multiple events: %s, %s", e1, e2));
+          })
+          .orElseThrow(() -> new JavaBoxException(String.format("internal error: no event in %s", events)));
+        final Snippet snippet = event.snippet();
+
+        // Debug
+//        if (this.log.isDebugEnabled())
+//            this.log.debug("execute:\n  event={}\n  result={}", event, execResult);
+
+        // Check snippet status
+        Object returnValue = null;
+        switch (event.status()) {
+        case RECOVERABLE_DEFINED:
+        case RECOVERABLE_NOT_DEFINED:
+            return SnippetOutcome.unresolvedReferences(this, snippet);
+        case VALID:
+            Optional<Throwable> error = Optional.ofNullable(execResult)
+              .map(ExecResult::error)
+              .or(() -> Optional.of(event).map(SnippetEvent::exception));
+            if (error.isPresent())
+                return SnippetOutcome.exceptionThrown(this, snippet, error.get());
+            switch (snippet.kind()) {
+            case EXPRESSION:
+            case VAR:
+                returnValue = execResult.result();
+                break;
+            default:
+                break;
+            }
+            return SnippetOutcome.success(this, snippet, returnValue);
+        case REJECTED:
+            return SnippetOutcome.compilerErrors(this, snippet,
+              this.toErrors(source, lineCol.dup(), this.jshell.diagnostics(snippet)));
+        default:
+            throw new JavaBoxException("internal error: " + event);
+        }
     }
 
     private List<CompilerError> toErrors(String source, LineAndColumn lineCol, Stream<Diag> diagnostics) {
@@ -483,85 +685,121 @@ public class JavaBox implements Closeable {
             controlType.getName(), info.box().config.controls())));
     }
 
-// Package Access - JavaBoxExecutionControl
+// Package Access
 
+    // Callback from JavaBoxExecutionControl.load()
     synchronized ClassBytecodes applyControls(ClassBytecodes cbc) {
-        if (this.config.controls().isEmpty())
-            return cbc;
-        byte[] newBytecode = cbc.bytecodes().clone();           // clone() it just in case it matters
+
+        // Apply controls
+        final ClassDesc name = ClassDesc.of(cbc.name());
+        final byte[] origBytes = cbc.bytecodes();
+        byte[] bytes = origBytes;
         for (Control control : this.config.controls()) {
-            byte[] modifiedBytecode = control.modifyBytecode(cbc.name(), newBytecode);
-            if (modifiedBytecode != null)
-                newBytecode = modifiedBytecode;
+            bytes = control.modifyBytecode(name, bytes);
+            if (bytes == null)
+                throw new ControlViolationException("null bytecode returned by " + control);
         }
-        return new ClassBytecodes(cbc.name(), newBytecode);
+
+        // Any changes?
+        if (bytes == origBytes)
+            return cbc;
+
+        // Sanity check class name didn't change
+        final ClassDesc newName = ClassFile.of().parse(bytes).thisClass().asSymbol();
+        if (!newName.equals(name)) {
+            throw new ControlViolationException(String.format(
+              "control(s) changed class name \"%s\" → \"%s\"", name.descriptorString(), newName.descriptorString()));
+        }
+
+        // Done
+        return new ClassBytecodes(cbc.name(), bytes);
     }
 
-    // Callback from JavaBoxExecutionControl constructor
-    static JavaBox getCurrent() {
-        return CURRENT.require();
-    }
-
+    // Callback from JavaBoxExecutionControl.enterContext()
     void startExecution() {
-
-//        if (this.log.isDebugEnabled())
-//            this.log.debug("enterContext()", new Throwable("HERE"));
 
         // Sanity check
         Preconditions.checkState(this.executeThread != null, "internal error");
         Preconditions.checkState(EXECUTION_INFO.get() == null, "internal error");
+        Preconditions.checkState(CURRENT.get() == null, "internal error");
+        Preconditions.checkState(this.currentExecResult.get() == null, "internal error");
 
         // Set thread name (if not already set)
         final Thread thread = Thread.currentThread();
         if (!thread.getName().startsWith(THREAD_NAME_PREFIX))
             thread.setName(String.format("%s-%d", THREAD_NAME_PREFIX, THREAD_NAME_INDEX.incrementAndGet()));
 
-        // Reset result
-        this.currentExecResult.set(null);
+        // Debug
+//        if (this.log.isDebugEnabled())
+//            this.log.debug("startExecution(): result={}", this.currentExecResult.get(), new Throwable("HERE"));
+
+        // Set current instance
+        CURRENT.set(this);
 
         // Initialize execution contexts
         final ExecutionInfo info = new ExecutionInfo(this);
         EXECUTION_INFO.set(info);
-        this.containerContexts.stream()
-          .map(context -> new ExecutionContext(context, context.control().startExecution(context)))
-          .forEach(info.executionContexts()::add);
+        boolean success = false;
+        try {
 
-//        if (this.log.isDebugEnabled())
-//            this.log.debug("enterContext(): this.currentExecResult={}", this.currentExecResult.get());
+            // Initialize control execution contexts
+            this.containerContexts.stream()
+              .map(context -> new ExecutionContext(context, context.control().startExecution(context)))
+              .forEach(info.executionContexts()::add);
 
-        // Notify subclass
-        this.startingExecution();
+            // Notify subclass
+            this.startingExecution();
+
+            // Done
+            success = true;
+        } finally {
+
+            // Reset thread locals if exception thrown
+            if (!success) {
+                CURRENT.set(null);
+                EXECUTION_INFO.set(null);
+//                if (this.log.isDebugEnabled())
+//                    this.log.debug("startExecution(): canceled due to exception");
+            }
+        }
     }
 
+    // Callback from JavaBoxExecutionControl.leaveContext()
     void finishExecution(Object result, Throwable error) {
 
         // Sanity check
+        final ExecutionInfo info = EXECUTION_INFO.get();
         Preconditions.checkState(this.executeThread != null, "internal error");
         Preconditions.checkState(EXECUTION_INFO.get() != null, "internal error");
+        Preconditions.checkState(info != null, "internal error");
+        Preconditions.checkState(this.currentExecResult.get() == null, "internal error");
+        try {
 
-//        if (this.log.isDebugEnabled())
-//            this.log.debug("leaveContext(): result={} error={}", result, error, new Throwable("HERE"));
+            // Snapshot ExecResult
+            this.currentExecResult.set(new ExecResult(result, error));
 
-        // Snapshot ExecResult
-        this.currentExecResult.set(new ExecResult(result, error));
+            // Shutdown execution contexts
+            info.executionContexts().forEach(executionContext -> {
+                final Control control = executionContext.containerContext().control();
+                try {
+                    control.finishExecution(executionContext, result, error);
+                } catch (Throwable e) {
+                    this.log.warn("error closing {} context for {} (ignoring)", "execution", control, e);
+                }
+            });
 
-        // Shutdown execution contexts
-        final ExecutionInfo info = EXECUTION_INFO.get();
-        EXECUTION_INFO.set(null);
-        info.executionContexts().forEach(executionContext -> {
-            final Control control = executionContext.containerContext().control();
-            try {
-                control.finishExecution(executionContext, result, error);
-            } catch (Exception e) {
-                this.log.warn("error closing {} context for {} (ignoring)", "execution", control, e);
-            }
-        });
+            // Debug
+//            if (this.log.isDebugEnabled())
+//                this.log.debug("finishExecution(): result={}", this.currentExecResult.get());
 
-//        if (this.log.isDebugEnabled())
-//            this.log.debug("leaveContext(): this.currentExecResult={}", this.currentExecResult.get());
+            // Notify subclass
+            this.finishingExecution(result, error);
+        } finally {
 
-        // Notify subclass
-        this.finishingExecution(result, error);
+            // Reset thread locals
+            CURRENT.set(null);
+            EXECUTION_INFO.remove();
+        }
     }
 
     /**
@@ -635,6 +873,22 @@ public class JavaBox implements Closeable {
 
         static ExecResult empty() {
             return new ExecResult(null, null);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder buf = new StringBuilder(32);
+            buf.append(this.getClass().getSimpleName()).append('[');
+            if (result == null && error == null)
+                buf.append("empty");
+            else {
+                buf.append("result=").append(result);
+                if (result != null)
+                    buf.append(" (" + result.getClass().getName() + ")");
+                if (error != null)
+                    buf.append(", error=").append(error);
+            }
+            return buf.append(']').toString();
         }
     }
 }

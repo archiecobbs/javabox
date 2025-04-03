@@ -7,7 +7,6 @@ package org.dellroad.javabox.execution;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,7 +38,8 @@ import jdk.jshell.execution.LocalExecutionControl;
  */
 public class LocalContextExecutionControl extends LocalExecutionControl {
 
-    private static final HashMap<ThreadGroup, InvokeInfo> INVOKE_INFO_MAP = new HashMap<>();
+    // Used for the invokeWrapper() hack
+    private static final InheritableThreadLocal<Invocation> CURRENT_INVOCATION = new InheritableThreadLocal<>();
     private static final Method INVOKE_WRAPPER_METHOD;
     static {
         try {
@@ -68,35 +68,18 @@ public class LocalContextExecutionControl extends LocalExecutionControl {
     // This is a total hack. Our goal is to access this LocalContextExecutionControl from within the thread
     // that is actually invoking the target method (which is different from the current thread here). The problem
     // is the target method must be a static method, so we have to stash "this" somewhere. To accomplish that
-    // we invoke invokeWrapper() instead of "method". Our invokeWrapper() will be invoked in some random
-    // thread whose ThreadGroup's parent ThreadGroup is also this current thread's ThreadGroup. We use that
-    // tenuous connection to retrieve the original method given here and also our current "this" instance.
+    // we invoke invokeWrapper() instead of "method" after storing "this" and "method" in an InheritableThreadLocal.
+    // This works because the thread that will execute invokeWrapper() is a child of the current thread.
+    // See also: https://bugs.openjdk.org/browse/JDK-8353487
     @Override
     protected String invoke(Method method) throws Exception {
-
-        // Create InvokeInfo info and its lookup key
-        final InvokeInfo invokeInfo = new InvokeInfo(this, method);
-        final ThreadGroup lookupKey = Thread.currentThread().getThreadGroup();
-
-        // Wait for any other snippet thread in my ThreadGroup to finish (can there be any?)
-        synchronized (INVOKE_INFO_MAP) {
-            while (INVOKE_INFO_MAP.containsKey(lookupKey))
-                INVOKE_INFO_MAP.wait();
-            INVOKE_INFO_MAP.put(lookupKey, invokeInfo);
-        }
-
-        // Proceed to invoke the snippet
+        if (CURRENT_INVOCATION.get() != null)
+            throw new IllegalStateException("reentrant execution");
+        CURRENT_INVOCATION.set(new Invocation(this, method));
         try {
             return super.invoke(INVOKE_WRAPPER_METHOD);
         } finally {
-
-            // Clean up in case somehow invokeWrapper() was never actually invoked
-            final InvokeInfo invokeInfo2;
-            synchronized (INVOKE_INFO_MAP) {
-                invokeInfo2 = INVOKE_INFO_MAP.get(lookupKey);
-                if (invokeInfo2 == invokeInfo)                      // use object equality to ensure it's ours
-                    INVOKE_INFO_MAP.remove(lookupKey);
-            }
+            CURRENT_INVOCATION.remove();
         }
     }
 
@@ -180,7 +163,7 @@ public class LocalContextExecutionControl extends LocalExecutionControl {
      * Invocation wrapper method.
      *
      * <p>
-     * This method recovers the current instance and the actual method to invoke from our internal secret mapping
+     * This method recovers the current instance and the actual method to invoke from {@link #CURRENT_INVOCATION}
      * and then delegates to {@link #invokeWithContext invokeWithContext()}.
      *
      * <p>
@@ -189,21 +172,13 @@ public class LocalContextExecutionControl extends LocalExecutionControl {
      * @return result from snippet execution
      */
     public static Object invokeWrapper() throws Throwable {
-
-        // Get the target method info stashed by invoke()
-        final ThreadGroup lookupKey = Thread.currentThread().getThreadGroup().getParent();
-        final InvokeInfo invokeInfo;
-        synchronized (INVOKE_INFO_MAP) {
-            invokeInfo = INVOKE_INFO_MAP.remove(lookupKey);
-        }
-        if (invokeInfo == null)
-            throw new RuntimeException("internal error");
-
-        // Proceed
-        return invokeInfo.control().invokeWithContext(invokeInfo.method());
+        final Invocation info = CURRENT_INVOCATION.get();
+        if (info == null)
+            throw new IllegalStateException("internal error");
+        return info.control().invokeWithContext(info.method());
     }
 
-// InvokeInfo
+// Invocation
 
-    private record InvokeInfo(LocalContextExecutionControl control, Method method) { }
+    private record Invocation(LocalContextExecutionControl control, Method method) { }
 }

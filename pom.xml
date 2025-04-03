@@ -19,9 +19,9 @@
     <url>https://github.com/archiecobbs/javabox</url>
 
     <modules>
+        <module>core</module>
         <module>execution</module>
         <module>controls</module>
-        <module>main</module>
     </modules>
     <licenses>
         <license>
@@ -79,7 +79,7 @@
             <!-- Sibling JARs -->
             <dependency>
                 <groupId>org.dellroad</groupId>
-                <artifactId>javabox-main</artifactId>
+                <artifactId>javabox-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

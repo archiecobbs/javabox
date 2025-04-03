@@ -58,9 +58,19 @@ public class SnippetOutcome {
           Optional.empty(), Optional.empty(), Optional.of(compilerErrors));
     }
 
+    static SnippetOutcome controlViolation(JavaBox box, String source, ControlViolationException exception) {
+        return new SnippetOutcome(box, Type.CONTROL_VIOLATION, source, Optional.empty(),
+          Optional.empty(), Optional.of(exception), Optional.empty());
+    }
+
     static SnippetOutcome exceptionThrown(JavaBox box, Snippet snippet, Throwable exception) {
         return new SnippetOutcome(box, Type.EXCEPTION_THROWN, snippet.source(), Optional.of(snippet),
           Optional.empty(), Optional.of(exception), Optional.empty());
+    }
+
+    static SnippetOutcome unresolvedReferences(JavaBox box, Snippet snippet) {
+        return new SnippetOutcome(box, Type.UNRESOLVED_REFERENCES, snippet.source(), Optional.of(snippet),
+          Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     static SnippetOutcome success(JavaBox box, Snippet snippet, Object returnValue) {
@@ -77,6 +87,18 @@ public class SnippetOutcome {
         }
         return new SnippetOutcome(box, type, snippet.source(),
           Optional.of(snippet), returnValue, Optional.empty(), Optional.empty());
+    }
+
+    SnippetOutcome toOverwritten() {
+        Preconditions.checkState(this.snippet.isPresent());
+        return new SnippetOutcome(this.box, Type.OVERWRITTEN, this.source,
+          this.snippet, this.returnValue, this.exception, this.compilerErrors);
+    }
+
+    SnippetOutcome toValid() {
+        Preconditions.checkState(this.snippet.isPresent() && this.type == Type.UNRESOLVED_REFERENCES);
+        return new SnippetOutcome(this.box, Type.SUCCESSFUL_NO_VALUE, this.source,
+          this.snippet, this.returnValue, this.exception, this.compilerErrors);
     }
 
 // Properties
@@ -154,6 +176,29 @@ public class SnippetOutcome {
         return this.compilerErrors;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(type.name());
+        switch (type) {
+        case COMPILER_ERRORS:
+            buf.append(':');
+            this.compilerErrors.get().stream()
+              .map(e -> "\n  " + e)
+              .forEach(buf::append);
+            break;
+        case EXCEPTION_THROWN:
+            buf.append(": ").append(this.exception.get());
+            break;
+        case SUCCESSFUL_WITH_VALUE:
+            buf.append(": ").append(this.returnValue);
+            break;
+        default:
+            break;
+        }
+        return buf.toString();
+    }
+
 // Type
 
     /**
@@ -167,7 +212,16 @@ public class SnippetOutcome {
          * <p>
          * Use {@link SnippetOutcome#compilerErrors} to retrieve the error(s).
          */
-        COMPILER_ERRORS,
+        COMPILER_ERRORS(true, false, false),
+
+        /**
+         * The snippet failed because it tried to do something disallowed by
+         * a configured {@link Control}.
+         *
+         * <p>
+         * Use {@link SnippetOutcome#exception} to retrieve the {@link ControlViolationException}.
+         */
+        CONTROL_VIOLATION(true, false, false),
 
         /**
          * The snippet failed due to throwing an exception during execution.
@@ -175,13 +229,28 @@ public class SnippetOutcome {
          * <p>
          * Use {@link SnippetOutcome#exception} to retrieve the exception thrown.
          */
-        EXCEPTION_THROWN,
+        EXCEPTION_THROWN(true, false, false),
+
+        /**
+         * The snippet was successfully compiled but contains one or more unresolved references
+         * that did not become resolved by any of the subsequent snippets in the same script.
+         */
+        UNRESOLVED_REFERENCES(false, false, false),
+
+        /**
+         * The snippet was successfully compiled but then got overwritten by a subsequent snippet
+         * in the same script.
+         *
+         * <p>
+         * This outcome is only possible after a subsequent snippet has been processed.
+         */
+        OVERWRITTEN(false, false, false),
 
         /**
          * The snippet was compiled and executed successfully and there is no associated return value
          * because the snippet was not of type {@link Snippet.Kind#EXPRESSION} or {@link Snippet.Kind#VAR}.
          */
-        SUCCESSFUL_NO_VALUE(true, false),
+        SUCCESSFUL_NO_VALUE(false, true, false),
 
         /**
          * The snippet was compiled and executed successfully and returned a value. The snippet is of
@@ -190,24 +259,32 @@ public class SnippetOutcome {
          * <p>
          * Use {@link SnippetOutcome#returnValue} to retrieve the return value.
          */
-        SUCCESSFUL_WITH_VALUE(true, true);
+        SUCCESSFUL_WITH_VALUE(false, true, true);
 
+        private boolean haltsScript;
         private boolean successful;
         private boolean hasValue;
 
-        Type() {
-            this(false, false);
-        }
-
-        Type(boolean successful, boolean hasValue) {
+        Type(boolean haltsScript, boolean successful, boolean hasValue) {
+            this.haltsScript = haltsScript;
             this.successful = successful;
             this.hasValue = hasValue;
         }
 
         /**
+         * Determine whether this outcome will cause a partially executed script to stop execution.
+         *
+         * @return true for {@link #COMPILER_ERRORS}, {@link #CONTROL_VIOLATION} and {@link #EXCEPTION_THROWN},
+         *  false otherwise
+         */
+        public boolean isHaltsScript() {
+            return this.haltsScript;
+        }
+
+        /**
          * Determine whether this outcome type represents a successful outcome.
          *
-         * @return true for {@link #SUCCESSFUL_WITH_VALUE} and {@link #SUCCESSFUL_WITH_VALUE}, false otherwise
+         * @return true for {@link #SUCCESSFUL_NO_VALUE} and {@link #SUCCESSFUL_WITH_VALUE}, false otherwise
          */
         public boolean isSuccessful() {
             return this.successful;

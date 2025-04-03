@@ -5,6 +5,8 @@
 
 package org.dellroad.javabox;
 
+import java.lang.constant.ClassDesc;
+
 /**
  * Monitors, modifies, and/or restricts the execution of scripts running in a {@link JavaBox}.
  *
@@ -68,16 +70,16 @@ public interface Control {
      * Apply this control to the given class which was generated from a script.
      *
      * <p>
-     * The default implementation in {@link Control} returns null.
+     * The default implementation in {@link Control} just returns {@code bytecode}.
      *
-     * @param className the name of the class being added
-     * @param classBytecode the Java bytecode of the class being added
-     * @return replacement java bytecode, or null to make no modifications
+     * @param name the name of the class being added
+     * @param bytecode the Java bytecode of the class being added
+     * @return replacement java bytecode; must not be null
      * @throws ControlViolationException if the class contains something rejected by this control
      * @throws JavaBoxException if some other error occurs
      */
-    default byte[] modifyBytecode(String className, byte[] classBytecode) {
-        return null;
+    default byte[] modifyBytecode(ClassDesc name, byte[] bytecode) {
+        return bytecode;
     }
 
     /**
