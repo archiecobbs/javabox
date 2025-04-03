@@ -81,8 +81,13 @@ loadScripts(document, 'script');</script>
 <li><a href="#isInitialized()" tabindex="0">isInitialized()</a></li>
 <li><a href="#isClosed()" tabindex="0">isClosed()</a></li>
 <li><a href="#getJShell()" tabindex="0">getJShell()</a></li>
+<li><a href="#getCurrent()" tabindex="0">getCurrent()</a></li>
 <li><a href="#initialize()" tabindex="0">initialize()</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#getVariable(java.lang.String)" tabindex="0">getVariable(String)</a></li>
+<li><a href="#setVariable(java.lang.String,java.lang.Object)" tabindex="0">setVariable(String, Object)</a></li>
+<li><a href="#setVariable(java.lang.String,java.lang.String,java.lang.Object)" tabindex="0">setVariable(String, String, Object)</a></li>
+<li><a href="#variableValue()" tabindex="0">variableValue()</a></li>
 <li><a href="#execute(java.lang.String)" tabindex="0">execute(String)</a></li>
 <li><a href="#interrupt()" tabindex="0">interrupt()</a></li>
 <li><a href="#executionContextFor(java.lang.Class)" tabindex="0">executionContextFor(Class)</a></li>
@@ -171,7 +176,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute(java.lang.String)" class="member-name-link">execute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Execute the given script in this container.</div>
+<div class="block">Execute the given script in this container with the specified preset variables.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Control.ExecutionContext.html" title="class in org.dellroad.javabox">Control.ExecutionContext</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#executionContextFor(java.lang.Class)" class="member-name-link">executionContextFor</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="Control.html" title="interface in org.dellroad.javabox">Control</a>&gt;&nbsp;controlType)</code></div>
@@ -190,10 +195,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the <a href="Config.html" title="class in org.dellroad.javabox"><code>Config</code></a> associated with this instance.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link">JShell</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJShell()" class="member-name-link">getJShell</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getCurrent()" class="member-name-link">getCurrent</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Get the <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance associated with the current thread.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link">JShell</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJShell()" class="member-name-link">getJShell</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instanced associated with this container.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getVariable(java.lang.String)" class="member-name-link">getVariable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the value of a variable in this container.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initialize()" class="member-name-link">initialize</a>()</code></div>
@@ -215,10 +230,28 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Determine if this instance is initialized.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVariable(java.lang.String,java.lang.Object)" class="member-name-link">setVariable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varValue)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Declare and assign a variable in this container.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVariable(java.lang.String,java.lang.String,java.lang.Object)" class="member-name-link">setVariable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varType,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varValue)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Declare and assign a variable in this container.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startingExecution()" class="member-name-link">startingExecution</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Subclass hook invoked when starting script execution.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#variableValue()" class="member-name-link">variableValue</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Obtain the value of a variable being set by <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>.</div>
 </div>
 </div>
 </div>
@@ -360,6 +393,22 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 </section>
 </li>
 <li>
+<section class="detail" id="getCurrent()">
+<h3>getCurrent</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></span>&nbsp;<span class="element-name">getCurrent</span>()</div>
+<div class="block">Get the <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance associated with the current thread.
+
+ <p>
+ This method works during <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> initialization and script execution.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if there is no such instance</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="initialize()">
 <h3>initialize</h3>
 <div class="horizontal-scroll">
@@ -391,17 +440,127 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 </section>
 </li>
 <li>
+<section class="detail" id="getVariable(java.lang.String)">
+<h3>getVariable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getVariable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName)</span>
+                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
+<div class="block">Get the value of a variable in this container.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>varName</code> - variable name</dd>
+<dt>Returns:</dt>
+<dd>variable value</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the current thread is interrupted</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if this instance is not initialized or closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is not found</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is not a valid Java identifier</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is null</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html#variables()" title="class or interface in jdk.jshell" class="external-link"><code>JShell.variables()</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setVariable(java.lang.String,java.lang.Object)">
+<h3>setVariable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVariable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varValue)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
+<div class="block">Declare and assign a variable in this container.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>varName</code> - variable name</dd>
+<dd><code>varValue</code> - variable value</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the current thread is interrupted</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if this instance is not initialized or closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is not a valid Java identifier</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is null</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html#variables()" title="class or interface in jdk.jshell" class="external-link"><code>JShell.variables()</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setVariable(java.lang.String,java.lang.String,java.lang.Object)">
+<h3>setVariable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVariable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varType,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varValue)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
+<div class="block">Declare and assign a variable in this container.
+
+ <p>
+ If <code>vartype</code> is null:
+ <ul>
+  <li>The actual type of <code>varValue</code> (expressed as a string) will be used;
+      this type must be accessible in the generated script
+  <li>If <code>varValue</code> is a non-null primitive wrapper type, the corresponding primitive type is used
+  <li>If <code>varValue</code> is null, <code>var</code> will be used
+ </ul></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>varName</code> - variable name</dd>
+<dd><code>varType</code> - variable's declared type, or null to infer from actual type</dd>
+<dd><code>varValue</code> - variable value</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the current thread is interrupted</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if this instance is not initialized or closed</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is not a valid Java identifier</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is null</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html#variables()" title="class or interface in jdk.jshell" class="external-link"><code>JShell.variables()</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="variableValue()">
+<h3>variableValue</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">variableValue</span>()</div>
+<div class="block">Obtain the value of a variable being set by <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>.
+
+ <p>
+ This method is only used internally; it's <code>public</code> so that it can be accessed
+ from JShell scripts.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>value of variable being set if any, otherwise null</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="execute(java.lang.String)">
 <h3>execute</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span>&nbsp;<span class="element-name">execute</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</span>
                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
-<div class="block">Execute the given script in this container.
+<div class="block">Execute the given script in this container with the specified preset variables.
 
  <p>
  The script is broken into individual snippets, which are executed one-at-a-time. Processing stops
- if any snippet fails, otherwise after the last snippet has finished. The results of the execution
- of the snippet that were processed are returned in the <a href="ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>.
+ if any snippet fails, otherwise after the last snippet has finished. The results from the execution
+ of the snippets that were processed are in the returned <a href="ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>.
 
  <p>
  This method is single threaded: if invoked simultaneously by two different threads, the second thread will

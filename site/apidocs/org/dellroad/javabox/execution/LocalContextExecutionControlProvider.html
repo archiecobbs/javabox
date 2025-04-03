@@ -77,6 +77,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#modifyJShellFlags(java.lang.ClassLoader,java.util.List)" tabindex="0">modifyJShellFlags(ClassLoader, List)</a></li>
+<li><a href="#inferClassPath(java.lang.ClassLoader)" tabindex="0">inferClassPath(ClassLoader)</a></li>
 <li><a href="#getExecutionFlag(java.util.List)" tabindex="0">getExecutionFlag(List)</a></li>
 <li><a href="#setExecutionFlag(java.util.List,java.lang.String)" tabindex="0">setExecutionFlag(List, String)</a></li>
 <li><a href="#addToClassPath(java.util.List,java.util.List)" tabindex="0">addToClassPath(List, List)</a></li>
@@ -136,9 +137,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshel
  <p>
  The standard <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControl</code></a> requires non-standard classes to be explicitly added
  via the <code>--class-path</code> command line flag. Moreover, the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link"><code>ClassLoader</code></a> that it uses delegates
- to the system class loader, which means that in certain more complex class loading scenarios (for example,
- when running as a servlet in the Tomcat web container), compiled snippets classes will fail to load
- due to resolution errors.
+ to the system class loader by default, which means that in certain more complex class loading scenarios
+ (for example, when running as a servlet in the Tomcat web container), compiled snippets classes will fail
+ to load due to resolution errors.
 
  <p>
  This class tries to workaround these issues as follows:
@@ -226,11 +227,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshel
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Build a new <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControl</code></a> using the given delegate.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected org.dellroad.stuff.java.MemoryClassLoader</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://archiecobbs.github.io/dellroad-stuff/site/apidocs/org/dellroad/stuff/java/MemoryClassLoader.html" title="class or interface in org.dellroad.stuff.java" class="external-link">MemoryClassLoader</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createMemoryClassLoader()" class="member-name-link">createMemoryClassLoader</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createMemoryLoaderDelegate(org.dellroad.stuff.java.MemoryClassLoader)" class="member-name-link">createMemoryLoaderDelegate</a><wbr>(org.dellroad.stuff.java.MemoryClassLoader&nbsp;memoryLoader)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createMemoryLoaderDelegate(org.dellroad.stuff.java.MemoryClassLoader)" class="member-name-link">createMemoryLoaderDelegate</a><wbr>(<a href="https://archiecobbs.github.io/dellroad-stuff/site/apidocs/org/dellroad/stuff/java/MemoryClassLoader.html" title="class or interface in org.dellroad.stuff.java" class="external-link">MemoryClassLoader</a>&nbsp;memoryLoader)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#defaultParameters()" class="member-name-link">defaultParameters</a>()</code></div>
@@ -244,19 +245,25 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshel
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Get the execution provider name specified via the <code>--execution</code> flag, if any.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#modifyJShellFlags(java.lang.ClassLoader,java.util.List)" class="member-name-link">modifyJShellFlags</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;loader,
- <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;flags)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#inferClassPath(java.lang.ClassLoader)" class="member-name-link">inferClassPath</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;loader)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Infer the classpath from the <code>java.class.path</code> system property and
+ the given <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link"><code>ClassLoader</code></a> hierarchy.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#modifyJShellFlags(java.lang.ClassLoader,java.util.List)" class="member-name-link">modifyJShellFlags</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;loader,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;flags)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Modify a list of JShell tool command line flags to enable use of this class.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setExecutionFlag(java.util.List,java.lang.String)" class="member-name-link">setExecutionFlag</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;flags,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setExecutionFlag(java.util.List,java.lang.String)" class="member-name-link">setExecutionFlag</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;flags,
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;providerName)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Modify a list of JShell tool command line flags to force the use of the named
  execution provider, overriding any previous.</div>
 </div>
@@ -330,6 +337,25 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshel
 <dd><code>flags</code> - modifiable list of command line flags</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>flags</code> is null</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="inferClassPath(java.lang.ClassLoader)">
+<h3>inferClassPath</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">inferClassPath</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;loader)</span></div>
+<div class="block">Infer the classpath from the <code>java.class.path</code> system property and
+ the given <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link"><code>ClassLoader</code></a> hierarchy.
+
+ <p>
+ Works best when the JVM is started with <code>--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>loader</code> - loader to copy from, or null for the current thread's context class loader</dd>
+<dt>Returns:</dt>
+<dd>list of class path entries</dd>
 </dl>
 </div>
 </section>
@@ -440,7 +466,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshel
 <section class="detail" id="createMemoryLoaderDelegate(org.dellroad.stuff.java.MemoryClassLoader)">
 <h3>createMemoryLoaderDelegate</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></span>&nbsp;<span class="element-name">createMemoryLoaderDelegate</span><wbr><span class="parameters">(org.dellroad.stuff.java.MemoryClassLoader&nbsp;memoryLoader)</span></div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></span>&nbsp;<span class="element-name">createMemoryLoaderDelegate</span><wbr><span class="parameters">(<a href="https://archiecobbs.github.io/dellroad-stuff/site/apidocs/org/dellroad/stuff/java/MemoryClassLoader.html" title="class or interface in org.dellroad.stuff.java" class="external-link">MemoryClassLoader</a>&nbsp;memoryLoader)</span></div>
 </div>
 </section>
 </li>
@@ -448,7 +474,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshel
 <section class="detail" id="createMemoryClassLoader()">
 <h3>createMemoryClassLoader</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">org.dellroad.stuff.java.MemoryClassLoader</span>&nbsp;<span class="element-name">createMemoryClassLoader</span>()</div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://archiecobbs.github.io/dellroad-stuff/site/apidocs/org/dellroad/stuff/java/MemoryClassLoader.html" title="class or interface in org.dellroad.stuff.java" class="external-link">MemoryClassLoader</a></span>&nbsp;<span class="element-name">createMemoryClassLoader</span>()</div>
 </div>
 </section>
 </li>

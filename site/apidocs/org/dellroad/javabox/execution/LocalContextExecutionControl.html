@@ -124,7 +124,7 @@ loadScripts(document, 'script');</script>
 
  <p>
  The methods a subclass can use to bracket snippet execution and <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> result decoding are <a href="#enterContext()"><code>enterContext()</code></a>
- and <code>#leaveContext leaveContext()</code>; the latter method also provides access the actual snippet return value, rather
+ and <a href="#leaveContext(java.lang.Object,java.lang.Throwable)"><code>leaveContext()</code></a>; the latter method also provides access the actual snippet return value, rather
  than just its <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation.</div>
 </div>
 </section>
@@ -328,7 +328,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Invocation wrapper method.
 
  <p>
- This method recovers the current instance and the actual method to invoke from our internal secret mapping
+ This method recovers the current instance and the actual method to invoke from <code>CURRENT_INVOCATION</code>
  and then delegates to <a href="#invokeWithContext(java.lang.reflect.Method)"><code>invokeWithContext()</code></a>.
 
  <p>

@@ -58,17 +58,25 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/control/ClassReferenceControl.html" title="class in org.dellroad.javabox.control">ClassReferenceControl</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A simple <a href="org/dellroad/javabox/control/ConstantPoolControl.html" title="class in org.dellroad.javabox.control"><code>ConstantPoolControl</code></a> that restricts which classes can be referenced by <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/classfile/constantpool/ClassEntry.html" title="class or interface in java.lang.classfile.constantpool" class="external-link"><code>ClassEntry</code></a>'s.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Captures a compilation error.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/Config.html" title="class in org.dellroad.javabox">Config</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/Config.html" title="class in org.dellroad.javabox">Config</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Configuration object for <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instances.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Builder for <a href="org/dellroad/javabox/Config.html" title="class in org.dellroad.javabox"><code>Config</code></a> instances.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/control/ConstantPoolControl.html" title="class in org.dellroad.javabox.control">ConstantPoolControl</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A JavaBox <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> that restricts the what's allowed to appear in the constant pool.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox">Control</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
@@ -87,58 +95,62 @@ loadScripts(document, 'script');</script>
 <div class="block">Thrown when a script does something that exceeds imposed limits or otherwise is not allowed
  by a configured <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/IllegalPoolEntryException.html" title="class in org.dellroad.javabox.control">IllegalPoolEntryException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="block">Exception thrown when an illegal entry is found in the constant pool.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A scripting container for scripts written in the Java language.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when some unexpected error occurs during a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> operation.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/JavaBoxExecutionControl.html" title="class in org.dellroad.javabox">JavaBoxExecutionControl</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControl</code></a> used by <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/JavaBoxExecutionControlProvider.html" title="class in org.dellroad.javabox">JavaBoxExecutionControlProvider</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/JavaBoxExecutionControl.html" title="class in org.dellroad.javabox">JavaBoxExecutionControl</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">The <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControl</code></a> used by <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> itself.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/JavaBoxExecutionControlProvider.html" title="class in org.dellroad.javabox">JavaBoxExecutionControlProvider</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The <a href="org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html" title="class in org.dellroad.javabox.execution"><code>LocalContextExecutionControlProvider</code></a> used by <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControl</code></a> that provides the ability to add thread-local context to the execution of
  each JShell snippet and its subsequent result decoding into a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControlProvider</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControlProvider</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Same as <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControlProvider.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControlProvider</code></a>, but with additional support for handling certain
  class path and class loading issues.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">A JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LoaderDelegate.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LoaderDelegate</code></a> that uses a <code>MemoryClassLoader</code>.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LoaderDelegate.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LoaderDelegate</code></a> that uses a <a href="https://archiecobbs.github.io/dellroad-stuff/site/apidocs/org/dellroad/stuff/java/MemoryClassLoader.html" title="class or interface in org.dellroad.stuff.java" class="external-link"><code>MemoryClassLoader</code></a>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The result from executing a script in a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Captures the outcome from one of the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s that constitute a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> script.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab3">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">
 <div class="block">The type of <a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox"><code>SnippetOutcome</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">This is a simple wrapper around a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> in which <a href="org/dellroad/javabox/execution/StringWrapper.html#toString()"><code>StringWrapper.toString()</code></a> returns the wrapped <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">A JavaBox <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> that limits the amount of time that a script snippet may execute.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/TimeLimitExceededException.html" title="class in org.dellroad.javabox.control">TimeLimitExceededException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/TimeLimitExceededException.html" title="class in org.dellroad.javabox.control">TimeLimitExceededException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Exception thrown when a script exceeds the time limit imposed by a <a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control"><code>TimeLimitControl</code></a>.</div>
 </div>
 </div>

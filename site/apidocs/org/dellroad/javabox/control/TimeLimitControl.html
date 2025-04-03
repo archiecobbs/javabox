@@ -71,7 +71,7 @@ loadScripts(document, 'script');</script>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#modifyBytecode(java.lang.String,byte%5B%5D)" tabindex="0">modifyBytecode(String, byte[])</a></li>
+<li><a href="#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)" tabindex="0">modifyBytecode(ClassDesc, byte[])</a></li>
 <li><a href="#startExecution(org.dellroad.javabox.Control.ContainerContext)" tabindex="0">startExecution(Control.ContainerContext)</a></li>
 <li><a href="#check()" tabindex="0">check()</a></li>
 <li><a href="#toString()" tabindex="0">toString()</a></li>
@@ -164,8 +164,8 @@ implements <a href="../Control.html" title="interface in org.dellroad.javabox">C
 <div class="block">Returns a hash code value for this object.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#modifyBytecode(java.lang.String,byte%5B%5D)" class="member-name-link">modifyBytecode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
- byte[]&nbsp;classBytecode)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)" class="member-name-link">modifyBytecode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/constant/ClassDesc.html" title="class or interface in java.lang.constant" class="external-link">ClassDesc</a>&nbsp;name,
+ byte[]&nbsp;bytes)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds time limit checks to the bytecode.</div>
 </div>
@@ -227,20 +227,20 @@ implements <a href="../Control.html" title="interface in org.dellroad.javabox">C
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="modifyBytecode(java.lang.String,byte[])">
+<section class="detail" id="modifyBytecode(java.lang.constant.ClassDesc,byte[])">
 <h3>modifyBytecode</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">modifyBytecode</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
- byte[]&nbsp;classBytecode)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">modifyBytecode</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/constant/ClassDesc.html" title="class or interface in java.lang.constant" class="external-link">ClassDesc</a>&nbsp;name,
+ byte[]&nbsp;bytes)</span></div>
 <div class="block">Adds time limit checks to the bytecode.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../Control.html#modifyBytecode(java.lang.String,byte%5B%5D)">modifyBytecode</a></code>&nbsp;in interface&nbsp;<code><a href="../Control.html" title="interface in org.dellroad.javabox">Control</a></code></dd>
+<dd><code><a href="../Control.html#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)">modifyBytecode</a></code>&nbsp;in interface&nbsp;<code><a href="../Control.html" title="interface in org.dellroad.javabox">Control</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>className</code> - the name of the class being added</dd>
-<dd><code>classBytecode</code> - the Java bytecode of the class being added</dd>
+<dd><code>name</code> - the name of the class being added</dd>
+<dd><code>bytes</code> - the Java bytecode of the class being added</dd>
 <dt>Returns:</dt>
-<dd>replacement java bytecode, or null to make no modifications</dd>
+<dd>replacement java bytecode; must not be null</dd>
 </dl>
 </div>
 </section>
@@ -263,7 +263,7 @@ implements <a href="../Control.html" title="interface in org.dellroad.javabox">C
 
  <p>
  The current thread will be the thread that is actually executing the script snippet.
- An <a href="../Control.ExecutionContext.html" title="class in org.dellroad.javabox"><code>Control.ExecutionContext</code></a> will be created using the returned private context and made
+ A <a href="../Control.ExecutionContext.html" title="class in org.dellroad.javabox"><code>Control.ExecutionContext</code></a> will be created using the returned private context and made
  available in this thread via <a href="../JavaBox.html#executionContextFor(java.lang.Class)"><code>JavaBox.executionContextFor()</code></a>,
  and also provided to <a href="../Control.html#finishExecution(org.dellroad.javabox.Control.ExecutionContext,java.lang.Object,java.lang.Throwable)"><code>finishExecution()</code></a>.
 

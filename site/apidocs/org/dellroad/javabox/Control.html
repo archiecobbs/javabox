@@ -67,7 +67,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#initialize(org.dellroad.javabox.JavaBox)" tabindex="0">initialize(JavaBox)</a></li>
 <li><a href="#shutdown(org.dellroad.javabox.Control.ContainerContext)" tabindex="0">shutdown(Control.ContainerContext)</a></li>
-<li><a href="#modifyBytecode(java.lang.String,byte%5B%5D)" tabindex="0">modifyBytecode(String, byte[])</a></li>
+<li><a href="#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)" tabindex="0">modifyBytecode(ClassDesc, byte[])</a></li>
 <li><a href="#startExecution(org.dellroad.javabox.Control.ContainerContext)" tabindex="0">startExecution(Control.ContainerContext)</a></li>
 <li><a href="#finishExecution(org.dellroad.javabox.Control.ExecutionContext,java.lang.Object,java.lang.Throwable)" tabindex="0">finishExecution(Control.ExecutionContext, Object, Throwable)</a></li>
 </ol>
@@ -82,7 +82,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></code></dd>
+<dd><code><a href="control/ClassReferenceControl.html" title="class in org.dellroad.javabox.control">ClassReferenceControl</a></code>, <code><a href="control/ConstantPoolControl.html" title="class in org.dellroad.javabox.control">ConstantPoolControl</a></code>, <code><a href="control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -97,9 +97,14 @@ loadScripts(document, 'script');</script>
  Controls may create per-container and per-execution contexts. The lifecycle methods
  <a href="#initialize(org.dellroad.javabox.JavaBox)"><code>initialize()</code></a> and <a href="#shutdown(org.dellroad.javabox.Control.ContainerContext)"><code>shutdown()</code></a> are for per-container context,
  and <a href="#startExecution(org.dellroad.javabox.Control.ContainerContext)"><code>startExecution()</code></a> and <a href="#finishExecution(org.dellroad.javabox.Control.ExecutionContext,java.lang.Object,java.lang.Throwable)"><code>finishExecution()</code></a> are
- for per-execution context. Note however that if the return value from a script execution is an
- invokable object, then any subsequent invocations into it will not have any per-execution context
- since they are executing outside of the container.</div>
+ for per-execution context. An "execution" happens with script snippets that contain statements or
+ expressions; snippets that simply declare classes, etc., do not (immediately) execute.
+
+ <p>
+ Note that if the return value from a script execution is an invokable object, then any subsequent
+ invocations into that object's methods it will not have any per-execution context, since they will
+ executing outside of the container. Of course, a control can always use other tricks to add such
+ context, e.g., bytecode modification, automatically wrapping return values in a proxy interface, etc.</div>
 </div>
 </section>
 <section class="summary">
@@ -151,8 +156,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Initialize this control for the given <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> and return any associated private context.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default byte[]</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#modifyBytecode(java.lang.String,byte%5B%5D)" class="member-name-link">modifyBytecode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
- byte[]&nbsp;classBytecode)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)" class="member-name-link">modifyBytecode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/constant/ClassDesc.html" title="class or interface in java.lang.constant" class="external-link">ClassDesc</a>&nbsp;name,
+ byte[]&nbsp;bytecode)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Apply this control to the given class which was generated from a script.</div>
 </div>
@@ -229,21 +234,21 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="modifyBytecode(java.lang.String,byte[])">
+<section class="detail" id="modifyBytecode(java.lang.constant.ClassDesc,byte[])">
 <h3>modifyBytecode</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">modifyBytecode</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
- byte[]&nbsp;classBytecode)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">modifyBytecode</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/constant/ClassDesc.html" title="class or interface in java.lang.constant" class="external-link">ClassDesc</a>&nbsp;name,
+ byte[]&nbsp;bytecode)</span></div>
 <div class="block">Apply this control to the given class which was generated from a script.
 
  <p>
- The default implementation in <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> returns null.</div>
+ The default implementation in <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> just returns <code>bytecode</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>className</code> - the name of the class being added</dd>
-<dd><code>classBytecode</code> - the Java bytecode of the class being added</dd>
+<dd><code>name</code> - the name of the class being added</dd>
+<dd><code>bytecode</code> - the Java bytecode of the class being added</dd>
 <dt>Returns:</dt>
-<dd>replacement java bytecode, or null to make no modifications</dd>
+<dd>replacement java bytecode; must not be null</dd>
 <dt>Throws:</dt>
 <dd><code><a href="ControlViolationException.html" title="class in org.dellroad.javabox">ControlViolationException</a></code> - if the class contains something rejected by this control</dd>
 <dd><code><a href="JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></code> - if some other error occurs</dd>
@@ -268,7 +273,7 @@ loadScripts(document, 'script');</script>
 
  <p>
  The current thread will be the thread that is actually executing the script snippet.
- An <a href="Control.ExecutionContext.html" title="class in org.dellroad.javabox"><code>Control.ExecutionContext</code></a> will be created using the returned private context and made
+ A <a href="Control.ExecutionContext.html" title="class in org.dellroad.javabox"><code>Control.ExecutionContext</code></a> will be created using the returned private context and made
  available in this thread via <a href="JavaBox.html#executionContextFor(java.lang.Class)"><code>JavaBox.executionContextFor()</code></a>,
  and also provided to <a href="#finishExecution(org.dellroad.javabox.Control.ExecutionContext,java.lang.Object,java.lang.Throwable)"><code>finishExecution()</code></a>.
 

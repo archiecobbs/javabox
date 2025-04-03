@@ -68,7 +68,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#enum-constant-detail" tabindex="0">Enum Constant Details</a>
 <ol class="toc-list">
 <li><a href="#COMPILER_ERRORS" tabindex="0">COMPILER_ERRORS</a></li>
+<li><a href="#CONTROL_VIOLATION" tabindex="0">CONTROL_VIOLATION</a></li>
 <li><a href="#EXCEPTION_THROWN" tabindex="0">EXCEPTION_THROWN</a></li>
+<li><a href="#UNRESOLVED_REFERENCES" tabindex="0">UNRESOLVED_REFERENCES</a></li>
+<li><a href="#OVERWRITTEN" tabindex="0">OVERWRITTEN</a></li>
 <li><a href="#SUCCESSFUL_NO_VALUE" tabindex="0">SUCCESSFUL_NO_VALUE</a></li>
 <li><a href="#SUCCESSFUL_WITH_VALUE" tabindex="0">SUCCESSFUL_WITH_VALUE</a></li>
 </ol>
@@ -77,6 +80,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#values()" tabindex="0">values()</a></li>
 <li><a href="#valueOf(java.lang.String)" tabindex="0">valueOf(String)</a></li>
+<li><a href="#isHaltsScript()" tabindex="0">isHaltsScript()</a></li>
 <li><a href="#isSuccessful()" tabindex="0">isSuccessful()</a></li>
 <li><a href="#hasValue()" tabindex="0">hasValue()</a></li>
 </ol>
@@ -132,9 +136,19 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">The snippet failed due to one or more compiler errors.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="#EXCEPTION_THROWN" class="member-name-link">EXCEPTION_THROWN</a></code></div>
+<div class="col-first odd-row-color"><code><a href="#CONTROL_VIOLATION" class="member-name-link">CONTROL_VIOLATION</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The snippet failed because it tried to do something disallowed by
+ a configured <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="#EXCEPTION_THROWN" class="member-name-link">EXCEPTION_THROWN</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The snippet failed due to throwing an exception during execution.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="#OVERWRITTEN" class="member-name-link">OVERWRITTEN</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The snippet was successfully compiled but then got overwritten by a subsequent snippet
+ in the same script.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="#SUCCESSFUL_NO_VALUE" class="member-name-link">SUCCESSFUL_NO_VALUE</a></code></div>
 <div class="col-last even-row-color">
@@ -144,6 +158,11 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code><a href="#SUCCESSFUL_WITH_VALUE" class="member-name-link">SUCCESSFUL_WITH_VALUE</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">The snippet was compiled and executed successfully and returned a value.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="#UNRESOLVED_REFERENCES" class="member-name-link">UNRESOLVED_REFERENCES</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The snippet was successfully compiled but contains one or more unresolved references
+ that did not become resolved by any of the subsequent snippets in the same script.</div>
 </div>
 </div>
 </section>
@@ -165,18 +184,23 @@ loadScripts(document, 'script');</script>
 <div class="block">Determine whether this outcome type implies that there was a value returned.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuccessful()" class="member-name-link">isSuccessful</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHaltsScript()" class="member-name-link">isHaltsScript</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Determine whether this outcome will cause a partially executed script to stop execution.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuccessful()" class="member-name-link">isSuccessful</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Determine whether this outcome type represents a successful outcome.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#valueOf(java.lang.String)" class="member-name-link">valueOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#valueOf(java.lang.String)" class="member-name-link">valueOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a>[]</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a>[]</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
 </div>
@@ -213,6 +237,19 @@ the order they are declared.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="CONTROL_VIOLATION">
+<h3>CONTROL_VIOLATION</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></span>&nbsp;<span class="element-name">CONTROL_VIOLATION</span></div>
+<div class="block">The snippet failed because it tried to do something disallowed by
+ a configured <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.
+
+ <p>
+ Use <code>SnippetOutcome.exception</code> to retrieve the <a href="ControlViolationException.html" title="class in org.dellroad.javabox"><code>ControlViolationException</code></a>.</div>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="EXCEPTION_THROWN">
 <h3>EXCEPTION_THROWN</h3>
 <div class="horizontal-scroll">
@@ -221,6 +258,29 @@ the order they are declared.</div>
 
  <p>
  Use <code>SnippetOutcome.exception</code> to retrieve the exception thrown.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="UNRESOLVED_REFERENCES">
+<h3>UNRESOLVED_REFERENCES</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></span>&nbsp;<span class="element-name">UNRESOLVED_REFERENCES</span></div>
+<div class="block">The snippet was successfully compiled but contains one or more unresolved references
+ that did not become resolved by any of the subsequent snippets in the same script.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="OVERWRITTEN">
+<h3>OVERWRITTEN</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></span>&nbsp;<span class="element-name">OVERWRITTEN</span></div>
+<div class="block">The snippet was successfully compiled but then got overwritten by a subsequent snippet
+ in the same script.
+
+ <p>
+ This outcome is only possible after a subsequent snippet has been processed.</div>
 </div>
 </section>
 </li>
@@ -291,6 +351,20 @@ not permitted.)</div>
 </section>
 </li>
 <li>
+<section class="detail" id="isHaltsScript()">
+<h3>isHaltsScript</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isHaltsScript</span>()</div>
+<div class="block">Determine whether this outcome will cause a partially executed script to stop execution.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true for <a href="#COMPILER_ERRORS"><code>COMPILER_ERRORS</code></a>, <a href="#CONTROL_VIOLATION"><code>CONTROL_VIOLATION</code></a> and <a href="#EXCEPTION_THROWN"><code>EXCEPTION_THROWN</code></a>,
+  false otherwise</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="isSuccessful()">
 <h3>isSuccessful</h3>
 <div class="horizontal-scroll">
@@ -298,7 +372,7 @@ not permitted.)</div>
 <div class="block">Determine whether this outcome type represents a successful outcome.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true for <a href="#SUCCESSFUL_WITH_VALUE"><code>SUCCESSFUL_WITH_VALUE</code></a> and <a href="#SUCCESSFUL_WITH_VALUE"><code>SUCCESSFUL_WITH_VALUE</code></a>, false otherwise</dd>
+<dd>true for <a href="#SUCCESSFUL_NO_VALUE"><code>SUCCESSFUL_NO_VALUE</code></a> and <a href="#SUCCESSFUL_WITH_VALUE"><code>SUCCESSFUL_WITH_VALUE</code></a>, false otherwise</dd>
 </dl>
 </div>
 </section>

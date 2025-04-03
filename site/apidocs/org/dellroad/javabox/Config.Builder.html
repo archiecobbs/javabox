@@ -66,7 +66,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#build()" tabindex="0">build()</a></li>
-<li><a href="#withJshellBuilder(jdk.jshell.JShell.Builder)" tabindex="0">withJshellBuilder(JShell.Builder)</a></li>
+<li><a href="#withJShellMods(java.util.function.Consumer)" tabindex="0">withJShellMods(Consumer)</a></li>
+<li><a href="#withJShellBuilder(jdk.jshell.JShell.Builder)" tabindex="0">withJShellBuilder(JShell.Builder)</a></li>
 <li><a href="#withDelegateLoader(java.lang.ClassLoader)" tabindex="0">withDelegateLoader(ClassLoader)</a></li>
 <li><a href="#withControls(java.util.List)" tabindex="0">withControls(List)</a></li>
 <li><a href="#withControl(org.dellroad.javabox.Control)" tabindex="0">withControl(Control)</a></li>
@@ -123,7 +124,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withControls(java.util.List)" class="member-name-link">withControls</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Control.html" title="interface in org.dellroad.javabox">Control</a>&gt;&nbsp;controls)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Configure the <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s.</div>
+<div class="block">Configure the list of <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withDelegateLoader(java.lang.ClassLoader)" class="member-name-link">withDelegateLoader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;delegateLoader)</code></div>
@@ -132,9 +133,14 @@ loadScripts(document, 'script');</script>
  of the loader that loads the classes generated for applied scripts.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withJshellBuilder(jdk.jshell.JShell.Builder)" class="member-name-link">withJshellBuilder</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link">JShell.Builder</a>&nbsp;jshellBuilder)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withJShellBuilder(jdk.jshell.JShell.Builder)" class="member-name-link">withJShellBuilder</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link">JShell.Builder</a>&nbsp;jshellBuilder)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Configure the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance used by the <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
+<div class="block">Provide a custom <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> to be used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withJShellMods(java.util.function.Consumer)" class="member-name-link">withJShellMods</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link">JShell.Builder</a>&gt;&nbsp;configurer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Apply a modification to the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> that will be used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance.</div>
 </div>
 </div>
 </div>
@@ -167,11 +173,30 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="withJshellBuilder(jdk.jshell.JShell.Builder)">
-<h3>withJshellBuilder</h3>
+<section class="detail" id="withJShellMods(java.util.function.Consumer)">
+<h3>withJShellMods</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></span>&nbsp;<span class="element-name">withJshellBuilder</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link">JShell.Builder</a>&nbsp;jshellBuilder)</span></div>
-<div class="block">Configure the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance used by the <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></span>&nbsp;<span class="element-name">withJShellMods</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link">JShell.Builder</a>&gt;&nbsp;configurer)</span></div>
+<div class="block">Apply a modification to the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> that will be used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance.
+
+ <p>
+ The given modification will not actually be applied until <a href="#build()"><code>build()</code></a> is invoked. Modifications are
+ applied in the same order as this method is invoked.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>configurer</code> - <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> builder configurer</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>jshellBuilder</code> is null</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="withJShellBuilder(jdk.jshell.JShell.Builder)">
+<h3>withJShellBuilder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></span>&nbsp;<span class="element-name">withJShellBuilder</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link">JShell.Builder</a>&nbsp;jshellBuilder)</span></div>
+<div class="block">Provide a custom <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> to be used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance.
 
  <p>
  For experts only.</div>
@@ -207,7 +232,7 @@ loadScripts(document, 'script');</script>
 <h3>withControls</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></span>&nbsp;<span class="element-name">withControls</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Control.html" title="interface in org.dellroad.javabox">Control</a>&gt;&nbsp;controls)</span></div>
-<div class="block">Configure the <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s.
+<div class="block">Configure the list of <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s.
 
  <p>
  In general, controls are applied in the order the appear in the list. For example, if a control
