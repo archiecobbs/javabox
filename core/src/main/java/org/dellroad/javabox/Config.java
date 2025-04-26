@@ -27,7 +27,7 @@ import jdk.jshell.JShell;
 public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, List<Control> controls) {
 
     private Config(Builder builder) {
-        this(builder.createJShellBuilder(), builder.delegateLoader, Collections.unmodifiableList(builder.controls));
+        this(builder.createJShellBuilder(), builder.createDelegateLoader(), Collections.unmodifiableList(builder.controls));
     }
 
     /**
@@ -129,6 +129,38 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
         public synchronized Builder withDelegateLoader(ClassLoader delegateLoader) {
             this.delegateLoader = delegateLoader;
             return this;
+        }
+
+        private synchronized ClassLoader createDelegateLoader() {
+
+            // Ensure we don't try to load JavaBox or any Control classes from the wrong ClassLoader
+            final ClassLoader javaBoxLoader = JavaBox.class.getClassLoader();
+            return new ClassLoader(this.delegateLoader) {
+
+                static {
+                    ClassLoader.registerAsParallelCapable();
+                }
+
+                @Override
+                public Class<?> loadClass(String name) throws ClassNotFoundException {
+
+                    // Intercept requests for JavaBox classes
+                    if (name.startsWith(JavaBox.class.getPackage().getName() + "."))
+                        return javaBoxLoader.loadClass(name);
+
+                    // Intercept requests for (exact) control classes
+                    Class<? extends Control> controlClass = controls.stream()
+                      .filter(c -> c.getClass().getName().equals(name))
+                      .findFirst()
+                      .map(Control::getClass)
+                      .orElse(null);
+                    if (controlClass != null)
+                        return controlClass;
+
+                    // Proceed normally
+                    return super.loadClass(name);
+                }
+            };
         }
 
         /**
