@@ -36,6 +36,7 @@ import jdk.jshell.SnippetEvent;
 import jdk.jshell.SourceCodeAnalysis;
 import jdk.jshell.SourceCodeAnalysis.Completeness;
 import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
+import jdk.jshell.execution.LocalExecutionControl;
 import jdk.jshell.spi.ExecutionControl.ClassBytecodes;
 
 import org.dellroad.javabox.Control.ContainerContext;
@@ -44,7 +45,102 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A scripting container for scripts written in the Java language.
+ * A container for scripts written in the Java language.
+ *
+ * <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/prism.min.js"></script>
+ * <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/components/prism-java.min.js"></script>
+ * <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/themes/prism.min.css" rel="stylesheet"/>
+ *
+ * <p><b>Overview</b>
+ *
+ * <p>
+ * Each {@link JavaBox} instance relies on an underlying {@link JShell} instance configured for
+ * {@linkplain LocalExecutionControl local execution} to parse and execute scripts and to hold its state,
+ * i.e., the variables, methods, and classes declared by those scripts.
+ *
+ * <p>
+ * Unlike standard {@link JShell}, which must remain compatible with remote execution, {@link JavaBox} instances
+ * support direct transfer of Java objects between the container and the outside world in two ways:
+ * <ul>
+ *  <li>Return values from script execution are provided to the caller by {@link #execute execute()}
+ *  <li>{@link JShell} variables can be read and written directly via {@link #getVariable getVariable()}
+ *      and {@link #setVariable setVariable()}.
+ * </ul>
+ *
+ * <p><b>Lifecycle</b>
+ *
+ * <p>
+ * Usage follows this pattern:
+ * <ul>
+ *  <li>Instances are created by providing a {@link Config}, an immutable configuration object
+ *      created via {@link Config.Builder}.
+ *  <li>Instances must be {@link #initialize}'d before use. This builds the underlying {@link JShell}
+ *      instance and creates an internal service thread.
+ *  <li>Instances must be {@link #close}'d to release resources when no longer needed.
+ * </ul>
+ *
+ * <p><b>Script Execution</b>
+ *
+ * <p>
+ * Scripts are executed via {@link #execute execute()}.
+ *
+ * <p>
+ * Scripts typically contains multiple individual expressions, statements, or declarations (called "snippets").
+ * {@link #execute execute()} returns the {@linkplain SnippetOutcome outcome} of each snippet.
+ *
+ * <p><b>Controls</b>
+ *
+ * <p>
+ * Scripts may be restricted or otherwise transformed using {@link Control}s. {@link Control}s are specified
+ * as part of the initial {@link Config}.
+ *
+ * <p>
+ * Every control is given a per-container {@link ContainerContext} and a per-execution {@link ExecutionContext}
+ * to which they may create and attach their own private state.
+ *
+ * <p><b>Examples</b>
+ *
+ * <p>
+ * Here is a simple "Hello, World" example:
+ * <pre><code class="language-java">
+ *  Config config = Config.builder().build();
+ *  try (JavaBox box = new JavaBox(config)) {
+ *      box.initialize();
+ *      box.setVariable("target", "World");
+ *      ScriptResult result = box.execute("""
+ *          String.format("Hello, %s!", target);
+ *          """);
+ *      Object rv = result.snippetOutcomes().get(0).returnValue();
+ *      System.out.println(s);      // prints "Hello, World!"
+ *  }
+ * </code></pre>
+ *
+ * <p>
+ * Here is an example that prevents infinite loops:
+ * <pre><code class="language-java">
+ *  // Set up control
+ *  Config config = Config.builder()
+ *    .withControl(new TimeLimitControl(Duration.ofSeconds(5)))
+ *    .build();
+ *
+ *  // Execute script
+ *  ScriptResult result;
+ *  try (JavaBox box = new JavaBox(config)) {
+ *      box.initialize();
+ *      result = box.execute("while (true) { Thread.yield(); }");
+ *  }
+ *
+ *  // Check result
+ *  result.snippetOutcomes().get(0).exception()
+ *    .filter(e -&gt; e instanceof TimeLimitExceededException)
+ *    .ifPresent(e -&gt; System.out.println("infinite loop detected"));
+ * </code></pre>
+ *
+ * <p><b>Thread Safety</b>
+ *
+ * <p>
+ * Instances are thread safe but single threaded: when simultaneous operations are attempted from multiple threads,
+ * only one operation executes at a time.
  */
 public class JavaBox implements Closeable {
 
@@ -270,6 +366,9 @@ public class JavaBox implements Closeable {
     /**
      * Declare and assign a variable in this container.
      *
+     * <p>
+     * Equivalent to: {@link #setVariable(String, String, Object) setVariable}{@code (varName, null, varValue)}.
+     *
      * @param varName variable name
      * @param varValue variable value
      * @throws InterruptedException if the current thread is interrupted
@@ -286,6 +385,9 @@ public class JavaBox implements Closeable {
      * Declare and assign a variable in this container.
      *
      * <p>
+     * This is basically equivalent to executing the script {@code "<varType> <varName> = <varValue>;"}.
+     *
+     * <p>
      * If {@code vartype} is null:
      * <ul>
      *  <li>The actual type of {@code varValue} (expressed as a string) will be used;
@@ -294,13 +396,21 @@ public class JavaBox implements Closeable {
      *  <li>If {@code varValue} is null, {@code var} will be used
      * </ul>
      *
+     * <p>
+     * Using the narrowest possible type for {@code varType} is advantageous because it eliminates the need
+     * for casting when referring to {@code varName} in subsequent scripts. However, it's possible that
+     * {@code varType} is not accessible in the script environment, e.g., not on the classpath or a private class.
+     * In that case, this method will throw a {@link JavaBoxException}. To avoid that, set {@code varType} to any
+     * accessible supertype (e.g., {@code "Object"}), or use {@code "var"} to infer it.
+     *
      * @param varName variable name
-     * @param varType variable's declared type, or null to infer from actual type
+     * @param varType variable's declared type, or null to infer from actual type; must be accessible in the generated script
      * @param varValue variable value
      * @throws InterruptedException if the current thread is interrupted
      * @throws IllegalStateException if this instance is not initialized or closed
      * @throws IllegalArgumentException if {@code varName} is not a valid Java identifier
      * @throws IllegalArgumentException if {@code varName} is null
+     * @throws JavaBoxException if {@code varName} is null
      * @see JShell#variables
      */
     public void setVariable(String varName, String varType, Object varValue) throws InterruptedException {
@@ -380,16 +490,12 @@ public class JavaBox implements Closeable {
 // Script Execution
 
     /**
-     * Execute the given script in this container with the specified preset variables.
+     * Execute the given script in this container.
      *
      * <p>
      * The script is broken into individual snippets, which are executed one-at-a-time. Processing stops
-     * if any snippet fails, otherwise after the last snippet has finished. The results from the execution
-     * of the snippets that were processed are in the returned {@link ScriptResult}.
-     *
-     * <p>
-     * This method is single threaded: if invoked simultaneously by two different threads, the second thread will
-     * block until the first finishes.
+     * if any snippet fails. The results from the execution of those snippets that were attempted are in
+     * the returned {@link ScriptResult}.
      *
      * <p>
      * If the current thread is interrupted, then script execution will be interrupted and {@link InterruptedException}
@@ -469,12 +575,13 @@ public class JavaBox implements Closeable {
     }
 
     /**
-     * Interrupt the execution of the script that is currently executing, if any.
+     * Interrupt the execution of the script or variable access that is currently executing, if any.
      *
      * <p>
-     * This method interrupts the thread currently running in {@link #execute execute()}, if any.
+     * This method interrupts the thread currently running in {@link #execute execute()},
+     * {@link #getVariable getVariable()}, or {@link #setVariable setVariable()}, if any.
      *
-     * @return true if script execution was interrupted, false if no execution was occurring
+     * @return true if execution was interrupted, false if no execution was occurring
      */
     public synchronized boolean interrupt() {
         if (this.executeThread != null) {
@@ -653,21 +760,20 @@ public class JavaBox implements Closeable {
      * and the script execution occurring in the current thread.
      *
      * <p>
-     * This method can be used by {@link Control}s that need access to the per-execution context
-     * from within the execution thread, for example, from bytecode woven into script classes.
+     * This method can be used by {@link Control}s that need access to the per-execution or per-container
+     * context from within the execution thread, for example, from bytecode woven into script classes.
      *
      * <p>
-     * The {@link Control} class name is used instead of the {@link Control} instance itself to
-     * allow custom obtaining the context instance from woven bytecode. The {@code controlType}
-     * must exactly equal the {@link Control} instance class (not just be assignable from it).
-     * If multiple instances of the same {@link Control} class are configured on a container,
-     * then the context associated with the first instance is returned.
+     * The {@link Control} class is used instead of the {@link Control} instance itself to allow invoking
+     * this method from woven bytecode. The {@code controlType} must exactly equal the {@link Control}
+     * instance class (not just be assignable from it). If multiple instances of the same {@link Control}
+     * class are configured on a container, then the context associated with the first instance is returned.
      *
      * <p>
-     * Note that the return value from a script execution can be an invokable object, and any
-     * subsequent invocation directly into that object will not have a per-execution context
-     * since it is executing outside of the container. If invoked in that scenario, this method
-     * will instead throw {@link IllegalStateException}.
+     * If a return value from a script's execution is an invokable object, then any subsequent invocations
+     * into that object's methods will not be able to obtain any per-execution context using this method,
+     * because they will executing outside of the container. Instead, an {@link IllegalStateException}
+     * is thrown.
      *
      * @param controlType the control's Java class
      * @return the execution context for the control of type {@code controlType}

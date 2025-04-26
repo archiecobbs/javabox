@@ -74,7 +74,7 @@ public class ScriptResult {
      *
      * <p>
      * A successful script execution is one in which all of the individual {@link #snippetOutcomes}
-     * were {@linkplain SnippetOutcome#isSuccessful successful}.
+     * were {@linkplain SnippetOutcome.Type#isSuccessful successful}.
      *
      * @return script snippet outcomes
      */

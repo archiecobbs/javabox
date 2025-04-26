@@ -258,6 +258,7 @@
                     <notimestamp>true</notimestamp>
                     <validateLinks>true</validateLinks>
                     <doclint>-reference,-missing</doclint>
+                    <additionalJOption>--allow-script-in-comments</additionalJOption>
                     <links/>
                 </configuration>
                 <executions>
