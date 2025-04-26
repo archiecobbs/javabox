@@ -9,6 +9,8 @@ import com.google.common.base.Preconditions;
 
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.ClassTransform;
+import java.lang.classfile.CodeBuilder;
+import java.lang.classfile.CodeElement;
 import java.lang.classfile.CodeTransform;
 import java.lang.classfile.Label;
 import java.lang.classfile.instruction.BranchInstruction;
@@ -58,19 +60,7 @@ public record TimeLimitControl(Duration timeLimit) implements Control {
     public byte[] modifyBytecode(ClassDesc name, byte[] bytes) {
         final ClassFile classFile = ClassFile.of();
         return classFile.transformClass(classFile.parse(bytes),
-          ClassTransform.transformingMethodBodies(
-            CodeTransform.ofStateful(() -> {
-              HashSet<Label> priorLabels = new HashSet<>();
-              return (builder, element) -> {
-                  switch (element) {
-                  case LabelTarget target -> priorLabels.add(target.label());
-                  case BranchInstruction branch when priorLabels.contains(branch.target())
-                      -> builder.invokestatic(CHECK_METHOD_CLASS_DESC, CHECK_METHOD_NAME, ConstantDescs.MTD_void);
-                  default -> { }
-                  }
-                  builder.with(element);
-              };
-          })));
+          ClassTransform.transformingMethodBodies(CodeTransform.ofStateful(TimeLimitWeaver::new)));
     }
 
     @Override
@@ -86,6 +76,32 @@ public record TimeLimitControl(Duration timeLimit) implements Control {
         if (overage > 0) {
             final Duration timeLimit = ((TimeLimitControl)executionContext.containerContext().control()).timeLimit();
             throw new TimeLimitExceededException(timeLimit, timeLimit.plusNanos(overage));
+        }
+    }
+
+// TimeLimitWeaver
+
+    private static final class TimeLimitWeaver implements CodeTransform {
+
+        private final HashSet<Label> priorLabels = new HashSet<>();
+
+        @Override
+        public void atStart(CodeBuilder builder) {
+            checkTimeLimit(builder);
+        }
+
+        @Override
+        public void accept(CodeBuilder builder, CodeElement element) {
+            switch (element) {
+                case LabelTarget target -> priorLabels.add(target.label());
+                case BranchInstruction branch when priorLabels.contains(branch.target()) -> checkTimeLimit(builder);
+                default -> { }
+            }
+            builder.with(element);
+        };
+
+        private void checkTimeLimit(CodeBuilder builder) {
+            builder.invokestatic(CHECK_METHOD_CLASS_DESC, CHECK_METHOD_NAME, ConstantDescs.MTD_void);
         }
     }
 }
