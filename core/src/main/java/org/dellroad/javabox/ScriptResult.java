@@ -68,4 +68,19 @@ public class ScriptResult {
     public List<SnippetOutcome> snippetOutcomes() {
         return this.snippetOutcomes;
     }
+
+    /**
+     * Determine whether the script exeuction was successful.
+     *
+     * <p>
+     * A successful script execution is one in which all of the individual {@link #snippetOutcomes}
+     * were {@linkplain SnippetOutcome#isSuccessful successful}.
+     *
+     * @return script snippet outcomes
+     */
+    public boolean isSuccessful() {
+        return this.snippetOutcomes.stream()
+          .map(SnippetOutcome::type)
+          .allMatch(SnippetOutcome.Type::isSuccessful);
+    }
 }
