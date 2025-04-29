@@ -64,9 +64,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#javaBox()" tabindex="0">javaBox()</a></li>
+<li><a href="#box()" tabindex="0">box()</a></li>
 <li><a href="#source()" tabindex="0">source()</a></li>
 <li><a href="#snippetOutcomes()" tabindex="0">snippetOutcomes()</a></li>
+<li><a href="#isSuccessful()" tabindex="0">isSuccessful()</a></li>
 </ol>
 </li>
 </ol>
@@ -112,18 +113,23 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#javaBox()" class="member-name-link">javaBox</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#box()" class="member-name-link">box</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the associated <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#snippetOutcomes()" class="member-name-link">snippetOutcomes</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuccessful()" class="member-name-link">isSuccessful</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Determine whether the script exeuction was successful.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#snippetOutcomes()" class="member-name-link">snippetOutcomes</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the outcomes of the individual JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s created from the script.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the original script source.</div>
 </div>
 </div>
@@ -144,10 +150,10 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="javaBox()">
-<h3>javaBox</h3>
+<section class="detail" id="box()">
+<h3>box</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></span>&nbsp;<span class="element-name">javaBox</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></span>&nbsp;<span class="element-name">box</span>()</div>
 <div class="block">Get the associated <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -173,8 +179,25 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="snippetOutcomes()">
 <h3>snippetOutcomes</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a>&gt;</span>&nbsp;<span class="element-name">snippetOutcomes</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</span>&nbsp;<span class="element-name">snippetOutcomes</span>()</div>
 <div class="block">Get the outcomes of the individual JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s created from the script.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>script snippet outcomes</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isSuccessful()">
+<h3>isSuccessful</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isSuccessful</span>()</div>
+<div class="block">Determine whether the script exeuction was successful.
+
+ <p>
+ A successful script execution is one in which all of the individual <code>snippetOutcomes</code>
+ are instances of <a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Successful</code></a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>script snippet outcomes</dd>

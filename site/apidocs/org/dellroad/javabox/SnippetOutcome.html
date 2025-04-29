@@ -5,7 +5,7 @@
 <title>SnippetOutcome (JavaBox Java Scripting Container 1.0.0 API)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="description" content="declaration: package: org.dellroad.javabox, class: SnippetOutcome">
+<meta name="description" content="declaration: package: org.dellroad.javabox, interface: SnippetOutcome">
 <meta name="generator" content="javadoc/ClassWriter">
 <link rel="stylesheet" type="text/css" href="../../../resource-files/jquery-ui.min.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../resource-files/stylesheet.css" title="Style">
@@ -65,14 +65,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#javaBox()" tabindex="0">javaBox()</a></li>
+<li><a href="#box()" tabindex="0">box()</a></li>
 <li><a href="#source()" tabindex="0">source()</a></li>
-<li><a href="#type()" tabindex="0">type()</a></li>
-<li><a href="#snippet()" tabindex="0">snippet()</a></li>
-<li><a href="#returnValue()" tabindex="0">returnValue()</a></li>
-<li><a href="#exception()" tabindex="0">exception()</a></li>
-<li><a href="#compilerErrors()" tabindex="0">compilerErrors()</a></li>
-<li><a href="#toString()" tabindex="0">toString()</a></li>
 </ol>
 </li>
 </ol>
@@ -80,25 +74,26 @@ loadScripts(document, 'script');</script>
 <main role="main">
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<h1 title="Class SnippetOutcome" class="title">Class SnippetOutcome</h1>
-</div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">org.dellroad.javabox.SnippetOutcome</div>
+<h1 title="Interface SnippetOutcome" class="title">Interface SnippetOutcome</h1>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>All Known Subinterfaces:</dt>
+<dd><code><a href="SnippetOutcome.CompilerErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a></code>, <code><a href="SnippetOutcome.CompilerSemanticErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a></code>, <code><a href="SnippetOutcome.CompilerSyntaxErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a></code>, <code><a href="SnippetOutcome.ControlViolation.html" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a></code>, <code><a href="SnippetOutcome.ExceptionThrown.html" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a></code>, <code><a href="SnippetOutcome.Overwritten.html" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a></code>, <code><a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a></code>, <code><a href="SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a></code>, <code><a href="SnippetOutcome.SuccessfulWithValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></code>, <code><a href="SnippetOutcome.UnresolvedReferences.html" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a></code></dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SnippetOutcome</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="type-signature"><span class="modifiers">public sealed interface </span><span class="element-name type-name-label">SnippetOutcome</span>
+<span class="permits">permits <a href="SnippetOutcome.CompilerErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a>, <a href="SnippetOutcome.ControlViolation.html" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a>, <a href="SnippetOutcome.UnresolvedReferences.html" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a>, <a href="SnippetOutcome.Overwritten.html" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a>, <a href="SnippetOutcome.ExceptionThrown.html" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a>, <a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a> <span class="permits-note">(not exhaustive)</span></span></div>
 <div class="block">Captures the outcome from one of the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s that constitute a <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> script.
 
  <p>
- A snippet can fail by failing to compile or by throwing an exception when executed.
- Some types of snippets return a value; you can use <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox"><code>SnippetOutcome.Type</code></a> to determine if so.
+ A snippet can fail by failing to compile, compiling into bytecode that violates a <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>,
+ throwing an exception during execution, etc.
 
  <p>
- Declaration snippets can have unresolved references; use <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html#unresolvedDependencies(jdk.jshell.DeclarationSnippet)" title="class or interface in jdk.jshell" class="external-link"><code>JShell.unresolvedDependencies()</code></a> to enumerate them. Use <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html#status(jdk.jshell.Snippet)" title="class or interface in jdk.jshell" class="external-link"><code>JShell.status()</code></a>
- to inquire about overall snippet status.</div>
+ For some outcomes that implement <a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.HasSnippet</code></a>, additional information is available
+ via the <a href="SnippetOutcome.HasSnippet.html#snippet()">associated JShell snippet</a>.</div>
 </div>
 </section>
 <section class="summary">
@@ -110,12 +105,76 @@ loadScripts(document, 'script');</script>
 <div class="caption"><span>Nested Classes</span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Class</div>
+<div class="table-header col-second">Interface</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="SnippetOutcome.Type.html" class="type-name-link" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></code></div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.CompilerErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">The type of <a href="SnippetOutcome.html" title="class in org.dellroad.javabox"><code>SnippetOutcome</code></a>.</div>
+<div class="block">Indicates failure due to one or more compiler errors.</div>
+</div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="SnippetOutcome.CompilerSemanticErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Indicates failure due to one or more compiler semantic errors.</div>
+</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.CompilerSyntaxErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Indicates failure due to one or more compiler parsing/syntax errors.</div>
+</div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="SnippetOutcome.ControlViolation.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Indicates that the bytecode generated by the snippet could not be loaded because it violated some <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.</div>
+</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.ExceptionThrown.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Indicates an exception was thrown during the execution of the snippet.</div>
+</div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="SnippetOutcome.HaltsScript.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Implemented by <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s that will cause a script to stop executing.</div>
+</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.HasException.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;<a href="SnippetOutcome.HasException.html#type-param-T" title="type parameter in SnippetOutcome.HasException">T</a> extends <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</code></div>
+<div class="col-last even-row-color">
+<div class="block">Implemented by <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which there is an associated exception.</div>
+</div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="SnippetOutcome.HasSnippet.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Implemented by <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which enough progress was made to define a JShell snippet.</div>
+</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.Overwritten.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Indicates that a declaration was successfully compiled, but the declaration was overwritten by
+ a later snippet in the same source.</div>
+</div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="SnippetOutcome.Successful.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Indicates a successful outcome.</div>
+</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.SuccessfulNoValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Indicates a successful outcome for which no value was returned, e.g., the invocation of a void method,
+ the declaration for which no unresolved references remain, etc.</div>
+</div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="SnippetOutcome.SuccessfulWithValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Indicates a successful outcome for which some value was returned, e.g., an evaluated expression
+ or the invocation of a non-void method.</div>
+</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="SnippetOutcome.UnresolvedReferences.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Indicates that a declaration was successful but it contained unresolved references and those
+ references were not resolved by any subsequent snippets in the same source.</div>
 </div>
 </div>
 </section>
@@ -125,56 +184,25 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a>&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#compilerErrors()" class="member-name-link">compilerErrors</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the compiler errors that caused compilation to fail, if any.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exception()" class="member-name-link">exception</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the exception thrown during the snippet's execution, if any.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#javaBox()" class="member-name-link">javaBox</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#box()" class="member-name-link">box</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Get the associated <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#returnValue()" class="member-name-link">returnValue</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the value returned from the snippet's execution, if any.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link">Snippet</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#snippet()" class="member-name-link">snippet</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> created by JShell, if any.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the source code of the snippet.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type()" class="member-name-link">type</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox"><code>SnippetOutcome.Type</code></a> of this snippet outcome.</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Get the source code of the snippet whose outcome is represented by this instance.</div>
 </div>
 </div>
 </div>
 </div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -187,10 +215,10 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="javaBox()">
-<h3>javaBox</h3>
+<section class="detail" id="box()">
+<h3>box</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></span>&nbsp;<span class="element-name">javaBox</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></span>&nbsp;<span class="element-name">box</span>()</div>
 <div class="block">Get the associated <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -203,98 +231,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="source()">
 <h3>source</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">source</span>()</div>
-<div class="block">Get the source code of the snippet.</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">source</span>()</div>
+<div class="block">Get the source code of the snippet whose outcome is represented by this instance.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>snippet source</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="type()">
-<h3>type</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></span>&nbsp;<span class="element-name">type</span>()</div>
-<div class="block">Get the <a href="SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox"><code>SnippetOutcome.Type</code></a> of this snippet outcome.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>outcome type</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="snippet()">
-<h3>snippet</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link">Snippet</a>&gt;</span>&nbsp;<span class="element-name">snippet</span>()</div>
-<div class="block">Get the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> created by JShell, if any.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>snippet, or empty if there were compilation errors</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="returnValue()">
-<h3>returnValue</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">returnValue</span>()</div>
-<div class="block">Get the value returned from the snippet's execution, if any.
-
- <p>
- Only snippets of type <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#EXPRESSION" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.EXPRESSION</code></a> and <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#VAR" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.VAR</code></a> return values.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>snippet return value, possibly null</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>type</code> is not <a href="SnippetOutcome.Type.html#SUCCESSFUL_WITH_VALUE"><code>SnippetOutcome.Type.SUCCESSFUL_WITH_VALUE</code></a></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="exception()">
-<h3>exception</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</span>&nbsp;<span class="element-name">exception</span>()</div>
-<div class="block">Get the exception thrown during the snippet's execution, if any.
-
- <p>
- Exceptions are only possible for snippets of type <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#EXPRESSION" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.EXPRESSION</code></a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#STATEMENT" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.STATEMENT</code></a>,
- and <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#VAR" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.VAR</code></a>.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>exception thrown during snippet execution, or empty if no exception was thrown
-  or the snippet has a type that does not immediately execute</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="compilerErrors()">
-<h3>compilerErrors</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a>&gt;&gt;</span>&nbsp;<span class="element-name">compilerErrors</span>()</div>
-<div class="block">Get the compiler errors that caused compilation to fail, if any.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>compilation errors, or empty if there were no compilation errors</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="toString()">
-<h3>toString</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
 </dl>
 </div>
 </section>

@@ -52,7 +52,7 @@ loadScripts(document, 'script');</script>
 <div class="header">
 <h1>Index</h1>
 </div>
-<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a><span class="vertical-separator">|</span><a href="serialized-form.html">Serialized&nbsp;Form</a>
+<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a><span class="vertical-separator">|</span><a href="serialized-form.html">Serialized&nbsp;Form</a>
 <h2 class="title" id="I:A">A</h2>
 <dl class="index">
 <dt><a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html#addToClasspath(java.lang.String)" class="member-name-link">addToClasspath(String)</a> - Method in class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></dt>
@@ -70,6 +70,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/dellroad/javabox/Control.ContainerContext.html#box()" class="member-name-link">box()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/Control.ContainerContext.html" title="class in org.dellroad.javabox">Control.ContainerContext</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./org/dellroad/javabox/Control.ContainerContext.html#param-box"><code>box</code></a> record component.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ScriptResult.html#box()" class="member-name-link">box()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
+<dd>
+<div class="block">Get the associated <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.html#box()" class="member-name-link">box()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dd>
+<div class="block">Get the associated <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/Config.Builder.html#build()" class="member-name-link">build()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/Config.Builder.html" title="class in org.dellroad.javabox">Config.Builder</a></dt>
 <dd>
@@ -142,10 +150,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./org/dellroad/javabox/CompilerError.html#param-columnNumber"><code>columnNumber</code></a> record component.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#COMPILER_ERRORS" class="member-name-link">COMPILER_ERRORS</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet failed due to one or more compiler errors.</div>
-</dd>
 <dt><a href="org/dellroad/javabox/CompilerError.html" class="type-name-link" title="class in org.dellroad.javabox">CompilerError</a> - Record Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
 <div class="block">Captures a compilation error.</div>
@@ -154,9 +158,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates an instance of a <code>CompilerError</code> record class.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#compilerErrors()" class="member-name-link">compilerErrors()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.CompilerErrors.html#compilerErrors()" class="member-name-link">compilerErrors()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.CompilerErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a></dt>
 <dd>
-<div class="block">Get the compiler errors that caused compilation to fail, if any.</div>
+<div class="block">Get the compiler errors that caused compilation to fail.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/Config.html" class="type-name-link" title="class in org.dellroad.javabox">Config</a> - Record Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
@@ -199,11 +203,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/dellroad/javabox/Control.html" class="type-name-link" title="interface in org.dellroad.javabox">Control</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
 <div class="block">Monitors, modifies, and/or restricts the execution of scripts running in a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#CONTROL_VIOLATION" class="member-name-link">CONTROL_VIOLATION</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet failed because it tried to do something disallowed by
- a configured <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/Control.ContainerContext.html" class="type-name-link" title="class in org.dellroad.javabox">Control.ContainerContext</a> - Record Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
@@ -284,17 +283,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./org/dellroad/javabox/CompilerError.html#param-errorMessage"><code>errorMessage</code></a> record component.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#exception()" class="member-name-link">exception()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.HasException.html#exception()" class="member-name-link">exception()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a></dt>
 <dd>
-<div class="block">Get the exception thrown during the snippet's execution, if any.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#EXCEPTION_THROWN" class="member-name-link">EXCEPTION_THROWN</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet failed due to throwing an exception during execution.</div>
+<div class="block">Get the exception thrown.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html#execute(java.lang.String)" class="member-name-link">execute(String)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
-<div class="block">Execute the given script in this container with the specified preset variables.</div>
+<div class="block">Execute the given script in this container.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/Control.ExecutionContext.html#%3Cinit%3E(org.dellroad.javabox.Control.ContainerContext,java.lang.Object)" class="member-name-link">ExecutionContext(Control.ContainerContext, Object)</a> - Constructor for record class org.dellroad.javabox.<a href="org/dellroad/javabox/Control.ExecutionContext.html" title="class in org.dellroad.javabox">Control.ExecutionContext</a></dt>
 <dd>
@@ -381,10 +376,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#hasValue()" class="member-name-link">hasValue()</a> - Method in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">Determine whether this outcome type implies that there was a value returned.</div>
-</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
@@ -415,7 +406,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html#interrupt()" class="member-name-link">interrupt()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
-<div class="block">Interrupt the execution of the script that is currently executing, if any.</div>
+<div class="block">Interrupt the execution of the script or variable access that is currently executing, if any.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html#invoke(java.lang.reflect.Method)" class="member-name-link">invoke(Method)</a> - Method in class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></dt>
 <dd>&nbsp;</dd>
@@ -431,32 +422,20 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Determine if this instance is closed.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#isHaltsScript()" class="member-name-link">isHaltsScript()</a> - Method in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">Determine whether this outcome will cause a partially executed script to stop execution.</div>
-</dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html#isInitialized()" class="member-name-link">isInitialized()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
 <div class="block">Determine if this instance is initialized.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#isSuccessful()" class="member-name-link">isSuccessful()</a> - Method in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
+<dt><a href="org/dellroad/javabox/ScriptResult.html#isSuccessful()" class="member-name-link">isSuccessful()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
 <dd>
-<div class="block">Determine whether this outcome type represents a successful outcome.</div>
+<div class="block">Determine whether the script exeuction was successful.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:J">J</h2>
 <dl class="index">
-<dt><a href="org/dellroad/javabox/ScriptResult.html#javaBox()" class="member-name-link">javaBox()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
-<dd>
-<div class="block">Get the associated <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#javaBox()" class="member-name-link">javaBox()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
-<dd>
-<div class="block">Get the associated <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
-</dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html" class="type-name-link" title="class in org.dellroad.javabox">JavaBox</a> - Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
-<div class="block">A scripting container for scripts written in the Java language.</div>
+<div class="block">A container for scripts written in the Java language.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html#%3Cinit%3E(org.dellroad.javabox.Config)" class="member-name-link">JavaBox(Config)</a> - Constructor for class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
@@ -584,17 +563,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Classes used by <a href="https://github.com/archiecobbs/javabox">JavaBox</a> for local execution in JShell.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#OVERWRITTEN" class="member-name-link">OVERWRITTEN</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet was successfully compiled but then got overwritten by a subsequent snippet
- in the same script.</div>
-</dd>
 </dl>
 <h2 class="title" id="I:R">R</h2>
 <dl class="index">
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#returnValue()" class="member-name-link">returnValue()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html#returnValue()" class="member-name-link">returnValue()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></dt>
 <dd>
-<div class="block">Get the value returned from the snippet's execution, if any.</div>
+<div class="block">Get the value returned from the snippet's execution.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:S">S</h2>
@@ -620,17 +594,69 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Shutdown this control for the given <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#snippet()" class="member-name-link">snippet()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html#snippet()" class="member-name-link">snippet()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a></dt>
 <dd>
-<div class="block">Get the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> created by JShell, if any.</div>
+<div class="block">Get the associated snippet.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html" class="type-name-link" title="class in org.dellroad.javabox">SnippetOutcome</a> - Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
 <div class="block">Captures the outcome from one of the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s that constitute a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> script.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html" class="type-name-link" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a> - Enum Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.CompilerErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
-<div class="block">The type of <a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox"><code>SnippetOutcome</code></a>.</div>
+<div class="block">Indicates failure due to one or more compiler errors.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.CompilerSemanticErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates failure due to one or more compiler semantic errors.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.CompilerSyntaxErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates failure due to one or more compiler parsing/syntax errors.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.ControlViolation.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates that the bytecode generated by the snippet could not be loaded because it violated some <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.ExceptionThrown.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates an exception was thrown during the execution of the snippet.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.HaltsScript.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s that will cause a script to stop executing.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.HasException.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasException&lt;T&gt;</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which there is an associated exception.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which enough progress was made to define a JShell snippet.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.Overwritten.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates that a declaration was successfully compiled, but the declaration was overwritten by
+ a later snippet in the same source.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.Successful.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates a successful outcome.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulNoValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates a successful outcome for which no value was returned, e.g., the invocation of a void method,
+ the declaration for which no unresolved references remain, etc.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates a successful outcome for which some value was returned, e.g., an evaluated expression
+ or the invocation of a non-void method.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.UnresolvedReferences.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Indicates that a declaration was successful but it contained unresolved references and those
+ references were not resolved by any subsequent snippets in the same source.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/ScriptResult.html#snippetOutcomes()" class="member-name-link">snippetOutcomes()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
 <dd>
@@ -640,9 +666,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the original script source.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#source()" class="member-name-link">source()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.html#source()" class="member-name-link">source()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a></dt>
 <dd>
-<div class="block">Get the source code of the snippet.</div>
+<div class="block">Get the source code of the snippet whose outcome is represented by this instance.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/Control.html#startExecution(org.dellroad.javabox.Control.ContainerContext)" class="member-name-link">startExecution(Control.ContainerContext)</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox">Control</a></dt>
 <dd>
@@ -665,15 +691,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/dellroad/javabox/execution/StringWrapper.html#%3Cinit%3E(java.lang.String)" class="member-name-link">StringWrapper(String)</a> - Constructor for record class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></dt>
 <dd>
 <div class="block">Constructor.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#SUCCESSFUL_NO_VALUE" class="member-name-link">SUCCESSFUL_NO_VALUE</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet was compiled and executed successfully and there is no associated return value
- because the snippet was not of type <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#EXPRESSION" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.EXPRESSION</code></a> or <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html#VAR" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind.VAR</code></a>.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#SUCCESSFUL_WITH_VALUE" class="member-name-link">SUCCESSFUL_WITH_VALUE</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet was compiled and executed successfully and returned a value.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
@@ -724,32 +741,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the wrapped string.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#toString()" class="member-name-link">toString()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.html#type()" class="member-name-link">type()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="class in org.dellroad.javabox">SnippetOutcome</a></dt>
-<dd>
-<div class="block">Get the <a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox"><code>SnippetOutcome.Type</code></a> of this snippet outcome.</div>
-</dd>
-</dl>
-<h2 class="title" id="I:U">U</h2>
-<dl class="index">
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#UNRESOLVED_REFERENCES" class="member-name-link">UNRESOLVED_REFERENCES</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">The snippet was successfully compiled but contains one or more unresolved references
- that did not become resolved by any of the subsequent snippets in the same script.</div>
-</dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>
 <dl class="index">
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">Returns the enum constant of this class with the specified name.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.Type.html#values()" class="member-name-link">values()</a> - Static method in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.Type.html" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></dt>
-<dd>
-<div class="block">Returns an array containing the constants of this enum class, in
-the order they are declared.</div>
-</dd>
 <dt><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html#valueStringWithContext(java.lang.Object)" class="member-name-link">valueStringWithContext(Object)</a> - Method in class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></dt>
 <dd>
 <div class="block">Decode the snippet result into a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> for display in the JShell console.</div>
@@ -785,7 +779,7 @@ the order they are declared.</div>
 <div class="block">Apply a modification to the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a> that will be used to create the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance.</div>
 </dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a><span class="vertical-separator">|</span><a href="serialized-form.html">Serialized&nbsp;Form</a>
+<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a><span class="vertical-separator">|</span><a href="serialized-form.html">Serialized&nbsp;Form</a>
 <footer role="contentinfo">
 <hr>
 <p class="legal-copy"><small>Copyright &#169; 2025. All rights reserved.</small></p>

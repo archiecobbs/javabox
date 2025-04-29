@@ -86,7 +86,6 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">org.dellroad.javabox.<a href="ScriptResult.html" class="type-name-link" title="class in org.dellroad.javabox">ScriptResult</a></li>
-<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.html" class="type-name-link" title="class in org.dellroad.javabox">SnippetOutcome</a></li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html" class="type-name-link external-link" title="class or interface in java.lang">Throwable</a> (implements java.io.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Exception.html" class="type-name-link external-link" title="class or interface in java.lang">Exception</a>
@@ -112,18 +111,56 @@ loadScripts(document, 'script');</script>
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
 <li class="circle">org.dellroad.javabox.<a href="Control.html" class="type-name-link" title="interface in org.dellroad.javabox">Control</a></li>
-</ul>
-</section>
-<section class="hierarchy">
-<h2 title="Enum Class Hierarchy">Enum Class Hierarchy</h2>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome</a>
 <ul>
-<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" class="type-name-link external-link" title="class or interface in java.lang">Object</a>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>)
 <ul>
-<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Enum.html" class="type-name-link external-link" title="class or interface in java.lang">Enum</a>&lt;E&gt; (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;T&gt;, java.lang.constant.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/constant/Constable.html" title="class or interface in java.lang.constant" class="external-link">Constable</a>, java.io.<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
-<ul>
-<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.Type.html" class="type-name-link" title="enum class in org.dellroad.javabox">SnippetOutcome.Type</a></li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerSemanticErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerSyntaxErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a></li>
 </ul>
 </li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ControlViolation.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>, org.dellroad.javabox.<a href="SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;T&gt;)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ExceptionThrown.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>, org.dellroad.javabox.<a href="SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;T&gt;, org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.Overwritten.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.Successful.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)
+<ul>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.SuccessfulNoValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a></li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.SuccessfulWithValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></li>
+</ul>
+</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.UnresolvedReferences.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+</ul>
+</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>
+<ul>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>)
+<ul>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerSemanticErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerSyntaxErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a></li>
+</ul>
+</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ControlViolation.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>, org.dellroad.javabox.<a href="SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;T&gt;)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ExceptionThrown.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>, org.dellroad.javabox.<a href="SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;T&gt;, org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+</ul>
+</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.HasException.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;T&gt;
+<ul>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ControlViolation.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>, org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ExceptionThrown.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>, org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>, org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>)</li>
+</ul>
+</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.HasSnippet.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a>
+<ul>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.CompilerSemanticErrors.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.CompilerErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.ExceptionThrown.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>, org.dellroad.javabox.<a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a>, org.dellroad.javabox.<a href="SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException</a>&lt;T&gt;)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.Overwritten.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>)</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.Successful.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>)
+<ul>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.SuccessfulNoValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a></li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.SuccessfulWithValue.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></li>
+</ul>
+</li>
+<li class="circle">org.dellroad.javabox.<a href="SnippetOutcome.UnresolvedReferences.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a> (also extends org.dellroad.javabox.<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>)</li>
 </ul>
 </li>
 </ul>

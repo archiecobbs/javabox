@@ -115,7 +115,102 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JavaBox</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></span></div>
-<div class="block">A scripting container for scripts written in the Java language.</div>
+<div class="block">A container for scripts written in the Java language.
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/prism.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/components/prism-java.min.js"></script>
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/themes/prism.min.css" rel="stylesheet"/>
+
+ <p><b>Overview</b>
+
+ <p>
+ Each <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance relies on an underlying <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance configured for
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link">local execution</a> to parse and execute scripts and to hold its state,
+ i.e., the variables, methods, and classes declared by those scripts.
+
+ <p>
+ Unlike standard <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a>, which must remain compatible with remote execution, <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instances
+ support direct transfer of Java objects between the container and the outside world in two ways:
+ <ul>
+  <li>Return values from script execution are provided to the caller by <a href="#execute(java.lang.String)"><code>execute()</code></a>
+  <li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> variables can be read and written directly via <a href="#getVariable(java.lang.String)"><code>getVariable()</code></a>
+      and <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>.
+ </ul>
+
+ <p><b>Lifecycle</b>
+
+ <p>
+ Usage follows this pattern:
+ <ul>
+  <li>Instances are created by providing a <a href="Config.html" title="class in org.dellroad.javabox"><code>Config</code></a>, an immutable configuration object
+      created via <a href="Config.Builder.html" title="class in org.dellroad.javabox"><code>Config.Builder</code></a>.
+  <li>Instances must be <a href="#initialize()"><code>initialize()</code></a>'d before use. This builds the underlying <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a>
+      instance and creates an internal service thread.
+  <li>Instances must be <a href="#close()"><code>close()</code></a>'d to release resources when no longer needed.
+ </ul>
+
+ <p><b>Script Execution</b>
+
+ <p>
+ Scripts are executed via <a href="#execute(java.lang.String)"><code>execute()</code></a>.
+
+ <p>
+ Scripts typically contains multiple individual expressions, statements, or declarations (called "snippets").
+ <a href="#execute(java.lang.String)"><code>execute()</code></a> returns the <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">outcome</a> of each snippet.
+
+ <p><b>Controls</b>
+
+ <p>
+ Scripts may be restricted or otherwise transformed using <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s. <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s are specified
+ as part of the initial <a href="Config.html" title="class in org.dellroad.javabox"><code>Config</code></a>.
+
+ <p>
+ Every control is given a per-container <a href="Control.ContainerContext.html" title="class in org.dellroad.javabox"><code>Control.ContainerContext</code></a> and a per-execution <a href="Control.ExecutionContext.html" title="class in org.dellroad.javabox"><code>Control.ExecutionContext</code></a>
+ to which they may create and attach their own private state.
+
+ <p><b>Examples</b>
+
+ <p>
+ Here is a simple "Hello, World" example:
+ <pre><code class="language-java">
+  Config config = Config.builder().build();
+  try (JavaBox box = new JavaBox(config)) {
+      box.initialize();
+      box.setVariable("target", "World");
+      ScriptResult result = box.execute("""
+          String.format("Hello, %s!", target);
+          """);
+      Object rv = result.snippetOutcomes().get(0).returnValue();
+      System.out.println(s);      // prints "Hello, World!"
+  }
+ </code></pre>
+
+ <p>
+ Here is an example that prevents infinite loops:
+ <pre><code class="language-java">
+  // Set up control
+  Config config = Config.builder()
+    .withControl(new TimeLimitControl(Duration.ofSeconds(5)))
+    .build();
+
+  // Execute script
+  ScriptResult result;
+  try (JavaBox box = new JavaBox(config)) {
+      box.initialize();
+      result = box.execute("while (true) { Thread.yield(); }");
+  }
+
+  // Check result
+  result.snippetOutcomes().get(0).exception()
+    .filter(e -&gt; e instanceof TimeLimitExceededException)
+    .ifPresent(e -&gt; System.out.println("infinite loop detected"));
+ </code></pre>
+
+ <p><b>Thread Safety</b>
+
+ <p>
+ Instances are thread safe but single threaded: when simultaneous operations are attempted from multiple threads,
+ only one operation executes at a time.</div>
 </div>
 </section>
 <section class="summary">
@@ -176,7 +271,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute(java.lang.String)" class="member-name-link">execute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Execute the given script in this container with the specified preset variables.</div>
+<div class="block">Execute the given script in this container.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Control.ExecutionContext.html" title="class in org.dellroad.javabox">Control.ExecutionContext</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#executionContextFor(java.lang.Class)" class="member-name-link">executionContextFor</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="Control.html" title="interface in org.dellroad.javabox">Control</a>&gt;&nbsp;controlType)</code></div>
@@ -218,7 +313,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interrupt()" class="member-name-link">interrupt</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Interrupt the execution of the script that is currently executing, if any.</div>
+<div class="block">Interrupt the execution of the script or variable access that is currently executing, if any.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isClosed()" class="member-name-link">isClosed</a>()</code></div>
@@ -474,7 +569,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVariable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;varName,
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varValue)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
-<div class="block">Declare and assign a variable in this container.</div>
+<div class="block">Declare and assign a variable in this container.
+
+ <p>
+ Equivalent to: <a href="#setVariable(java.lang.String,java.lang.String,java.lang.Object)"><code>setVariable</code></a><code>(varName, null, varValue)</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>varName</code> - variable name</dd>
@@ -505,23 +603,34 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="block">Declare and assign a variable in this container.
 
  <p>
+ This is basically equivalent to executing the script <code>"&lt;varType&gt; &lt;varName&gt; = &lt;varValue&gt;;"</code>.
+
+ <p>
  If <code>vartype</code> is null:
  <ul>
   <li>The actual type of <code>varValue</code> (expressed as a string) will be used;
       this type must be accessible in the generated script
   <li>If <code>varValue</code> is a non-null primitive wrapper type, the corresponding primitive type is used
   <li>If <code>varValue</code> is null, <code>var</code> will be used
- </ul></div>
+ </ul>
+
+ <p>
+ Using the narrowest possible type for <code>varType</code> is advantageous because it eliminates the need
+ for casting when referring to <code>varName</code> in subsequent scripts. However, it's possible that
+ <code>varType</code> is not accessible in the script environment, e.g., not on the classpath or a private class.
+ In that case, this method will throw a <a href="JavaBoxException.html" title="class in org.dellroad.javabox"><code>JavaBoxException</code></a>. To avoid that, set <code>varType</code> to any
+ accessible supertype (e.g., <code>"Object"</code>), or use <code>"var"</code> to infer it.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>varName</code> - variable name</dd>
-<dd><code>varType</code> - variable's declared type, or null to infer from actual type</dd>
+<dd><code>varType</code> - variable's declared type, or null to infer from actual type; must be accessible in the generated script</dd>
 <dd><code>varValue</code> - variable value</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the current thread is interrupted</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if this instance is not initialized or closed</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is not a valid Java identifier</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>varName</code> is null</dd>
+<dd><code><a href="JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></code> - if <code>varName</code> is null</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
@@ -555,16 +664,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span>&nbsp;<span class="element-name">execute</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</span>
                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
-<div class="block">Execute the given script in this container with the specified preset variables.
+<div class="block">Execute the given script in this container.
 
  <p>
  The script is broken into individual snippets, which are executed one-at-a-time. Processing stops
- if any snippet fails, otherwise after the last snippet has finished. The results from the execution
- of the snippets that were processed are in the returned <a href="ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>.
-
- <p>
- This method is single threaded: if invoked simultaneously by two different threads, the second thread will
- block until the first finishes.
+ if any snippet fails. The results from the execution of those snippets that were attempted are in
+ the returned <a href="ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>.
 
  <p>
  If the current thread is interrupted, then script execution will be interrupted and <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link"><code>InterruptedException</code></a>
@@ -587,13 +692,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <h3>interrupt</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">interrupt</span>()</div>
-<div class="block">Interrupt the execution of the script that is currently executing, if any.
+<div class="block">Interrupt the execution of the script or variable access that is currently executing, if any.
 
  <p>
- This method interrupts the thread currently running in <a href="#execute(java.lang.String)"><code>execute()</code></a>, if any.</div>
+ This method interrupts the thread currently running in <a href="#execute(java.lang.String)"><code>execute()</code></a>,
+ <a href="#getVariable(java.lang.String)"><code>getVariable()</code></a>, or <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>, if any.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true if script execution was interrupted, false if no execution was occurring</dd>
+<dd>true if execution was interrupted, false if no execution was occurring</dd>
 </dl>
 </div>
 </section>
@@ -607,21 +713,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  and the script execution occurring in the current thread.
 
  <p>
- This method can be used by <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s that need access to the per-execution context
- from within the execution thread, for example, from bytecode woven into script classes.
+ This method can be used by <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s that need access to the per-execution or per-container
+ context from within the execution thread, for example, from bytecode woven into script classes.
 
  <p>
- The <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> class name is used instead of the <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> instance itself to
- allow custom obtaining the context instance from woven bytecode. The <code>controlType</code>
- must exactly equal the <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> instance class (not just be assignable from it).
- If multiple instances of the same <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> class are configured on a container,
- then the context associated with the first instance is returned.
+ The <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> class is used instead of the <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> instance itself to allow invoking
+ this method from woven bytecode. The <code>controlType</code> must exactly equal the <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>
+ instance class (not just be assignable from it). If multiple instances of the same <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>
+ class are configured on a container, then the context associated with the first instance is returned.
 
  <p>
- Note that the return value from a script execution can be an invokable object, and any
- subsequent invocation directly into that object will not have a per-execution context
- since it is executing outside of the container. If invoked in that scenario, this method
- will instead throw <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>.</div>
+ If a return value from a script's execution is an invokable object, then any subsequent invocations
+ into that object's methods will not be able to obtain any per-execution context using this method,
+ because they will executing outside of the container. Instead, an <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>
+ is thrown.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>controlType</code> - the control's Java class</dd>
