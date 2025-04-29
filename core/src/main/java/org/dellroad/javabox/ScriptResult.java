@@ -47,7 +47,7 @@ public class ScriptResult {
      *
      * @return associated container
      */
-    public JavaBox javaBox() {
+    public JavaBox box() {
         return this.box;
     }
 
@@ -74,13 +74,12 @@ public class ScriptResult {
      *
      * <p>
      * A successful script execution is one in which all of the individual {@link #snippetOutcomes}
-     * were {@linkplain SnippetOutcome.Type#isSuccessful successful}.
+     * are instances of {@link SnippetOutcome.Successful}.
      *
      * @return script snippet outcomes
      */
     public boolean isSuccessful() {
         return this.snippetOutcomes.stream()
-          .map(SnippetOutcome::type)
-          .allMatch(SnippetOutcome.Type::isSuccessful);
+          .allMatch(SnippetOutcome.Successful.class::isInstance);
     }
 }

@@ -10,7 +10,7 @@ import java.time.Duration;
 import org.dellroad.javabox.Config;
 import org.dellroad.javabox.JavaBox;
 import org.dellroad.javabox.ScriptResult;
-import org.dellroad.javabox.SnippetOutcome;
+import org.dellroad.javabox.SnippetOutcome.ExceptionThrown;
 import org.dellroad.stuff.test.TestSupport;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,9 +40,8 @@ public class TimeLimitTest extends TestSupport {
 
         // Check result
         Assert.assertEquals(result.snippetOutcomes().size(), 1);
-        final SnippetOutcome snippetOutcome = result.snippetOutcomes().get(0);
-        Assert.assertEquals(snippetOutcome.type(), SnippetOutcome.Type.EXCEPTION_THROWN);
-        final Throwable exception = snippetOutcome.exception().get();
+        final ExceptionThrown snippetOutcome = (ExceptionThrown)result.snippetOutcomes().get(0);
+        final Throwable exception = snippetOutcome.exception();
         if (!(exception instanceof TimeLimitExceededException))
             throw new AssertionError("wrong exception: " + exception);
         this.log.debug("got expected " + exception);

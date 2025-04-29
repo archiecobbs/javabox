@@ -5,24 +5,24 @@
 
 package org.dellroad.javabox.control;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.dellroad.javabox.ScriptResult;
 import org.dellroad.javabox.SnippetOutcome;
-import org.dellroad.javabox.SnippetOutcome.Type;
+import org.dellroad.javabox.SnippetOutcome.Successful;
 import org.dellroad.stuff.test.TestSupport;
 import org.testng.Assert;
 
 public class ControlTestSupport extends TestSupport {
 
-    protected SnippetOutcome checkResult(ScriptResult result, Type... types) {
+    protected SnippetOutcome checkResult(ScriptResult result, Class<?>... types) {
         final List<SnippetOutcome> outcomes = result.snippetOutcomes();
         Assert.assertEquals(outcomes.size(), 1);
         final SnippetOutcome outcome = outcomes.get(0);
         if (types.length == 0)
-            types = new Type[] { Type.SUCCESSFUL_NO_VALUE, Type.SUCCESSFUL_WITH_VALUE };
-        Assert.assertTrue(Arrays.asList(types).contains(outcome.type()), "unexpected outcome type " + outcome.type());
+            types = new Class<?>[] { Successful.class };
+        Assert.assertTrue(Stream.of(types).anyMatch(type -> type.isInstance(outcome)), "unexpected outcome " + outcome);
         return outcome;
     }
 

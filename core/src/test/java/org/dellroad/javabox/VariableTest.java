@@ -33,14 +33,16 @@ public class VariableTest extends TestSupport {
             Assert.assertEquals(value, 123);
 
             ScriptResult result = box.execute("foo + 1");
-            Assert.assertEquals(result.snippetOutcomes().get(0).returnValue(), 124);
+            Assert.assertTrue(result.snippetOutcomes().get(0) instanceof SnippetOutcome.SuccessfulWithValue s
+              && s.returnValue().equals(124));
 
             box.setVariable("bar", "byte", (byte)37);
             value = box.getVariable("bar");
             Assert.assertEquals(value, (byte)37);
 
             result = box.execute("bar + 1");
-            Assert.assertEquals(result.snippetOutcomes().get(0).returnValue(), 38);
+            Assert.assertTrue(result.snippetOutcomes().get(0) instanceof SnippetOutcome.SuccessfulWithValue s
+              && s.returnValue().equals(38));
         }
     }
 }

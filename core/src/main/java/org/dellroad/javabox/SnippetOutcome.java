@@ -5,298 +5,168 @@
 
 package org.dellroad.javabox;
 
-import com.google.common.base.Preconditions;
-
 import java.util.List;
-import java.util.Optional;
 
-import jdk.jshell.JShell;
 import jdk.jshell.Snippet;
 
 /**
  * Captures the outcome from one of the {@link Snippet}s that constitute a {@link JavaBox} script.
  *
  * <p>
- * A snippet can fail by failing to compile or by throwing an exception when executed.
- * Some types of snippets return a value; you can use {@link SnippetOutcome.Type} to determine if so.
+ * A snippet can fail by failing to compile, compiling into bytecode that violates a {@link Control},
+ * throwing an exception during execution, etc.
  *
  * <p>
- * Declaration snippets can have unresolved references; use {@link JShell#unresolvedDependencies
- * JShell.unresolvedDependencies()} to enumerate them. Use {@link JShell#status JShell.status()}
- * to inquire about overall snippet status.
+ * For some outcomes that implement {@link SnippetOutcome.HasSnippet}, additional information is available
+ * via the {@linkplain SnippetOutcome.HasSnippet#snippet associated JShell snippet}.
  */
-public class SnippetOutcome {
-
-    private final JavaBox box;
-    private final Type type;
-    private final String source;
-    private final Optional<Snippet> snippet;
-    private final Object returnValue;
-    private final Optional<Throwable> exception;
-    private final Optional<List<CompilerError>> compilerErrors;
-
-// Constructor & Factory Methods
-
-    SnippetOutcome(JavaBox box, Type type, String source, Optional<Snippet> snippet,
-      Object returnValue, Optional<Throwable> exception, Optional<List<CompilerError>> compilerErrors) {
-        this.box = box;
-        this.type = type;
-        this.source = source;
-        this.snippet = snippet;
-        this.returnValue = returnValue;
-        this.exception = exception;
-        this.compilerErrors = compilerErrors;
-    }
-
-    static SnippetOutcome compilerErrors(JavaBox box, String source, List<CompilerError> compilerErrors) {
-        return new SnippetOutcome(box, Type.COMPILER_ERRORS, source, Optional.empty(),
-          Optional.empty(), Optional.empty(), Optional.of(compilerErrors));
-    }
-
-    static SnippetOutcome compilerErrors(JavaBox box, Snippet snippet, List<CompilerError> compilerErrors) {
-        return new SnippetOutcome(box, Type.COMPILER_ERRORS, snippet.source(), Optional.of(snippet),
-          Optional.empty(), Optional.empty(), Optional.of(compilerErrors));
-    }
-
-    static SnippetOutcome controlViolation(JavaBox box, String source, ControlViolationException exception) {
-        return new SnippetOutcome(box, Type.CONTROL_VIOLATION, source, Optional.empty(),
-          Optional.empty(), Optional.of(exception), Optional.empty());
-    }
-
-    static SnippetOutcome exceptionThrown(JavaBox box, Snippet snippet, Throwable exception) {
-        return new SnippetOutcome(box, Type.EXCEPTION_THROWN, snippet.source(), Optional.of(snippet),
-          Optional.empty(), Optional.of(exception), Optional.empty());
-    }
-
-    static SnippetOutcome unresolvedReferences(JavaBox box, Snippet snippet) {
-        return new SnippetOutcome(box, Type.UNRESOLVED_REFERENCES, snippet.source(), Optional.of(snippet),
-          Optional.empty(), Optional.empty(), Optional.empty());
-    }
-
-    static SnippetOutcome success(JavaBox box, Snippet snippet, Object returnValue) {
-        final Type type;
-        switch (snippet.kind()) {
-        case EXPRESSION:
-        case VAR:
-            type = Type.SUCCESSFUL_WITH_VALUE;
-            break;
-        default:
-            type = Type.SUCCESSFUL_NO_VALUE;
-            assert returnValue == null;
-            break;
-        }
-        return new SnippetOutcome(box, type, snippet.source(),
-          Optional.of(snippet), returnValue, Optional.empty(), Optional.empty());
-    }
-
-    SnippetOutcome toOverwritten() {
-        Preconditions.checkState(this.snippet.isPresent());
-        return new SnippetOutcome(this.box, Type.OVERWRITTEN, this.source,
-          this.snippet, this.returnValue, this.exception, this.compilerErrors);
-    }
-
-    SnippetOutcome toValid() {
-        Preconditions.checkState(this.snippet.isPresent() && this.type == Type.UNRESOLVED_REFERENCES);
-        return new SnippetOutcome(this.box, Type.SUCCESSFUL_NO_VALUE, this.source,
-          this.snippet, this.returnValue, this.exception, this.compilerErrors);
-    }
-
-// Properties
+public sealed interface SnippetOutcome
+  permits SnippetOutcomes.AbstractSnippetOutcome, SnippetOutcome.CompilerErrors, SnippetOutcome.ControlViolation,
+    SnippetOutcome.UnresolvedReferences, SnippetOutcome.Overwritten, SnippetOutcome.ExceptionThrown, SnippetOutcome.Successful {
 
     /**
      * Get the associated {@link JavaBox}.
      *
      * @return associated container
      */
-    public JavaBox javaBox() {
-        return this.box;
-    }
+    JavaBox box();
 
     /**
-     * Get the source code of the snippet.
+     * Get the source code of the snippet whose outcome is represented by this instance.
      *
      * @return snippet source
      */
-    public String source() {
-        return this.source;
-    }
+    String source();
+
+// Ordinary interfaces
 
     /**
-     * Get the {@link Type} of this snippet outcome.
-     *
-     * @return outcome type
+     * Implemented by {@link SnippetOutcome}s for which enough progress was made to define a JShell snippet.
      */
-    public Type type() {
-        return this.type;
+    interface HasSnippet {
+
+        /**
+         * Get the associated snippet.
+         *
+         * @return JShell snippet
+         */
+        Snippet snippet();
     }
 
     /**
-     * Get the {@link Snippet} created by JShell, if any.
+     * Implemented by {@link SnippetOutcome}s for which there is an associated exception.
      *
-     * @return snippet, or empty if there were compilation errors
+     * @param <T> exception type
      */
-    public Optional<Snippet> snippet() {
-        return this.snippet;
+    interface HasException<T extends Throwable> {
+
+        /**
+         * Get the exception thrown.
+         *
+         * @return exception thrown
+         */
+        T exception();
     }
 
     /**
-     * Get the value returned from the snippet's execution, if any.
+     * Implemented by {@link SnippetOutcome}s that will cause a script to stop executing.
+     */
+    interface HaltsScript {
+    }
+
+// SnippetOutcome permitted interfaces
+
+    /**
+     * Indicates failure due to one or more compiler errors.
+     */
+    sealed interface CompilerErrors extends SnippetOutcome, HaltsScript
+      permits SnippetOutcomes.AbstractCompilerErrors, SnippetOutcome.CompilerSyntaxErrors, SnippetOutcome.CompilerSemanticErrors {
+
+        /**
+         * Get the compiler errors that caused compilation to fail.
+         *
+         * @return compilation errors
+         */
+        List<CompilerError> compilerErrors();
+    }
+
+    /**
+     * Indicates failure due to one or more compiler parsing/syntax errors.
+     */
+    sealed interface CompilerSyntaxErrors extends CompilerErrors
+      permits SnippetOutcomes.CompilerSyntaxErrors {
+    }
+
+    /**
+     * Indicates failure due to one or more compiler semantic errors.
+     */
+    sealed interface CompilerSemanticErrors extends CompilerErrors, HasSnippet
+      permits SnippetOutcomes.CompilerSemanticErrors {
+    }
+
+    /**
+     * Indicates that the bytecode generated by the snippet could not be loaded because it violated some {@link Control}.
      *
      * <p>
-     * Only snippets of type {@link Snippet.Kind#EXPRESSION} and {@link Snippet.Kind#VAR} return values.
-     *
-     * @return snippet return value, possibly null
-     * @throws IllegalArgumentException if {@link #type} is not {@link Type#SUCCESSFUL_WITH_VALUE}
+     * If this error happens, the snippet was never executed. Controls can also trigger exceptions during
+     * snippet execution; this results in an {@link ExceptionThrown} instead.
      */
-    public Object returnValue() {
-        Preconditions.checkState(this.type.hasValue(), "no value returned");
-        return this.returnValue;
+    sealed interface ControlViolation extends SnippetOutcome, HaltsScript, HasException<ControlViolationException>
+      permits SnippetOutcomes.ControlViolation {
     }
 
     /**
-     * Get the exception thrown during the snippet's execution, if any.
+     * Indicates that a declaration was successful but it contained unresolved references and those
+     * references were not resolved by any subsequent snippets in the same source.
      *
      * <p>
-     * Exceptions are only possible for snippets of type {@link Snippet.Kind#EXPRESSION}, {@link Snippet.Kind#STATEMENT},
-     * and {@link Snippet.Kind#VAR}.
-     *
-     * @return exception thrown during snippet execution, or empty if no exception was thrown
-     *  or the snippet has a type that does not immediately execute
+     * Note: When a declaration contains unresolved references that are all subsequently resolved
+     * later in the same script, it returns {@link SuccessfulNoValue}.
      */
-    public Optional<Throwable> exception() {
-        return this.exception;
+    sealed interface UnresolvedReferences extends SnippetOutcome, HasSnippet
+      permits SnippetOutcomes.UnresolvedReferences {
     }
 
     /**
-     * Get the compiler errors that caused compilation to fail, if any.
-     *
-     * @return compilation errors, or empty if there were no compilation errors
-     */
-    public Optional<List<CompilerError>> compilerErrors() {
-        return this.compilerErrors;
+     * Indicates that a declaration was successfully compiled, but the declaration was overwritten by
+     * a later snippet in the same source.
+     **/
+    sealed interface Overwritten extends SnippetOutcome, HasSnippet
+      permits SnippetOutcomes.Overwritten {
     }
-
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(type.name());
-        switch (type) {
-        case COMPILER_ERRORS:
-            buf.append(':');
-            this.compilerErrors.get().stream()
-              .map(e -> "\n  " + e)
-              .forEach(buf::append);
-            break;
-        case EXCEPTION_THROWN:
-            buf.append(": ").append(this.exception.get());
-            break;
-        case SUCCESSFUL_WITH_VALUE:
-            buf.append(": ").append(this.returnValue);
-            break;
-        default:
-            break;
-        }
-        return buf.toString();
-    }
-
-// Type
 
     /**
-     * The type of {@link SnippetOutcome}.
+     * Indicates an exception was thrown during the execution of the snippet.
      */
-    public enum Type {
+    sealed interface ExceptionThrown extends SnippetOutcome, HasSnippet, HaltsScript, HasException<Throwable>
+      permits SnippetOutcomes.ExceptionThrown {
+    }
+
+    /**
+     * Indicates a successful outcome.
+     */
+    sealed interface Successful extends SnippetOutcome, HasSnippet
+      permits SnippetOutcomes.AbstractSuccessful, SnippetOutcome.SuccessfulNoValue, SnippetOutcome.SuccessfulWithValue {
+    }
+
+    /**
+     * Indicates a successful outcome for which no value was returned, e.g., the invocation of a void method,
+     * the declaration for which no unresolved references remain, etc.
+     */
+    sealed interface SuccessfulNoValue extends Successful permits SnippetOutcomes.SuccessfulNoValue {
+    }
+
+    /**
+     * Indicates a successful outcome for which some value was returned, e.g., an evaluated expression
+     * or the invocation of a non-void method.
+     */
+    sealed interface SuccessfulWithValue extends Successful permits SnippetOutcomes.SuccessfulWithValue {
 
         /**
-         * The snippet failed due to one or more compiler errors.
+         * Get the value returned from the snippet's execution.
          *
-         * <p>
-         * Use {@link SnippetOutcome#compilerErrors} to retrieve the error(s).
+         * @return snippet return value
          */
-        COMPILER_ERRORS(true, false, false),
-
-        /**
-         * The snippet failed because it tried to do something disallowed by
-         * a configured {@link Control}.
-         *
-         * <p>
-         * Use {@link SnippetOutcome#exception} to retrieve the {@link ControlViolationException}.
-         */
-        CONTROL_VIOLATION(true, false, false),
-
-        /**
-         * The snippet failed due to throwing an exception during execution.
-         *
-         * <p>
-         * Use {@link SnippetOutcome#exception} to retrieve the exception thrown.
-         */
-        EXCEPTION_THROWN(true, false, false),
-
-        /**
-         * The snippet was successfully compiled but contains one or more unresolved references
-         * that did not become resolved by any of the subsequent snippets in the same script.
-         */
-        UNRESOLVED_REFERENCES(false, false, false),
-
-        /**
-         * The snippet was successfully compiled but then got overwritten by a subsequent snippet
-         * in the same script.
-         *
-         * <p>
-         * This outcome is only possible after a subsequent snippet has been processed.
-         */
-        OVERWRITTEN(false, false, false),
-
-        /**
-         * The snippet was compiled and executed successfully and there is no associated return value
-         * because the snippet was not of type {@link Snippet.Kind#EXPRESSION} or {@link Snippet.Kind#VAR}.
-         */
-        SUCCESSFUL_NO_VALUE(false, true, false),
-
-        /**
-         * The snippet was compiled and executed successfully and returned a value. The snippet is of
-         * type {@link Snippet.Kind#EXPRESSION} or {@link Snippet.Kind#VAR}.
-         *
-         * <p>
-         * Use {@link SnippetOutcome#returnValue} to retrieve the return value.
-         */
-        SUCCESSFUL_WITH_VALUE(false, true, true);
-
-        private boolean haltsScript;
-        private boolean successful;
-        private boolean hasValue;
-
-        Type(boolean haltsScript, boolean successful, boolean hasValue) {
-            this.haltsScript = haltsScript;
-            this.successful = successful;
-            this.hasValue = hasValue;
-        }
-
-        /**
-         * Determine whether this outcome will cause a partially executed script to stop execution.
-         *
-         * @return true for {@link #COMPILER_ERRORS}, {@link #CONTROL_VIOLATION} and {@link #EXCEPTION_THROWN},
-         *  false otherwise
-         */
-        public boolean isHaltsScript() {
-            return this.haltsScript;
-        }
-
-        /**
-         * Determine whether this outcome type represents a successful outcome.
-         *
-         * @return true for {@link #SUCCESSFUL_NO_VALUE} and {@link #SUCCESSFUL_WITH_VALUE}, false otherwise
-         */
-        public boolean isSuccessful() {
-            return this.successful;
-        }
-
-        /**
-         * Determine whether this outcome type implies that there was a value returned.
-         *
-         * @return true for {@link #SUCCESSFUL_WITH_VALUE}, false otherwise
-         */
-        public boolean hasValue() {
-            return this.hasValue;
-        }
+        Object returnValue();
     }
 }

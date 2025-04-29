@@ -56,43 +56,44 @@ public class JavaBoxTest extends TestSupport {
             box.initialize();
             result = box.execute(source);
         }
-        Assert.assertSame(result.javaBox(), theBox);
+        Assert.assertSame(result.box(), theBox);
         Assert.assertEquals(result.source(), source);
         final List<SnippetOutcome> snippetOutcomes = result.snippetOutcomes();
         Assert.assertEquals(snippetOutcomes.size(), 1);
         final SnippetOutcome snippetOutcome = snippetOutcomes.get(0);
-        Assert.assertEquals(snippetOutcome.javaBox(), theBox);
+        Assert.assertEquals(snippetOutcome.box(), theBox);
         Assert.assertEquals(snippetOutcome.source(), source);
-        Assert.assertEquals(snippetOutcome.type(), SnippetOutcome.Type.SUCCESSFUL_WITH_VALUE);
-        Assert.assertEquals(snippetOutcome.snippet().get().kind(), Snippet.Kind.VAR);
-        Assert.assertEquals(snippetOutcome.returnValue(), content);
-        Assert.assertFalse(snippetOutcome.exception().isPresent());
-        Assert.assertFalse(snippetOutcome.compilerErrors().isPresent());
+        Assert.assertTrue(snippetOutcome instanceof SnippetOutcome.SuccessfulWithValue);
+        SnippetOutcome.SuccessfulWithValue s = (SnippetOutcome.SuccessfulWithValue)snippetOutcome;
+        Assert.assertEquals(s.snippet().kind(), Snippet.Kind.VAR);
+        Assert.assertEquals(s.returnValue(), content);
     }
 
     @Test
-    public void testUnresolvedDependencies() throws Exception {
+    public void testUnresolvedReferences() throws Exception {
         Config config = Config.builder().build();
         try (JavaBox box = new JavaBox(config)) {
             box.initialize();
             final JShell jsh = box.getJShell();
             final ScriptResult result1 = box.execute("class Foo { public int x = Bar.y + 1; }");
-            Assert.assertEquals(this.unresolvedDependencies(box, result1), Set.of("variable Bar"));
+            Assert.assertEquals(this.unresolvedReferences(box, result1), Set.of("variable Bar"));
             final ScriptResult result2 = box.execute("class Bar { public static int y = 17; }");
-            Assert.assertEquals(this.unresolvedDependencies(box, result1), Set.of());
-            Assert.assertEquals(this.unresolvedDependencies(box, result2), Set.of());
+            Assert.assertEquals(this.unresolvedReferences(box, result1), Set.of());
+            Assert.assertEquals(this.unresolvedReferences(box, result2), Set.of());
             final ScriptResult result3 = box.execute("new Foo().x;");
-            Assert.assertEquals(result3.snippetOutcomes().get(0).returnValue(), 18);
+            Assert.assertEquals(((SnippetOutcome.SuccessfulWithValue)result3.snippetOutcomes().get(0)).returnValue(), 18);
         }
     }
 
-    private Set<String> unresolvedDependencies(JavaBox box, ScriptResult result) {
+    private Set<String> unresolvedReferences(JavaBox box, ScriptResult result) {
         Assert.assertEquals(result.snippetOutcomes().size(), 1);
-        return unresolvedDependencies(box, result.snippetOutcomes().get(0));
+        return unresolvedReferences(box, result.snippetOutcomes().get(0));
     }
 
-    private Set<String> unresolvedDependencies(JavaBox box, SnippetOutcome snippetOutcome) {
-        return box.getJShell().unresolvedDependencies((DeclarationSnippet)snippetOutcome.snippet().get())
+    private Set<String> unresolvedReferences(JavaBox box, SnippetOutcome snippetOutcome) {
+        if (!(snippetOutcome instanceof SnippetOutcome.UnresolvedReferences unresolved))
+            return Set.of();
+        return box.getJShell().unresolvedDependencies((DeclarationSnippet)unresolved.snippet())
           .collect(Collectors.toSet());
     }
 }
