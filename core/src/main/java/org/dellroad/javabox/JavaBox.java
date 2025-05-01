@@ -99,7 +99,7 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  * <p><b>Controls</b>
  *
  * <p>
- * Scripts may be restricted or otherwise transformed using {@link Control}s. {@link Control}s are specified
+ * Scripts may be restricted or otherwise transformed using {@link Control}s which are specified
  * as part of the initial {@link Config}.
  *
  * <p>
@@ -139,9 +139,10 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  *  }
  *
  *  // Check result
- *  result.snippetOutcomes().get(0).exception()
- *    .filter(e -&gt; e instanceof TimeLimitExceededException)
- *    .ifPresent(e -&gt; System.out.println("infinite loop detected"));
+ *  switch (result.snippetOutcomes().get(0)) {
+ *  case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExceededException
+ *    -> System.out.println("infinite loop detected");
+ *  }
  * </code></pre>
  *
  * <p><b>Thread Safety</b>

@@ -41,7 +41,7 @@ public sealed interface SnippetOutcome
 // Ordinary interfaces
 
     /**
-     * Implemented by {@link SnippetOutcome}s for which enough progress was made to define a JShell snippet.
+     * Implemented by {@link SnippetOutcome}s for which enough progress was made to define a JShell {@link Snippet}.
      */
     interface HasSnippet {
 
