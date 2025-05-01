@@ -11,6 +11,10 @@ JavaBox is a simple container ("sandbox") for executing scripts written in Java.
 
 JavaBox uses [JShell](https://docs.oracle.com/en/java/javase/23/jshell/introduction-jshell.html) in local execution mode. That means scripts execute on the same JVM instance as the container itself. In particular, scripts can return Java objects, and these objects can be used normally, outside of the container. The mechanism by which the container imposes controls on scripts is by using [controls](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html) which can intercept script class loading and/or execution.
 
+### Caveats
+
+* Requires Java 24+
+
 ### Where do I get it?
 
 JavaBox is available from [Maven Central](https://search.maven.org/search?q=a:javabox*%20AND%20g:org.dellroad).
