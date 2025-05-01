@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -766,7 +765,7 @@ public class JavaBox implements Closeable {
             return new SnippetOutcomes.SuccessfulWithValue(this, snippet, returnValue);
         case REJECTED:
             return new SnippetOutcomes.CompilerSemanticErrors(this, snippet,
-              this.toErrors(source, lineCol.dup(), this.jshell.diagnostics(snippet)));
+              this.toErrors(source, lineCol.clone(), this.jshell.diagnostics(snippet)));
         default:
             throw new JavaBoxException("internal error: " + event);
         }
@@ -776,9 +775,9 @@ public class JavaBox implements Closeable {
         final CompilerError[] array = diagnostics
           .sorted(Comparator.comparingLong(Diag::getPosition))
           .map(diag -> {
-            final LineAndColumn diagLineCol = lineCol.dup();
+            final LineAndColumn diagLineCol = lineCol.clone();
             diagLineCol.advance(source.substring(0, (int)diag.getPosition()));
-            return diagLineCol.toError(diag.getMessage(Locale.ROOT));
+            return new CompilerError(diagLineCol, diag.getMessage(Locale.ROOT));
           })
           .toArray(CompilerError[]::new);
         return List.of(array);
@@ -961,38 +960,6 @@ public class JavaBox implements Closeable {
      * The implementation in {@link JavaBox} does nothing.
      */
     protected void finishingExecution(Object result, Throwable error) {
-    }
-
-// LineAndColumn
-
-    private record LineAndColumn(AtomicInteger lineNumber, AtomicInteger columNumber) {
-
-        LineAndColumn() {
-            this(new AtomicInteger(1), new AtomicInteger(1));
-        }
-
-        void advance(String text) {
-            text.codePoints().forEach(ch -> {
-                if (ch == '\n') {
-                    lineNumber().incrementAndGet();
-                    columNumber().set(1);
-                } else
-                    columNumber().incrementAndGet();
-            });
-        }
-
-        void reset() {
-            lineNumber().set(1);
-            columNumber().set(1);
-        }
-
-        CompilerError toError(String message) {
-            return new CompilerError(lineNumber().get(), columNumber().get(), message);
-        }
-
-        LineAndColumn dup() {
-            return new LineAndColumn(lineNumber(), columNumber());
-        }
     }
 
 // ExecutionInfo

@@ -5,20 +5,26 @@
 
 package org.dellroad.javabox;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Captures a compilation error.
  *
- * @param lineNumber the line number at which the error occurred (one based)
- * @param columnNumber the column number at which the error occurred (one based)
+ * @param lineCol the location where the error occurred (one based)
  * @param errorMessage the error message
  */
-public record CompilerError(int lineNumber, int columnNumber, String errorMessage) {
+public record CompilerError(LineAndColumn lineCol, String errorMessage) {
+
+    public CompilerError {
+        Preconditions.checkArgument(lineCol != null, "null lineCol");
+        Preconditions.checkArgument(errorMessage != null, "null errorMessage");
+    }
 
     /**
      * Format this instance like {@code "12:34: continue outside of loop"}.
      */
     @Override
     public String toString() {
-        return String.format("%d:%d: %s", lineNumber, columnNumber, errorMessage);
+        return String.format("%d:%d: %s", lineCol.lineOffset() + 1, lineCol.columnOffset() + 1, errorMessage);
     }
 }
