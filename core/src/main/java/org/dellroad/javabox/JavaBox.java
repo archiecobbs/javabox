@@ -606,8 +606,8 @@ public class JavaBox implements Closeable {
 
         // Break source into individual source snippets
         final SourceCodeAnalysis sourceCodeAnalysis = this.jshell.sourceCodeAnalysis();
-        final LineAndColumn lineCol = new LineAndColumn();
         final List<SnippetOutcome> snippetOutcomes = new ArrayList<>();
+        LineAndColumn offset = LineAndColumn.initial();
         for (String remain = source; !remain.isEmpty(); ) {
 
             // Check for interrupt of execute() thread
@@ -631,21 +631,21 @@ public class JavaBox implements Closeable {
             switch (info.completeness()) {
             case CONSIDERED_INCOMPLETE:
             case DEFINITELY_INCOMPLETE:
-                outcome = new SnippetOutcomes.CompilerSyntaxErrors(this, snippetSource,
-                  Collections.singletonList(lineCol.toError("incomplete trailing statement")));
+                outcome = new SnippetOutcomes.CompilerSyntaxErrors(this, offset, snippetSource,
+                  Collections.singletonList(new CompilerError(offset, "incomplete trailing statement")));
                 break;
             case UNKNOWN:
                 final List<SnippetEvent> eval = this.jshell.eval(snippetSource);
                 final SnippetEvent event;
                 if (eval.size() != 1 || !Snippet.Status.REJECTED.equals((event = eval.get(0)).status()))
                     throw new JavaBoxException("internal error: " + eval);
-                outcome = new SnippetOutcomes.CompilerSyntaxErrors(this, snippetSource,
-                  this.toErrors(snippetSource, lineCol, this.jshell.diagnostics(event.snippet())));
+                outcome = new SnippetOutcomes.CompilerSyntaxErrors(this, offset, snippetSource,
+                  this.toErrors(snippetSource, offset, this.jshell.diagnostics(event.snippet())));
                 break;
             case COMPLETE_WITH_SEMI:
             case COMPLETE:
             case EMPTY:
-                outcome = this.executeSnippet(snippetSource, lineCol);
+                outcome = this.executeSnippet(snippetSource, offset);
                 break;
             default:
                 throw new JavaBoxException("internal error");
@@ -661,7 +661,7 @@ public class JavaBox implements Closeable {
                 assert !snippetSource.isEmpty() && snippetSource.charAt(snippetSource.length() - 1) == ';';
                 snippetSource = snippetSource.substring(0, snippetSource.length() - 1);
             }
-            lineCol.advance(snippetSource);
+            offset = offset.advance(snippetSource);
             if ((remain = info.remaining()).trim().isEmpty())
                 break;
         }
@@ -671,20 +671,21 @@ public class JavaBox implements Closeable {
             final SnippetOutcome oldOutcome = snippetOutcomes.get(i);
             if (!(oldOutcome instanceof HasSnippet hasSnippet))
                 continue;
+            offset = oldOutcome.offset();
             final Snippet snippet = hasSnippet.snippet();
             SnippetOutcome newOutcome = oldOutcome;
             switch (this.jshell.status(snippet)) {
             case RECOVERABLE_DEFINED:
             case RECOVERABLE_NOT_DEFINED:
-                newOutcome = new SnippetOutcomes.UnresolvedReferences(this, snippet);
+                newOutcome = new SnippetOutcomes.UnresolvedReferences(this, offset, snippet);
                 break;
             case OVERWRITTEN:
                 switch (oldOutcome) {
                 case Successful success:
-                    newOutcome = new SnippetOutcomes.Overwritten(this, snippet);
+                    newOutcome = new SnippetOutcomes.Overwritten(this, offset, snippet);
                     break;
                 case UnresolvedReferences unresolved:
-                    newOutcome = new SnippetOutcomes.Overwritten(this, snippet);
+                    newOutcome = new SnippetOutcomes.Overwritten(this, offset, snippet);
                     break;
                 case Overwritten overwritten:
                     break;
@@ -699,7 +700,7 @@ public class JavaBox implements Closeable {
                 case ExceptionThrown exception:
                     break;
                 case UnresolvedReferences unresolved:
-                    newOutcome = new SnippetOutcomes.SuccessfulNoValue(this, snippet);
+                    newOutcome = new SnippetOutcomes.SuccessfulNoValue(this, offset, snippet);
                     break;
                 default:
                     throw new JavaBoxException("internal error: " + oldOutcome + " -> " + snippet);
@@ -715,7 +716,7 @@ public class JavaBox implements Closeable {
         return new ScriptResult(this, source, Collections.unmodifiableList(snippetOutcomes));
     }
 
-    private SnippetOutcome executeSnippet(String source, LineAndColumn lineCol) {
+    private SnippetOutcome executeSnippet(String source, LineAndColumn offset) {
 
         // Invoke JShell with the snippet
         final List<SnippetEvent> events;
@@ -724,7 +725,7 @@ public class JavaBox implements Closeable {
             events = this.jshell.eval(source);
             execResult = this.currentExecResult.get();
         } catch (ControlViolationException e) {
-            return new SnippetOutcomes.ControlViolation(this, source, e);
+            return new SnippetOutcomes.ControlViolation(this, offset, source, e);
         } finally {
             this.currentExecResult.set(null);
         }
@@ -747,13 +748,13 @@ public class JavaBox implements Closeable {
         switch (event.status()) {
         case RECOVERABLE_DEFINED:
         case RECOVERABLE_NOT_DEFINED:
-            return new SnippetOutcomes.UnresolvedReferences(this, snippet);
+            return new SnippetOutcomes.UnresolvedReferences(this, offset, snippet);
         case VALID:
             Optional<Throwable> error = Optional.ofNullable(execResult)
               .map(ExecResult::error)
               .or(() -> Optional.of(event).map(SnippetEvent::exception));
             if (error.isPresent())
-                return new SnippetOutcomes.ExceptionThrown(this, snippet, error.get());
+                return new SnippetOutcomes.ExceptionThrown(this, offset, snippet, error.get());
             switch (snippet.kind()) {
             case EXPRESSION:
             case VAR:
@@ -762,22 +763,21 @@ public class JavaBox implements Closeable {
             default:
                 break;
             }
-            return new SnippetOutcomes.SuccessfulWithValue(this, snippet, returnValue);
+            return new SnippetOutcomes.SuccessfulWithValue(this, offset, snippet, returnValue);
         case REJECTED:
-            return new SnippetOutcomes.CompilerSemanticErrors(this, snippet,
-              this.toErrors(source, lineCol.clone(), this.jshell.diagnostics(snippet)));
+            return new SnippetOutcomes.CompilerSemanticErrors(this, offset, snippet,
+              this.toErrors(source, offset, this.jshell.diagnostics(snippet)));
         default:
             throw new JavaBoxException("internal error: " + event);
         }
     }
 
-    private List<CompilerError> toErrors(String source, LineAndColumn lineCol, Stream<Diag> diagnostics) {
+    private List<CompilerError> toErrors(String source, LineAndColumn offset, Stream<Diag> diagnostics) {
         final CompilerError[] array = diagnostics
           .sorted(Comparator.comparingLong(Diag::getPosition))
           .map(diag -> {
-            final LineAndColumn diagLineCol = lineCol.clone();
-            diagLineCol.advance(source.substring(0, (int)diag.getPosition()));
-            return new CompilerError(diagLineCol, diag.getMessage(Locale.ROOT));
+            final LineAndColumn diagOffset = offset.advance(source.substring(0, (int)diag.getPosition()));
+            return new CompilerError(diagOffset, diag.getMessage(Locale.ROOT));
           })
           .toArray(CompilerError[]::new);
         return List.of(array);

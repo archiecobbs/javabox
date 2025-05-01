@@ -7,6 +7,8 @@ package org.dellroad.javabox;
 
 import com.google.common.base.Preconditions;
 
+import java.util.Iterator;
+
 /**
  * Represents a character offset into a {@link String}, along with associated line and column offsets.
  *
@@ -17,18 +19,27 @@ import com.google.common.base.Preconditions;
  * The character, line, and column offsets are zero-based. Columns are measured in codepoints rather than characters.
  *
  * <p>
- * Instances are mutable and not thread-safe.
+ * Instances are immutable.
  */
-public class LineAndColumn implements Cloneable {
+public final class LineAndColumn {
 
-    private int offset;
-    private int lineOffset;
-    private int columnOffset;
+    private static final LineAndColumn INITIAL = new LineAndColumn(0, 0, 0);
+
+    private final int offset;
+    private final int lineOffset;
+    private final int columnOffset;
+
+    private LineAndColumn(int offset, int lineOffset, int columnOffset) {
+        this.offset = offset;
+        this.lineOffset = lineOffset;
+        this.columnOffset = columnOffset;
+    }
 
     /**
-     * Constructor.
+     * Obtain an initial instance with all offsets set to zero.
      */
-    public LineAndColumn() {
+    public static LineAndColumn initial() {
+        return LineAndColumn.INITIAL;
     }
 
     /**
@@ -62,45 +73,26 @@ public class LineAndColumn implements Cloneable {
      * Update the offsets by advancing through the given string.
      *
      * @param text string content
+     * @return updated instance
      * @throws IllegalArgumentException if {@code text} is null
-     * @throws IllegalArgumentException if the offsets overflow
+     * @throws IllegalArgumentException if the offsets would overflow
      */
-    public void advance(String text) {
+    public LineAndColumn advance(String text) {
         Preconditions.checkArgument(text != null, "null text");
-        final int newOffset = this.offset + text.length();
-        if (newOffset < 0)
+        final int offset = this.offset + text.length();
+        if (offset < 0)
             throw new IllegalArgumentException("overflow");
-        this.offset = newOffset;
-        text.codePoints().forEach(ch -> {
+        int lineOffset = this.lineOffset;
+        int columnOffset = this.columnOffset;
+        for (Iterator<Integer> i = text.codePoints().iterator(); i.hasNext(); ) {
+            final int ch = i.next();
             if (ch == '\n') {
-                this.lineOffset++;
-                this.columnOffset = 0;
+                lineOffset++;
+                columnOffset = 0;
             } else
-                this.columnOffset++;
-        });
-    }
-
-    /**
-     * Reset this instance to all zero offsets.
-     */
-    public void reset() {
-        this.offset = 0;
-        this.lineOffset = 0;
-        this.columnOffset = 0;
-    }
-
-// Cloneable
-
-    /**
-     * Clone this instance.
-     */
-    @Override
-    public LineAndColumn clone() {
-        try {
-            return (LineAndColumn)super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+                columnOffset++;
         }
+        return new LineAndColumn(offset, lineOffset, columnOffset);
     }
 
 // Object
