@@ -34,9 +34,21 @@ public sealed interface SnippetOutcome
     /**
      * Get the source code of the snippet whose outcome is represented by this instance.
      *
+     * <p>
+     * This will equal the substring of the original script source starting at {@link #offset}.
+     *
      * @return snippet source
+     * @see #offset
      */
     String source();
+
+    /**
+     * Get the position within the original script source of the {@link #source} associated with this instance.
+     *
+     * @return snippet source offset in original script
+     * @see #source
+     */
+    LineAndColumn offset();
 
 // Ordinary interfaces
 
