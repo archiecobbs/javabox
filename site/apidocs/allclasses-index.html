@@ -115,94 +115,106 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The <a href="org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html" title="class in org.dellroad.javabox.execution"><code>LocalContextExecutionControlProvider</code></a> used by <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Represents a character offset into a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>, along with associated line and column offsets.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControl</code></a> that provides the ability to add thread-local context to the execution of
  each JShell snippet and its subsequent result decoding into a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControlProvider</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControlProvider</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Same as <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControlProvider.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LocalExecutionControlProvider</code></a>, but with additional support for handling certain
  class path and class loading issues.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LoaderDelegate.html" title="class or interface in jdk.jshell.execution" class="external-link"><code>LoaderDelegate</code></a> that uses a <a href="https://archiecobbs.github.io/dellroad-stuff/site/apidocs/org/dellroad/stuff/java/MemoryClassLoader.html" title="class or interface in org.dellroad.stuff.java" class="external-link"><code>MemoryClassLoader</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">A checker for <a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>s that imposes some set of requirements that must be satisfied.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="block">Exception thrown by a <a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox"><code>ResultChecker</code></a> when a requirement is violated.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The result from executing a script in a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Captures the outcome from one of the <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s that constitute a <a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> script.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.CompilerErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.CompilerErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerErrors</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates failure due to one or more compiler errors.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.CompilerSemanticErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.CompilerSemanticErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSemanticErrors</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates failure due to one or more compiler semantic errors.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.CompilerSyntaxErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.CompilerSyntaxErrors.html" title="interface in org.dellroad.javabox">SnippetOutcome.CompilerSyntaxErrors</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates failure due to one or more compiler parsing/syntax errors.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.ControlViolation.html" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.ControlViolation.html" title="interface in org.dellroad.javabox">SnippetOutcome.ControlViolation</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates that the bytecode generated by the snippet could not be loaded because it violated some <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.ExceptionThrown.html" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.ExceptionThrown.html" title="interface in org.dellroad.javabox">SnippetOutcome.ExceptionThrown</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates an exception was thrown during the execution of the snippet.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox">SnippetOutcome.HaltsScript</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s that will cause a script to stop executing.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.HasException.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasException&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which there is an associated exception.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which enough progress was made to define a JShell snippet.</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.Overwritten.html" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which enough progress was made to define a JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.Overwritten.html" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates that a declaration was successfully compiled, but the declaration was overwritten by
  a later snippet in the same source.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox">SnippetOutcome.Successful</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates a successful outcome.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulNoValue</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates a successful outcome for which no value was returned, e.g., the invocation of a void method,
  the declaration for which no unresolved references remain, etc.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates a successful outcome for which some value was returned, e.g., an evaluated expression
  or the invocation of a non-void method.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.UnresolvedReferences.html" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.UnresolvedReferences.html" title="interface in org.dellroad.javabox">SnippetOutcome.UnresolvedReferences</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Indicates that a declaration was successful but it contained unresolved references and those
  references were not resolved by any subsequent snippets in the same source.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">This is a simple wrapper around a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> in which <a href="org/dellroad/javabox/execution/StringWrapper.html#toString()"><code>StringWrapper.toString()</code></a> returns the wrapped <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">A JavaBox <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> that limits the amount of time that a script snippet may execute.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/TimeLimitExceededException.html" title="class in org.dellroad.javabox.control">TimeLimitExceededException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/TimeLimitExceededException.html" title="class in org.dellroad.javabox.control">TimeLimitExceededException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Exception thrown when a script exceeds the time limit imposed by a <a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control"><code>TimeLimitControl</code></a>.</div>
 </div>
 </div>

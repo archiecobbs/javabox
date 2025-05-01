@@ -69,6 +69,17 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="org.dellroad.javabox">
 <h2>Uses of <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a> in <a href="../package-summary.html">org.dellroad.javabox</a></h2>
+<div class="caption"><span>Subinterfaces with type arguments of type <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a> in <a href="../package-summary.html">org.dellroad.javabox</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Interface</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../ResultChecker.html" class="type-name-link" title="interface in org.dellroad.javabox">ResultChecker</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">A checker for <a href="../ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>s that imposes some set of requirements that must be satisfied.</div>
+</div>
+</div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">org.dellroad.javabox</a> that return <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -78,6 +89,67 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">JavaBox.</span><code><a href="../JavaBox.html#execute(java.lang.String)" class="member-name-link">execute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Execute the given script in this container.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ResultCheckerException.</span><code><a href="../ResultCheckerException.html#result()" class="member-name-link">result</a>()</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Get the <a href="../ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a> which generated this exception.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../package-summary.html">org.dellroad.javabox</a> with parameters of type <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>default void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ResultChecker.</span><code><a href="../ResultChecker.html#check(org.dellroad.javabox.ScriptResult)" class="member-name-link">check</a><wbr>(<a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a>&nbsp;result)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Apply this instance to the given result.</div>
+</div>
+</div>
+<div class="caption"><span>Method parameters in <a href="../package-summary.html">org.dellroad.javabox</a> with type arguments of type <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static <a href="../ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ResultChecker.</span><code><a href="../ResultChecker.html#checkSnippets(java.util.function.BiConsumer)" class="member-name-link">checkSnippets</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/BiConsumer.html" title="class or interface in java.util.function" class="external-link">BiConsumer</a>&lt;? super <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a>, ? super <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;snippetChecker)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Create an instance that verifies that every <a href="../SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s meets some requirement.</div>
+</div>
+</div>
+<div class="caption"><span>Constructors in <a href="../package-summary.html">org.dellroad.javabox</a> with parameters of type <a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,int,java.lang.String)" class="member-name-link">ResultCheckerException</a><wbr>(<a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a>&nbsp;result,
+ int&nbsp;snippetIndex,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructor.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,int,java.lang.String,java.lang.Throwable)" class="member-name-link">ResultCheckerException</a><wbr>(<a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a>&nbsp;result,
+ int&nbsp;snippetIndex,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;cause)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Constructor.</div>
+</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,java.lang.String)" class="member-name-link">ResultCheckerException</a><wbr>(<a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a>&nbsp;result,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructor for exceptions that are not specific to a single snippet.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,java.lang.String,java.lang.Throwable)" class="member-name-link">ResultCheckerException</a><wbr>(<a href="../ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a>&nbsp;result,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;cause)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Constructor for exceptions that are not specific to a single snippet.</div>
 </div>
 </div>
 </section>

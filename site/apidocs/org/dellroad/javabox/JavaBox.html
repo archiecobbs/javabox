@@ -161,7 +161,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  <p><b>Controls</b>
 
  <p>
- Scripts may be restricted or otherwise transformed using <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s. <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s are specified
+ Scripts may be restricted or otherwise transformed using <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s which are specified
  as part of the initial <a href="Config.html" title="class in org.dellroad.javabox"><code>Config</code></a>.
 
  <p>
@@ -201,9 +201,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
   }
 
   // Check result
-  result.snippetOutcomes().get(0).exception()
-    .filter(e -&gt; e instanceof TimeLimitExceededException)
-    .ifPresent(e -&gt; System.out.println("infinite loop detected"));
+  switch (result.snippetOutcomes().get(0)) {
+  case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExceededException
+    -&gt; System.out.println("infinite loop detected");
+  }
  </code></pre>
 
  <p><b>Thread Safety</b>

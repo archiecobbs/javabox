@@ -62,6 +62,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Utility method to modify the given JShell command line flags to add/augment the <code>--class-path</code>
  flag(s) to (also) include the given classpath components.</div>
 </dd>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#advance(java.lang.String)" class="member-name-link">advance(String)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>
+<div class="block">Update the offsets by advancing through the given string.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultChecker.html#allSuccessful()" class="member-name-link">allSuccessful()</a> - Static method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></dt>
+<dd>
+<div class="block">Create an instance that verifies that all <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s are successful.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:B">B</h2>
 <dl class="index">
@@ -92,6 +100,10 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="org/dellroad/javabox/control/TimeLimitControl.html#check()" class="member-name-link">check()</a> - Static method in record class org.dellroad.javabox.control.<a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/dellroad/javabox/ResultChecker.html#check(org.dellroad.javabox.ScriptResult)" class="member-name-link">check(ScriptResult)</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></dt>
+<dd>
+<div class="block">Apply this instance to the given result.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/control/ClassReferenceControl.html#checkClassEntry(java.lang.classfile.constantpool.ClassEntry)" class="member-name-link">checkClassEntry(ClassEntry)</a> - Method in class org.dellroad.javabox.control.<a href="org/dellroad/javabox/control/ClassReferenceControl.html" title="class in org.dellroad.javabox.control">ClassReferenceControl</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/control/ConstantPoolControl.html#checkClassEntry(java.lang.classfile.constantpool.ClassEntry)" class="member-name-link">checkClassEntry(ClassEntry)</a> - Method in class org.dellroad.javabox.control.<a href="org/dellroad/javabox/control/ConstantPoolControl.html" title="class in org.dellroad.javabox.control">ConstantPoolControl</a></dt>
@@ -128,6 +140,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Validate a constant pool entry.</div>
 </dd>
+<dt><a href="org/dellroad/javabox/ResultChecker.html#checkSnippets(java.util.function.BiConsumer)" class="member-name-link">checkSnippets(BiConsumer&lt;? super ScriptResult, ? super Integer&gt;)</a> - Static method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></dt>
+<dd>
+<div class="block">Create an instance that verifies that every <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s meets some requirement.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/control/ConstantPoolControl.html#checkStringEntry(java.lang.classfile.constantpool.StringEntry)" class="member-name-link">checkStringEntry(StringEntry)</a> - Method in class org.dellroad.javabox.control.<a href="org/dellroad/javabox/control/ConstantPoolControl.html" title="class in org.dellroad.javabox.control">ConstantPoolControl</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/control/ConstantPoolControl.html#checkUtf8Entry(java.lang.classfile.constantpool.Utf8Entry)" class="member-name-link">checkUtf8Entry(Utf8Entry)</a> - Method in class org.dellroad.javabox.control.<a href="org/dellroad/javabox/control/ConstantPoolControl.html" title="class in org.dellroad.javabox.control">ConstantPoolControl</a></dt>
@@ -146,15 +162,15 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Close this instance.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/CompilerError.html#columnNumber()" class="member-name-link">columnNumber()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#columnOffset()" class="member-name-link">columnOffset()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
 <dd>
-<div class="block">Returns the value of the <a href="./org/dellroad/javabox/CompilerError.html#param-columnNumber"><code>columnNumber</code></a> record component.</div>
+<div class="block">Get the column offset.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/CompilerError.html" class="type-name-link" title="class in org.dellroad.javabox">CompilerError</a> - Record Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
 <div class="block">Captures a compilation error.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/CompilerError.html#%3Cinit%3E(int,int,java.lang.String)" class="member-name-link">CompilerError(int, int, String)</a> - Constructor for record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
+<dt><a href="org/dellroad/javabox/CompilerError.html#%3Cinit%3E(org.dellroad.javabox.LineAndColumn,java.lang.String)" class="member-name-link">CompilerError(LineAndColumn, String)</a> - Constructor for record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>CompilerError</code> record class.</div>
 </dd>
@@ -279,6 +295,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/CompilerError.html#errorMessage()" class="member-name-link">errorMessage()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./org/dellroad/javabox/CompilerError.html#param-errorMessage"><code>errorMessage</code></a> record component.</div>
@@ -376,6 +394,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
@@ -396,6 +416,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/JavaBoxException.html#initCause(java.lang.Throwable)" class="member-name-link">initCause(Throwable)</a> - Method in exception class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#initial()" class="member-name-link">initial()</a> - Static method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>
+<div class="block">Obtain an initial instance with all offsets set to zero.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html#initialize()" class="member-name-link">initialize()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
 <div class="block">Initialize this instance.</div>
@@ -480,15 +504,28 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:L">L</h2>
 <dl class="index">
+<dt><a href="org/dellroad/javabox/ResultChecker.html#lastValueHasType(java.lang.Class)" class="member-name-link">lastValueHasType(Class&lt;?&gt;)</a> - Static method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></dt>
+<dd>
+<div class="block">Create an instance that verifies that the last <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was successful
+ and returned an object having the specified type.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html#leaveContext(java.lang.Object,java.lang.Throwable)" class="member-name-link">leaveContext(Object, Throwable)</a> - Method in class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></dt>
 <dd>
 <div class="block">Leave the thread-local context previously opened by <a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html#enterContext()"><code>LocalContextExecutionControl.enterContext()</code></a> in the current thread.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBoxExecutionControl.html#leaveContext(java.lang.Object,java.lang.Throwable)" class="member-name-link">leaveContext(Object, Throwable)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBoxExecutionControl.html" title="class in org.dellroad.javabox">JavaBoxExecutionControl</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/dellroad/javabox/CompilerError.html#lineNumber()" class="member-name-link">lineNumber()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html" class="type-name-link" title="class in org.dellroad.javabox">LineAndColumn</a> - Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
-<div class="block">Returns the value of the <a href="./org/dellroad/javabox/CompilerError.html#param-lineNumber"><code>lineNumber</code></a> record component.</div>
+<div class="block">Represents a character offset into a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>, along with associated line and column offsets.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/CompilerError.html#lineCol()" class="member-name-link">lineCol()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./org/dellroad/javabox/CompilerError.html#param-lineCol"><code>lineCol</code></a> record component.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#lineOffset()" class="member-name-link">lineOffset()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>
+<div class="block">Get the line offset.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html#load(jdk.jshell.spi.ExecutionControl.ClassBytecodes%5B%5D)" class="member-name-link">load(ExecutionControl.ClassBytecodes[])</a> - Method in class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/MemoryLoaderDelegate.html" title="class in org.dellroad.javabox.execution">MemoryLoaderDelegate</a></dt>
 <dd>&nbsp;</dd>
@@ -553,6 +590,14 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:O">O</h2>
 <dl class="index">
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#offset()" class="member-name-link">offset()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>
+<div class="block">Get the overall character offset.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/SnippetOutcome.html#offset()" class="member-name-link">offset()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a></dt>
+<dd>
+<div class="block">Get the position within the original script source of the <a href="org/dellroad/javabox/SnippetOutcome.html#source()"><code>SnippetOutcome.source()</code></a> associated with this instance.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a> - package org.dellroad.javabox</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/control/package-summary.html">org.dellroad.javabox.control</a> - package org.dellroad.javabox.control</dt>
@@ -566,6 +611,34 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:R">R</h2>
 <dl class="index">
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html#result()" class="member-name-link">result()</a> - Method in exception class org.dellroad.javabox.<a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></dt>
+<dd>
+<div class="block">Get the <a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a> which generated this exception.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultChecker.html" class="type-name-link" title="interface in org.dellroad.javabox">ResultChecker</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">A checker for <a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox"><code>ScriptResult</code></a>s that imposes some set of requirements that must be satisfied.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html" class="type-name-link" title="class in org.dellroad.javabox">ResultCheckerException</a> - Exception Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
+<dd>
+<div class="block">Exception thrown by a <a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox"><code>ResultChecker</code></a> when a requirement is violated.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,int,java.lang.String)" class="member-name-link">ResultCheckerException(ScriptResult, int, String)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></dt>
+<dd>
+<div class="block">Constructor.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,int,java.lang.String,java.lang.Throwable)" class="member-name-link">ResultCheckerException(ScriptResult, int, String, Throwable)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></dt>
+<dd>
+<div class="block">Constructor.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,java.lang.String)" class="member-name-link">ResultCheckerException(ScriptResult, String)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></dt>
+<dd>
+<div class="block">Constructor for exceptions that are not specific to a single snippet.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html#%3Cinit%3E(org.dellroad.javabox.ScriptResult,java.lang.String,java.lang.Throwable)" class="member-name-link">ResultCheckerException(ScriptResult, String, Throwable)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></dt>
+<dd>
+<div class="block">Constructor for exceptions that are not specific to a single snippet.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html#returnValue()" class="member-name-link">returnValue()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></dt>
 <dd>
 <div class="block">Get the value returned from the snippet's execution.</div>
@@ -597,6 +670,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html#snippet()" class="member-name-link">snippet()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a></dt>
 <dd>
 <div class="block">Get the associated snippet.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ResultCheckerException.html#snippetIndex()" class="member-name-link">snippetIndex()</a> - Method in exception class org.dellroad.javabox.<a href="org/dellroad/javabox/ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></dt>
+<dd>
+<div class="block">Get the index of the snippet that generated this exception.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/SnippetOutcome.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
@@ -632,7 +709,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/dellroad/javabox/SnippetOutcome.HasSnippet.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.HasSnippet</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
-<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which enough progress was made to define a JShell snippet.</div>
+<div class="block">Implemented by <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s for which enough progress was made to define a JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/SnippetOutcome.Overwritten.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.Overwritten</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
@@ -719,7 +796,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/CompilerError.html#toString()" class="member-name-link">toString()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/CompilerError.html" title="class in org.dellroad.javabox">CompilerError</a></dt>
 <dd>
-<div class="block">Format this instance like <code>"12:53: continue outside of loop"</code>.</div>
+<div class="block">Format this instance like <code>"12:34: continue outside of loop"</code>.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/Config.html#toString()" class="member-name-link">toString()</a> - Method in record class org.dellroad.javabox.<a href="org/dellroad/javabox/Config.html" title="class in org.dellroad.javabox">Config</a></dt>
 <dd>
@@ -741,6 +818,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the wrapped string.</div>
 </dd>
+<dt><a href="org/dellroad/javabox/LineAndColumn.html#toString()" class="member-name-link">toString()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/LineAndColumn.html" title="class in org.dellroad.javabox">LineAndColumn</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>
 <dl class="index">
