@@ -11,6 +11,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
+import jdk.jshell.Snippet;
+
 /**
  * A checker for {@link ScriptResult}s that imposes some set of requirements that must be satisfied.
  *
@@ -68,27 +70,65 @@ public interface ResultChecker extends Consumer<ScriptResult> {
     }
 
     /**
-     * Create an instance that verifies that the last {@link SnippetOutcome} was successful
-     * and returned an object having the specified type.
+     * Create an instance that verifies that the last {@link SnippetOutcome} was a successful
+     * expression returning a value having the specified type.
+     *
+     * <p>
+     * This is useful in scenarios where the purpose of the script is to produce some result.
+     * This checks that:
+     * <ul>
+     *  <li>The script was not empty, i.e., it contained at least one snippet
+     *  <li>Every snippet in the script was {@linkplain SnippetOutcome.Successful successful}
+     *  <li>The final snippet was an expression having the specified type
+     *  <li>If {@code allowNull} is false, the returned value is not null
+     * </ul>
+     * If the above criteria are not met, a {@link ResultCheckerException} is thrown.
      *
      * @param type expected return type
+     * @param allowNull true to allow null values, otherwise false
      * @throws IllegalArgumentException if {@code type} is null or primitive
      */
-    static ResultChecker lastValueHasType(Class<?> type) {
+    static ResultChecker returns(Class<?> type, boolean allowNull) {
         Preconditions.checkArgument(type != null, "null type");
         Preconditions.checkArgument(!type.isPrimitive(), "primitive type");
         return result -> {
+
+            // There must be at least one snippet
             final int numSnippets = result.snippetOutcomes().size();
             if (numSnippets == 0)
                 throw new ResultCheckerException(result, "script is empty");
+
+            // The final snippet must have been successful
             final int snippetIndex = numSnippets - 1;
             final SnippetOutcome outcome = result.snippetOutcomes().get(numSnippets - 1);
-            if (!(outcome instanceof SnippetOutcome.SuccessfulWithValue success))
+            if (!(outcome instanceof SnippetOutcome.Successful success))
                 throw new ResultCheckerException(result, snippetIndex, "final snippet was not successful: " + outcome);
-            final Object value = success.returnValue();
-            if (!type.isInstance(value)) {
-                throw new ResultCheckerException(result, snippetIndex, String.format("script returned %s (expected %s)",
-                  value != null ? "value of type " + value.getClass().getName() : "null value", type.getClass().getName()));
+            final Snippet snippet = success.snippet();
+
+            // The final snippet must be an expression
+            switch (snippet.subKind()) {
+            case ASSIGNMENT_SUBKIND:
+            case OTHER_EXPRESSION_SUBKIND:
+            case TEMP_VAR_EXPRESSION_SUBKIND:
+            case VAR_VALUE_SUBKIND:
+                break;
+            default:
+                throw new ResultCheckerException(result, snippetIndex,
+                  String.format("final snippet was not an expression: kind=%s, subKind=%s", snippet.kind(), snippet.subKind()));
+            }
+            final SnippetOutcome.SuccessfulWithValue successWithValue = (SnippetOutcome.SuccessfulWithValue)success;
+
+            // The snippet's return value must have the correct type
+            final Object value = successWithValue.returnValue();
+            if (value == null) {
+                if (!allowNull) {
+                    throw new ResultCheckerException(result, snippetIndex,
+                      String.format("script returned null (expected %s)", type.getClass().getName()));
+                }
+            } else if (!type.isInstance(value)) {
+                throw new ResultCheckerException(result, snippetIndex,
+                  String.format("script returned value of type %s (expected %s)",
+                  value.getClass().getName(), type.getClass().getName()));
             }
         };
     }

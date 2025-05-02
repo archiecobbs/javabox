@@ -117,8 +117,7 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  *      ScriptResult result = box.execute("""
  *          String.format("Hello, %s!", target);
  *          """);
- *      Object rv = result.snippetOutcomes().get(0).returnValue();
- *      System.out.println(s);      // prints "Hello, World!"
+ *      System.out.println(result.returnValue());      // prints "Hello, World!"
  *  }
  * </code></pre>
  *
@@ -134,13 +133,17 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  *  ScriptResult result;
  *  try (JavaBox box = new JavaBox(config)) {
  *      box.initialize();
- *      result = box.execute("while (true) { Thread.yield(); }");
+ *      result = box.execute("""
+ *          while (true) {
+ *              Thread.yield();
+ *          }
+ *      """);
  *  }
  *
  *  // Check result
  *  switch (result.snippetOutcomes().get(0)) {
  *  case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExceededException
- *    -> System.out.println("infinite loop detected");
+ *    -&gt; System.out.println("infinite loop detected");
  *  }
  * </code></pre>
  *

@@ -70,6 +70,32 @@ public class ScriptResult {
     }
 
     /**
+     * Convenience method to get the return value from a script's final snippet.
+     *
+     * <p>
+     * This is useful in scenarios where the purpose of the script is to produce some result.
+     * This checks that:
+     * <ul>
+     *  <li>The script was not empty, i.e., it contained at least one snippet
+     *  <li>The outcome of every snippet in the script was {@linkplain SnippetOutcome.Successful successful}
+     *  <li>The final snippet is an expression whose value is an instance of the given type
+     * </ul>
+     * If the above criteria are not met, a {@link ResultCheckerException} is thrown.
+     *
+     * @param type required return type
+     * @return script return value (possibly null)
+     * @throws IllegalArgumentException if {@code type} is null or primitive
+     * @throws ResultCheckerException if script failed or did not return a value
+     * @see ResultChecker#returns
+     */
+    public <T> T returnValue(Class<T> type) {
+        ResultChecker.returns(type, true).check(this);
+        final SnippetOutcome outcome = this.snippetOutcomes.get(this.snippetOutcomes.size() - 1);
+        final SnippetOutcome.SuccessfulWithValue success = (SnippetOutcome.SuccessfulWithValue)outcome;
+        return type.cast(success.returnValue());
+    }
+
+    /**
      * Determine whether the script exeuction was successful.
      *
      * <p>
