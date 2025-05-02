@@ -67,7 +67,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#check(org.dellroad.javabox.ScriptResult)" tabindex="0">check(ScriptResult)</a></li>
 <li><a href="#allSuccessful()" tabindex="0">allSuccessful()</a></li>
 <li><a href="#checkSnippets(java.util.function.BiConsumer)" tabindex="0">checkSnippets(BiConsumer)</a></li>
-<li><a href="#lastValueHasType(java.lang.Class)" tabindex="0">lastValueHasType(Class)</a></li>
+<li><a href="#returns(java.lang.Class,boolean)" tabindex="0">returns(Class, boolean)</a></li>
 </ol>
 </li>
 </ol>
@@ -130,10 +130,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/ja
 <div class="block">Create an instance that verifies that every <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a>s meets some requirement.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#lastValueHasType(java.lang.Class)" class="member-name-link">lastValueHasType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#returns(java.lang.Class,boolean)" class="member-name-link">returns</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type,
+ boolean&nbsp;allowNull)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
-<div class="block">Create an instance that verifies that the last <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was successful
- and returned an object having the specified type.</div>
+<div class="block">Create an instance that verifies that the last <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was a successful
+ expression returning a value having the specified type.</div>
 </div>
 </div>
 </div>
@@ -201,15 +202,28 @@ extends <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/ja
 </section>
 </li>
 <li>
-<section class="detail" id="lastValueHasType(java.lang.Class)">
-<h3>lastValueHasType</h3>
+<section class="detail" id="returns(java.lang.Class,boolean)">
+<h3>returns</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></span>&nbsp;<span class="element-name">lastValueHasType</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</span></div>
-<div class="block">Create an instance that verifies that the last <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was successful
- and returned an object having the specified type.</div>
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></span>&nbsp;<span class="element-name">returns</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type,
+ boolean&nbsp;allowNull)</span></div>
+<div class="block">Create an instance that verifies that the last <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was a successful
+ expression returning a value having the specified type.
+
+ <p>
+ This is useful in scenarios where the purpose of the script is to produce some result.
+ This checks that:
+ <ul>
+  <li>The script was not empty, i.e., it contained at least one snippet
+  <li>Every snippet in the script was <a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox">successful</a>
+  <li>The final snippet was an expression having the specified type
+  <li>If <code>allowNull</code> is false, the returned value is not null
+ </ul>
+ If the above criteria are not met, a <a href="ResultCheckerException.html" title="class in org.dellroad.javabox"><code>ResultCheckerException</code></a> is thrown.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - expected return type</dd>
+<dd><code>allowNull</code> - true to allow null values, otherwise false</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>type</code> is null or primitive</dd>
 </dl>

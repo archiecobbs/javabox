@@ -180,8 +180,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
       ScriptResult result = box.execute("""
           String.format("Hello, %s!", target);
           """);
-      Object rv = result.snippetOutcomes().get(0).returnValue();
-      System.out.println(s);      // prints "Hello, World!"
+      System.out.println(result.returnValue());      // prints "Hello, World!"
   }
  </code></pre>
 
@@ -197,7 +196,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
   ScriptResult result;
   try (JavaBox box = new JavaBox(config)) {
       box.initialize();
-      result = box.execute("while (true) { Thread.yield(); }");
+      result = box.execute("""
+          while (true) {
+              Thread.yield();
+          }
+      """);
   }
 
   // Check result

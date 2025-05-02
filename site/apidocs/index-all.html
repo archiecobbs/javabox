@@ -504,11 +504,6 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:L">L</h2>
 <dl class="index">
-<dt><a href="org/dellroad/javabox/ResultChecker.html#lastValueHasType(java.lang.Class)" class="member-name-link">lastValueHasType(Class&lt;?&gt;)</a> - Static method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></dt>
-<dd>
-<div class="block">Create an instance that verifies that the last <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was successful
- and returned an object having the specified type.</div>
-</dd>
 <dt><a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html#leaveContext(java.lang.Object,java.lang.Throwable)" class="member-name-link">leaveContext(Object, Throwable)</a> - Method in class org.dellroad.javabox.execution.<a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html" title="class in org.dellroad.javabox.execution">LocalContextExecutionControl</a></dt>
 <dd>
 <div class="block">Leave the thread-local context previously opened by <a href="org/dellroad/javabox/execution/LocalContextExecutionControl.html#enterContext()"><code>LocalContextExecutionControl.enterContext()</code></a> in the current thread.</div>
@@ -639,9 +634,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor for exceptions that are not specific to a single snippet.</div>
 </dd>
+<dt><a href="org/dellroad/javabox/ResultChecker.html#returns(java.lang.Class,boolean)" class="member-name-link">returns(Class&lt;?&gt;, boolean)</a> - Static method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/ResultChecker.html" title="interface in org.dellroad.javabox">ResultChecker</a></dt>
+<dd>
+<div class="block">Create an instance that verifies that the last <a href="org/dellroad/javabox/SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> was a successful
+ expression returning a value having the specified type.</div>
+</dd>
 <dt><a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html#returnValue()" class="member-name-link">returnValue()</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetOutcome.SuccessfulWithValue.html" title="interface in org.dellroad.javabox">SnippetOutcome.SuccessfulWithValue</a></dt>
 <dd>
 <div class="block">Get the value returned from the snippet's execution.</div>
+</dd>
+<dt><a href="org/dellroad/javabox/ScriptResult.html#returnValue(java.lang.Class)" class="member-name-link">returnValue(Class&lt;T&gt;)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
+<dd>
+<div class="block">Convenience method to get the return value from a script's final snippet.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:S">S</h2>
