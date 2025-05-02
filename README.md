@@ -13,7 +13,7 @@ JavaBox uses [JShell](https://docs.oracle.com/en/java/javase/23/jshell/introduct
 
 ### Caveats
 
-* Requires Java 24+
+* Requires Java 24+ (except for the `execution` module which requires JDK 17+)
 
 ### Where do I get it?
 
