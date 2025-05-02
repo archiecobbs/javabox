@@ -1,3 +1,7 @@
+Version Next
+
+    - Add missing service loader file for LocalContextExecutionControlProvider.
+
 Version 1.0.0 Released May 2, 2025
 
     - Initial release
