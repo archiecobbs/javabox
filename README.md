@@ -55,7 +55,7 @@ case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExc
 
 ### Caveats
 
-* Requires Java 24+ (except for the `execution` module which requires JDK 17+)
+* The `controls` module requires Java 24+ because the `Control`'s therein rely on the new `ClassFile` API; everything else requires JDK 17+.
 
 ### Where do I get it?
 

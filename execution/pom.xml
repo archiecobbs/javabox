@@ -19,7 +19,6 @@
         </site>
     </distributionManagement>
     <properties>
-        <java.version>17</java.version>
         <automatic.module.name>${javabox.package.root}.execution</automatic.module.name>
     </properties>
     <dependencies>

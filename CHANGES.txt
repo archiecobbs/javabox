@@ -1,3 +1,7 @@
+Version Next
+
+    - Target core module for JDK 17, so only controls requires JDK 24.
+
 Version 1.0.1 Released May 2, 2025
 
     - Add missing service loader file for LocalContextExecutionControlProvider.

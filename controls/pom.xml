@@ -19,6 +19,7 @@
         </site>
     </distributionManagement>
     <properties>
+        <java.version>24</java.version>
         <automatic.module.name>${javabox.package.root}.controls</automatic.module.name>
     </properties>
     <dependencies>

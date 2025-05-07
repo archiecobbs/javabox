@@ -8,7 +8,6 @@ package org.dellroad.javabox;
 import com.google.common.base.Preconditions;
 
 import java.io.Closeable;
-import java.lang.classfile.ClassFile;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -363,14 +362,12 @@ public class JavaBox implements Closeable {
         Preconditions.checkState(!this.closed, "closed");
 
         // Get the variable
-        switch (this.execute(varName).snippetOutcomes().get(0)) {
-        case SuccessfulWithValue success:
+        SnippetOutcome outcome = this.execute(varName).snippetOutcomes().get(0);
+        if (outcome instanceof SuccessfulWithValue success)
             return success.returnValue();
-        case CompilerErrors errors:
+        if (outcome instanceof CompilerErrors)
             throw new IllegalArgumentException("no such variable \"" + varName + "\"");
-        case SnippetOutcome outcome:
-            throw new JavaBoxException("error getting variable \"" + varName + "\": " + outcome);
-        }
+        throw new JavaBoxException("error getting variable \"" + varName + "\": " + outcome);
     }
 
     /**
@@ -432,19 +429,17 @@ public class JavaBox implements Closeable {
 
         // Auto-generate type if needed
         if (varType == null) {
-            varType = switch (varValue) {
-                case null -> Object.class.getName();
-                case Boolean x -> "boolean";
-                case Byte x -> "byte";
-                case Character x -> "char";
-                case Short x -> "short";
-                case Integer x -> "int";
-                case Float x -> "float";
-                case Long x -> "long";
-                case Double x -> "double";
-                default -> varValue.getClass().getName();
-            };
-        }
+            varType = varValue == null          ? Object.class.getName() :
+                varValue instanceof Boolean     ? "boolean" :
+                varValue instanceof Byte        ? "byte" :
+                varValue instanceof Character   ? "char" :
+                varValue instanceof Short       ? "short" :
+                varValue instanceof Integer     ? "int" :
+                varValue instanceof Float       ? "float" :
+                varValue instanceof Long        ? "long" :
+                varValue instanceof Double      ? "double" :
+                                                varValue.getClass().getName();
+            }
 
         // Create a script that sets the variable
         String script = String.format("%s %s = (%s)%s.variableValue();", varType, varName, varType, JavaBox.class.getName());
@@ -458,10 +453,9 @@ public class JavaBox implements Closeable {
 
         // Execute the script
         try {
-            switch (this.execute(script).snippetOutcomes().get(0)) {
-            case Successful success -> { }
-            case SnippetOutcome outcome -> throw new JavaBoxException("error setting variable \"" + varName + "\": " + outcome);
-            }
+            final SnippetOutcome outcome = this.execute(script).snippetOutcomes().get(0);
+            if (!(outcome instanceof Successful))
+                throw new JavaBoxException("error setting variable \"" + varName + "\": " + outcome);
         } finally {
             synchronized (this) {
                 this.variableValue = null;
@@ -683,32 +677,21 @@ public class JavaBox implements Closeable {
                 newOutcome = new SnippetOutcomes.UnresolvedReferences(this, offset, snippet);
                 break;
             case OVERWRITTEN:
-                switch (oldOutcome) {
-                case Successful success:
+                if (oldOutcome instanceof Successful || oldOutcome instanceof UnresolvedReferences) {
                     newOutcome = new SnippetOutcomes.Overwritten(this, offset, snippet);
                     break;
-                case UnresolvedReferences unresolved:
-                    newOutcome = new SnippetOutcomes.Overwritten(this, offset, snippet);
-                    break;
-                case Overwritten overwritten:
-                    break;
-                default:
-                    throw new JavaBoxException("internal error: " + oldOutcome + " -> " + snippet);
                 }
-                break;
+                if (oldOutcome instanceof Overwritten)
+                    break;
+                throw new JavaBoxException("internal error: " + oldOutcome + " -> " + snippet);
             case VALID:
-                switch (oldOutcome) {
-                case Successful success:
+                if (oldOutcome instanceof Successful || oldOutcome instanceof ExceptionThrown)
                     break;
-                case ExceptionThrown exception:
-                    break;
-                case UnresolvedReferences unresolved:
+                if (oldOutcome instanceof UnresolvedReferences unresolved) {
                     newOutcome = new SnippetOutcomes.SuccessfulNoValue(this, offset, snippet);
                     break;
-                default:
-                    throw new JavaBoxException("internal error: " + oldOutcome + " -> " + snippet);
                 }
-                break;
+                throw new JavaBoxException("internal error: " + oldOutcome + " -> " + snippet);
             default:
                 throw new JavaBoxException("internal error: " + oldOutcome + " -> " + snippet);
             }
@@ -842,13 +825,6 @@ public class JavaBox implements Closeable {
         // Any changes?
         if (bytes == origBytes)
             return cbc;
-
-        // Sanity check class name didn't change
-        final ClassDesc newName = ClassFile.of().parse(bytes).thisClass().asSymbol();
-        if (!newName.equals(name)) {
-            throw new ControlViolationException(String.format(
-              "control(s) changed class name \"%s\" → \"%s\"", name.descriptorString(), newName.descriptorString()));
-        }
 
         // Done
         return new ClassBytecodes(cbc.name(), bytes);
