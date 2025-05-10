@@ -1,4 +1,4 @@
-Version 1.1.0
+Version 1.1.0 Released May 10, 2025
 
     - Target core module for JDK 17, so only controls requires JDK 24.
     - Add suspend/resume function.
