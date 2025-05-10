@@ -13,6 +13,8 @@ import jdk.jshell.DeclarationSnippet;
 import jdk.jshell.JShell;
 import jdk.jshell.Snippet;
 
+import org.dellroad.javabox.SnippetOutcome.SuccessfulWithValue;
+import org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
 import org.dellroad.stuff.test.TestSupport;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -63,8 +65,8 @@ public class JavaBoxTest extends TestSupport {
         final SnippetOutcome snippetOutcome = snippetOutcomes.get(0);
         Assert.assertEquals(snippetOutcome.box(), theBox);
         Assert.assertEquals(snippetOutcome.source(), source);
-        Assert.assertTrue(snippetOutcome instanceof SnippetOutcome.SuccessfulWithValue);
-        SnippetOutcome.SuccessfulWithValue s = (SnippetOutcome.SuccessfulWithValue)snippetOutcome;
+        Assert.assertTrue(snippetOutcome instanceof SuccessfulWithValue);
+        final SuccessfulWithValue s = (SuccessfulWithValue)snippetOutcome;
         Assert.assertEquals(s.snippet().kind(), Snippet.Kind.VAR);
         Assert.assertEquals(s.returnValue(), content);
     }
@@ -81,7 +83,7 @@ public class JavaBoxTest extends TestSupport {
             Assert.assertEquals(this.unresolvedReferences(box, result1), Set.of());
             Assert.assertEquals(this.unresolvedReferences(box, result2), Set.of());
             final ScriptResult result3 = box.execute("new Foo().x;");
-            Assert.assertEquals(((SnippetOutcome.SuccessfulWithValue)result3.snippetOutcomes().get(0)).returnValue(), 18);
+            Assert.assertEquals(((SuccessfulWithValue)result3.snippetOutcomes().get(0)).returnValue(), 18);
         }
     }
 
@@ -91,7 +93,7 @@ public class JavaBoxTest extends TestSupport {
     }
 
     private Set<String> unresolvedReferences(JavaBox box, SnippetOutcome snippetOutcome) {
-        if (!(snippetOutcome instanceof SnippetOutcome.UnresolvedReferences unresolved))
+        if (!(snippetOutcome instanceof UnresolvedReferences unresolved))
             return Set.of();
         return box.getJShell().unresolvedDependencies((DeclarationSnippet)unresolved.snippet())
           .collect(Collectors.toSet());

@@ -143,6 +143,37 @@ final class SnippetOutcomes {
         }
     }
 
+    static final class Suspended extends AbstractSnippetOutcome implements SnippetOutcome.Suspended {
+
+        private final Object parameter;
+
+        Suspended(JavaBox box, LineAndColumn offset, String source, Object parameter) {
+            super(box, offset, source);
+            this.parameter = parameter;
+        }
+
+        @Override
+        public Object parameter() {
+            return this.parameter;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s: %s", super.toString(), this.parameter);
+        }
+    }
+
+    static final class Interrupted extends AbstractSnippetOutcome implements SnippetOutcome.Interrupted {
+
+        Interrupted(JavaBox box, LineAndColumn offset, Snippet snippet) {
+            super(box, offset, snippet.source());
+        }
+
+        Interrupted(JavaBox box, LineAndColumn offset, String source) {
+            super(box, offset, source);
+        }
+    }
+
     static final class ExceptionThrown extends AbstractHasSnippet implements SnippetOutcome.ExceptionThrown {
 
         private final Throwable exception;

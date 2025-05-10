@@ -27,8 +27,8 @@ import org.dellroad.javabox.JavaBox;
  * A JavaBox {@link Control} that limits the amount of time that a script snippet may execute.
  *
  * <p>
- * This class works by adding time checks to backward branches. Therefore, it only works when
- * the executing thread is actually executing (i.e., not blocked).
+ * This class works by adding time checks to method entry points and backward branches. Therefore,
+ * it only works when the executing thread is actually executing (i.e., not blocked).
  *
  * @param timeLimit the maximum execution time allowed
  */

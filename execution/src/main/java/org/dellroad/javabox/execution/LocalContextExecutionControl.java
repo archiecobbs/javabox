@@ -16,7 +16,7 @@ import jdk.jshell.execution.LocalExecutionControl;
 
 /**
  * A {@link LocalExecutionControl} that provides the ability to add thread-local context to the execution of
- * each JShell snippet and its subsequent result decoding into a {@link String}.
+ * each JShell snippet.
  *
  * <p>
  * It is sometimes useful to have the execution of JShell snippets occur within some thread-local context. For example,
@@ -95,7 +95,7 @@ public class LocalContextExecutionControl extends LocalExecutionControl {
     }
 
     /**
-     * Leave the thread-local context previously opened by {@link #enterContext} in the current thread.
+     * Exit the thread-local context previously entered by {@link #enterContext} in the current thread.
      *
      * <p>
      * The implementation in {@link LocalContextExecutionControl} does nothing.
@@ -163,13 +163,14 @@ public class LocalContextExecutionControl extends LocalExecutionControl {
      * Invocation wrapper method.
      *
      * <p>
-     * This method recovers the current instance and the actual method to invoke from {@link #CURRENT_INVOCATION}
+     * This method recovers the current instance and the actual method to invoke
      * and then delegates to {@link #invokeWithContext invokeWithContext()}.
      *
      * <p>
      * This method is only used internally but is required to be public due to Java access controls.
      *
      * @return result from snippet execution
+     * @throws IllegalStateException if not invoked by JShell
      */
     public static Object invokeWrapper() throws Throwable {
         final Invocation info = CURRENT_INVOCATION.get();

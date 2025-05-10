@@ -11,7 +11,7 @@
         <version>3.2.11.0</version>
     </parent>
     <artifactId>javabox</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <name>JavaBox Java Scripting Container</name>
@@ -50,6 +50,7 @@
 
         <!-- Basic stuff -->
         <java.version>17</java.version>
+        <javadoc.version>24</javadoc.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Root package name -->
@@ -346,7 +347,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <source>${java.version}</source>
+                    <source>${javadoc.version}</source>
                     <notimestamp>true</notimestamp>
                     <validateLinks>true</validateLinks>
                     <doclint>-missing</doclint>

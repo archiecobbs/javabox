@@ -16,13 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -45,9 +40,11 @@ import static org.dellroad.javabox.SnippetOutcome.CompilerErrors;
 import static org.dellroad.javabox.SnippetOutcome.ExceptionThrown;
 import static org.dellroad.javabox.SnippetOutcome.HaltsScript;
 import static org.dellroad.javabox.SnippetOutcome.HasSnippet;
+import static org.dellroad.javabox.SnippetOutcome.Interrupted;
 import static org.dellroad.javabox.SnippetOutcome.Overwritten;
 import static org.dellroad.javabox.SnippetOutcome.Successful;
 import static org.dellroad.javabox.SnippetOutcome.SuccessfulWithValue;
+import static org.dellroad.javabox.SnippetOutcome.Suspended;
 import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
 
 /**
@@ -60,17 +57,18 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  * <p><b>Overview</b>
  *
  * <p>
- * Each {@link JavaBox} instance relies on an underlying {@link JShell} instance configured for
- * {@linkplain LocalExecutionControl local execution} to parse and execute scripts and to hold its state,
- * i.e., the variables, methods, and classes declared by those scripts.
+ * Each {@link JavaBox} instance relies on an underlying {@link JShell} instance configured for to parse and execute
+ * scripts, and to hold its state, i.e., the variables, methods, and classes declared by those scripts.
+ * The {@link JavaBox} instance is configured for {@linkplain LocalExecutionControl local execution}, so scripts
+ * run within the same virtual machine.
  *
  * <p>
- * Unlike standard {@link JShell}, which must remain compatible with remote execution, {@link JavaBox} instances
- * support direct transfer of Java objects between the container and the outside world in two ways:
+ * Bevcause {@link JavaBox} instances always run in local execution mode, they support the direct transfer of Java objects
+ * between the container and the outside world:
  * <ul>
- *  <li>Return values from script execution are provided to the caller by {@link #execute execute()}
- *  <li>{@link JShell} variables can be read and written directly via {@link #getVariable getVariable()}
- *      and {@link #setVariable setVariable()}.
+ *  <li>Return values from script execution are returned to the caller
+ *  <li>{@link JShell} variables can be read and written directly (via {@link #getVariable getVariable()}
+ *      and {@link #setVariable setVariable()}).
  * </ul>
  *
  * <p><b>Lifecycle</b>
@@ -88,21 +86,50 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  * <p><b>Script Execution</b>
  *
  * <p>
- * Scripts are executed via {@link #execute execute()}.
+ * Scripts are executed via {@link #execute execute()}. A single script may contain multiple individual expressions,
+ * statements, or declarations; these are called "snippets". The snippets are analyzed and executed one at a time.
+ * The return value from {@link #execute execute()} contains a distinct {@link SnippetOutcome} for each of the snippets.
+ * Often the last snippet's return value (if any) is considered to be the overall script's "return value".
+ *
+ * <p><b>Suspend and Resume</b>
  *
  * <p>
- * Scripts typically contains multiple individual expressions, statements, or declarations (called "snippets").
- * {@link #execute execute()} returns the {@linkplain SnippetOutcome outcome} of each snippet.
+ * If a script invokes {@link #suspend suspend()}, then {@link #execute execute()} returns to the caller with the
+ * last snippet outcome being an instance of {@link Suspended}. The script can be restarted later by invoking
+ * {@link #resume resume()}, which behaves just like {@link #execute execute()}, except that it continues the previous
+ * script instead of starting a new one. On the next return, the previously suspended snippet's earlier {@link Suspended}
+ * outcome will be overwritten with its new, updated outcome.
+ *
+ * <p>
+ * If there is a suspended script associated with an instance, any new invocation of {@link #execute execute()} will fail.
+ * Instead, suspeneded scripts must be resumed via {@link #resume resume()} and allowed to terminate.
+ *
+ * <p><b>Interruption</b>
+ *
+ * <p>
+ * Both {@link #execute execute()} and {@link #resume resume()} block the calling thread until the script terminates
+ * or suspends itself. Another thread can interrupt that execution by interrupting the calling thread, or equivalenntly
+ * by invoking {@link #interrupt}. If a snippet's execution is interrrupted, its outcome is {@link SnippetOutcome.Interrupted}.
+ *
+ * <p>
+ * A suspended script can also be interrupted, but the script does not awaken immediately. Instead, upon the next call to
+ * {@link #resume resume()}, it will terminate immediately and have outcome {@link SnippetOutcome.Interrupted}.
  *
  * <p><b>Controls</b>
  *
  * <p>
- * Scripts may be restricted or otherwise transformed using {@link Control}s which are specified
- * as part of the initial {@link Config}.
+ * Scripts may be restricted or otherwise transformed using {@link Control}s which are specified as part of the initial
+ * {@link Config}. Controls can do the following things:
+ * <ul>
+ *  <li>Inspect and modify all of the bytecode generated from scripts
+ *  <li>Keep state associated with each {@link JavaBox} instance
+ *  <li>Keep state associated with each {@link JavaBox} snippet execution
+ * </ul>
  *
  * <p>
- * Every control is given a per-container {@link ContainerContext} and a per-execution {@link ExecutionContext}
- * to which they may create and attach their own private state.
+ * Every control is given a per-container {@link ContainerContext} and a per-execution {@link ExecutionContext}.
+ * Controls can modify script bytecode to insert method calls into the control itself, where it can then utilize its
+ * state to decide what to do, etc.
  *
  * <p><b>Examples</b>
  *
@@ -121,7 +148,7 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  * </code></pre>
  *
  * <p>
- * Here is an example that prevents infinite loops:
+ * Here is an example that shows how to avoid infinite loops:
  * <pre><code class="language-java">
  *  // Set up control
  *  Config config = Config.builder()
@@ -150,45 +177,194 @@ import static org.dellroad.javabox.SnippetOutcome.UnresolvedReferences;
  *
  * <p>
  * Instances are thread safe but single threaded: when simultaneous operations are attempted from multiple threads,
- * only one operation executes at a time.
+ * only one operation executes at a time. The one-at-a-time operations are:
+ * <ul>
+ *  <li>{@link #execute execute()}
+ *  <li>{@link #resume resume()}
+ *  <li>{@link #getVariable getVariable()}
+ *  <li>{@link #setVariable setVariable()}
+ *  <li>{@link #close()}
+ * </ul>
  */
 public class JavaBox implements Closeable {
 
-    /**
-     * The package name reserved for {@link JavaBox} classes use within the container.
-     */
-    public static final String JAVABOX_RESERVED_PACKAGE = "JAVABOX";
-
-    /**
-     * The package name reserved for use by JShell within the container.
-     */
-    public static final String JSHELL_RESERVED_PACKAGE = "REPL";
-
     private static final String THREAD_NAME_PREFIX = "JavaBox";
     private static final AtomicLong THREAD_NAME_INDEX = new AtomicLong();
-    private static final ThreadLocal<JavaBox> CURRENT = new ThreadLocal<>();
-    private static final ThreadLocal<ExecutionInfo> EXECUTION_INFO = new ThreadLocal<>();
+    private static final ThreadLocal<JavaBox> CURRENT_JAVABOX = new ThreadLocal<>();
+    private static final ThreadLocal<SnippetThreadInfo> SNIPPET_THREAD_INFO = new ThreadLocal<>();
     private static final int EXECUTE_WAIT_TIME_MILLIS = 100;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Config config;
     private final ArrayList<ContainerContext> containerContexts = new ArrayList<>();
-    private final AtomicReference<ExecResult> currentExecResult = new AtomicReference<>();
 
-    private JShell jshell;
+    private State state = State.INITIAL;
     private ExecutorService executor;
-
-    private boolean initialized;
-    private boolean closed;
+    private JShell jshell;
 
     // The value of some variable being set by setVariable()
     private AtomicReference<Object> variableValue;
 
-    // This is the thread in execute() that is waiting on the Future that reports the outcome of doExecute()
-    private volatile Thread executeThread;
+    // Execution state
+    private String source;
+    private boolean interrupted;
+    private SnippetOutcomes.Suspended suspendOutcome;
+    private Object resumeReturnValue;
+    private final List<SnippetOutcome> snippetOutcomes = new ArrayList<>();
+    private final AtomicReference<CurrentSnippet> currentSnippet = new AtomicReference<>();
+    private final AtomicReference<SnippetResult> snippetResult = new AtomicReference<>();
 
-    // This flag is how "executeThread" notifies the thread in doExecute() that it was interrupted
-    private volatile boolean executionInterrupted;
+/*
+
+    State management is complicated because there are 3+ different threads that can be running
+    through a single JavaBox instance at the same time:
+
+        (a) One or more USER THREADS invoking execute(), resume(), interrupt(), close(), etc.
+        (b) The EXECUTION THREAD which runs on "executor" and invokes JShell.eval() from doExecute()
+        (c) The SNIPPET THREAD created by JShell that actually executes snippet code
+
+*/
+
+    private enum State {
+
+        // The initial state, prior to initialize()
+        INITIAL {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor == null);
+                Preconditions.checkState(box.jshell == null);
+                Preconditions.checkState(box.source == null);
+                Preconditions.checkState(!box.interrupted);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+                Preconditions.checkState(box.snippetOutcomes.isEmpty());
+                Preconditions.checkState(box.currentSnippet.get() == null);
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        },
+
+        // Initialized but otherwise not doing anything
+        IDLE {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor != null);
+                Preconditions.checkState(box.jshell != null);
+                Preconditions.checkState(box.source == null);
+                Preconditions.checkState(!box.interrupted);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+                Preconditions.checkState(box.snippetOutcomes.isEmpty());
+                Preconditions.checkState(box.currentSnippet.get() == null);
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        },
+
+        // Executing a script: the user thread is waiting for a result from execute() or resume(), the execution thread
+        // is either compiling a snippet or waiting for JShell.eval() to return, and the snippet thread is executing script code.
+        // Also, the "interrupted" flag may be set; if so, JShell.stop() will have been invoked at least once. We can also get
+        // to this state from SUSPENDED if some user thread invokes interrupt().
+        EXECUTING {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor != null);
+                Preconditions.checkState(box.jshell != null);
+                Preconditions.checkState(box.source != null);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+            }
+        },
+
+        // Follows EXECUTING after JShell.eval() has returned in the execution thread and that thread has added the appropriate
+        // SnippetOutcome and exited. We are waiting for the user thread that invoked execute() or resume() to wake up and
+        // return a corresponding ScriptResult. After that the state reverts back to IDLE.
+        RETURNING {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor != null);
+                Preconditions.checkState(box.jshell != null);
+                Preconditions.checkState(box.source != null);
+                Preconditions.checkState(!box.interrupted);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+                Preconditions.checkState(box.currentSnippet.get() == null);
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        },
+
+        // Follows EXECUTING after an invocation of suspend() by the snippet thread. The script thread will be blocked in
+        // suspend() and the "suspendOutcome" holds the temporary outcome. The execution thread will stay blocked waiting for
+        // JShell.eval() to return. The user thread will wake up, copy the current snippetOutcomes list, append suspendOutcome,
+        // and return a corresponding ScriptResult. The state will change to SUSPENDED.
+        // Note: if "interrupted" is set when suspend() is invoked, an immediate ThreadDeath exception is thrown, so it's
+        // not possible for "interrupted" to be set in this state.
+        SUSPENDING {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor != null);
+                Preconditions.checkState(box.jshell != null);
+                Preconditions.checkState(box.source != null);
+                Preconditions.checkState(box.suspendOutcome != null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+                Preconditions.checkState(box.currentSnippet.get() != null);
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        },
+
+        // There is no user thread, the execution thread is still blocked in JShell.eval(), and the snippet thread is blocked
+        // in suspend(). When resume() is invoked we will go to RESUMING.
+        SUSPENDED {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor != null);
+                Preconditions.checkState(box.jshell != null);
+                Preconditions.checkState(box.source != null);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+                Preconditions.checkState(box.currentSnippet.get() != null);
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        },
+
+        // Same as SUSPENDED but resume() has been invoked and we are waiting for the snippet thread to wake up and return
+        // "resumeReturnValue" from suspend(). If "interrupted" is set then suspend() with throw ThreadDeath instead.
+        // Either way, after that we will go back to EXECUTING.
+        RESUMING {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor != null);
+                Preconditions.checkState(box.jshell != null);
+                Preconditions.checkState(box.source != null);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.currentSnippet.get() != null);
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        },
+
+        // Closed and no longer usable
+        CLOSED {
+
+            @Override
+            void checkInvariants(JavaBox box) {
+                Preconditions.checkState(box.executor == null);
+                Preconditions.checkState(box.jshell == null);
+                Preconditions.checkState(box.source == null);
+                Preconditions.checkState(!box.interrupted);
+                Preconditions.checkState(box.suspendOutcome == null);
+                Preconditions.checkState(box.resumeReturnValue == null);
+                Preconditions.checkState(box.snippetOutcomes.isEmpty());
+                Preconditions.checkState(box.snippetResult.get() == null);
+            }
+        };
+
+        abstract void checkInvariants(JavaBox box);
+    }
 
 // Constructor
 
@@ -218,12 +394,12 @@ public class JavaBox implements Closeable {
     }
 
     /**
-     * Determine if this instance is initialized.
+     * Determine if this instance has been initialized.
      *
      * @return true if this instance is initialized, otherwise false
      */
     public synchronized boolean isInitialized() {
-        return this.initialized;
+        return this.state != State.INITIAL;
     }
 
     /**
@@ -232,7 +408,43 @@ public class JavaBox implements Closeable {
      * @return true if this instance is closed, otherwise false
      */
     public synchronized boolean isClosed() {
-        return this.closed;
+        return this.state == State.CLOSED;
+    }
+
+    /**
+     * Determine if this instance is currently executing a script.
+     *
+     * <p>
+     * A suspended script counts as "currently executing"; use {@link #isSuspended} to detect that situation.
+     *
+     * @return true if this instance has a currently executing script, otherwise false
+     */
+    public synchronized boolean isExecuting() {
+        this.checkInvariants();
+        switch (this.state) {
+        case EXECUTING:
+        case SUSPENDING:
+        case SUSPENDED:
+        case RESUMING:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    /**
+     * Determine if this instance has a suspended script.
+     *
+     * @return true if this instance has a currently suspended script, otherwise false
+     */
+    public synchronized boolean isSuspended() {
+        switch (this.state) {
+        case SUSPENDING:
+        case SUSPENDED:
+            return true;
+        default:
+            return false;
+        }
     }
 
     /**
@@ -242,7 +454,7 @@ public class JavaBox implements Closeable {
      * @throws IllegalStateException if this instance is not yet initialized
      */
     public synchronized JShell getJShell() {
-        Preconditions.checkState(this.initialized, "not initialized");
+        Preconditions.checkState(this.state != State.INITIAL, "not initialized");
         return this.jshell;
     }
 
@@ -255,7 +467,7 @@ public class JavaBox implements Closeable {
      * @throws IllegalStateException if there is no such instance
      */
     public static JavaBox getCurrent() {
-        final JavaBox box = CURRENT.get();
+        final JavaBox box = CURRENT_JAVABOX.get();
         Preconditions.checkState(box != null, "there is no JavaBox associated with the current thread");
         return box;
     }
@@ -270,14 +482,19 @@ public class JavaBox implements Closeable {
     public synchronized void initialize() {
 
         // Sanity check
-        Preconditions.checkState(!this.initialized, "already initialized");
-        Preconditions.checkState(!this.closed, "closed");
-        Preconditions.checkState(CURRENT.get() == null, "reentrant invocation");
-        CURRENT.set(this);
+        Preconditions.checkState(this.state == State.INITIAL, "already initialized");
+
+        // Initialize executor, JShell, and controls
+        Preconditions.checkState(CURRENT_JAVABOX.get() == null, "reentrant invocation");
+        CURRENT_JAVABOX.set(this);
         try {
 
             // Create our executor
-            this.executor = Executors.newSingleThreadExecutor();
+            this.executor = Executors.newSingleThreadExecutor(task -> {
+                Thread thread = new Thread(task);
+                thread.setName(String.format("%s-Execute-%d", THREAD_NAME_PREFIX, THREAD_NAME_INDEX.incrementAndGet()));
+                return thread;
+            });
 
             // Create our JShell instance
             this.jshell = this.config.jshellBuilder().build();
@@ -286,14 +503,14 @@ public class JavaBox implements Closeable {
             this.config.controls().stream()
               .forEach(control -> this.containerContexts.add(new ContainerContext(this, control, control.initialize(this))));
         } catch (RuntimeException | Error e) {
-            this.shutdown();
+            this.close();
             throw e;
         } finally {
-            CURRENT.set(null);
+            CURRENT_JAVABOX.set(null);
         }
 
-        // Done
-        this.initialized = true;
+        // Ready
+        this.newState(State.IDLE);
     }
 
     /**
@@ -301,43 +518,66 @@ public class JavaBox implements Closeable {
      *
      * <p>
      * If this instance is already closed, or was never initialized, this method does nothing.
+     *
+     * <p>
+     * If there is a currently executing or suspended script, it will be interrupted and allowed to terminate.
      */
     @Override
     public synchronized void close() {
-        if (this.closed)
-            return;
-        this.closed = true;
-        this.shutdown();
-    }
 
-    private synchronized void shutdown() {
+        // Wait for all activity to cease
         boolean wasInterrupted = false;
-        this.interrupt();
-        while (this.executeThread != null) {
-            try {
-                this.wait(EXECUTE_WAIT_TIME_MILLIS);
-            } catch (InterruptedException e) {
-                wasInterrupted = true;
+        while (true) {
+            if (this.state != State.INITIAL)        // during intialize() our state is still being set up
+                this.checkInvariants();
+            switch (this.state) {
+            case INITIAL:
+            case IDLE:
+            case CLOSED:
+                break;
+            case EXECUTING:
+            case RETURNING:
+            case SUSPENDING:
+            case RESUMING:
+                this.interrupt();
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    wasInterrupted = true;
+                }
+                continue;
+            case SUSPENDED:
+                this.interrupt();
+                this.resume(null);
+                continue;
+            default:
+                throw new JavaBoxException("internal error: " + this.state);
             }
+            break;
+        }
+
+        // Shut everything down
+        if (this.jshell != null) {
+            this.jshell.close();
+            this.jshell = null;
         }
         if (this.executor != null) {
             this.executor.shutdown();
             this.executor = null;
         }
-        if (this.jshell != null) {
-            this.jshell.close();
-            this.jshell = null;
-        }
         while (!this.containerContexts.isEmpty()) {
             final ContainerContext context = this.containerContexts.remove(this.containerContexts.size() - 1);
             try {
                 context.control().shutdown(context);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 this.log.warn("error closing {} context for {} (ignoring)", "container", context.control(), e);
             }
         }
+
+        // Done
         if (wasInterrupted)
             Thread.currentThread().interrupt();
+        this.newState(State.CLOSED);
     }
 
 // Variables
@@ -358,8 +598,6 @@ public class JavaBox implements Closeable {
 
         // Sanity check
         this.checkVariableName(varName);
-        Preconditions.checkState(this.initialized, "not initialized");
-        Preconditions.checkState(!this.closed, "closed");
 
         // Get the variable
         SnippetOutcome outcome = this.execute(varName).snippetOutcomes().get(0);
@@ -398,7 +636,7 @@ public class JavaBox implements Closeable {
      * If {@code vartype} is null:
      * <ul>
      *  <li>The actual type of {@code varValue} (expressed as a string) will be used;
-     *      this type must be accessible in the generated script
+     *      this type name must be accessible in the generated script
      *  <li>If {@code varValue} is a non-null primitive wrapper type, the corresponding primitive type is used
      *  <li>If {@code varValue} is null, {@code var} will be used
      * </ul>
@@ -406,7 +644,7 @@ public class JavaBox implements Closeable {
      * <p>
      * Using the narrowest possible type for {@code varType} is advantageous because it eliminates the need
      * for casting when referring to {@code varName} in subsequent scripts. However, it's possible that
-     * {@code varType} is not accessible in the script environment, e.g., not on the classpath or a private class.
+     * {@code varType} is not accessible in the script environment, e.g., not on the classpath, or a private class.
      * In that case, this method will throw a {@link JavaBoxException}. To avoid that, set {@code varType} to any
      * accessible supertype (e.g., {@code "Object"}), or use {@code "var"} to infer it.
      *
@@ -417,34 +655,31 @@ public class JavaBox implements Closeable {
      * @throws IllegalStateException if this instance is not initialized or closed
      * @throws IllegalArgumentException if {@code varName} is not a valid Java identifier
      * @throws IllegalArgumentException if {@code varName} is null
-     * @throws JavaBoxException if {@code varName} is null
+     * @throws JavaBoxException if variable assignment fails
      * @see JShell#variables
      */
     public void setVariable(String varName, String varType, Object varValue) throws InterruptedException {
 
         // Sanity check
         this.checkVariableName(varName);
-        Preconditions.checkState(this.initialized, "not initialized");
-        Preconditions.checkState(!this.closed, "closed");
 
         // Auto-generate type if needed
         if (varType == null) {
-            varType = varValue == null          ? Object.class.getName() :
-                varValue instanceof Boolean     ? "boolean" :
-                varValue instanceof Byte        ? "byte" :
-                varValue instanceof Character   ? "char" :
-                varValue instanceof Short       ? "short" :
-                varValue instanceof Integer     ? "int" :
-                varValue instanceof Float       ? "float" :
-                varValue instanceof Long        ? "long" :
-                varValue instanceof Double      ? "double" :
-                                                varValue.getClass().getName();
-            }
+            varType = varValue == null      ? Object.class.getName() :
+              varValue instanceof Boolean   ? "boolean" :
+              varValue instanceof Byte      ? "byte" :
+              varValue instanceof Character ? "char" :
+              varValue instanceof Short     ? "short" :
+              varValue instanceof Integer   ? "int" :
+              varValue instanceof Float     ? "float" :
+              varValue instanceof Long      ? "long" :
+              varValue instanceof Double    ? "double" : varValue.getClass().getName();
+        }
 
         // Create a script that sets the variable
-        String script = String.format("%s %s = (%s)%s.variableValue();", varType, varName, varType, JavaBox.class.getName());
+        final String script = String.format("%s %s = (%s)%s.variableValue();", varType, varName, varType, JavaBox.class.getName());
 
-        // Wait for our turn
+        // Ensure there is only one use of variableValue() at a time
         synchronized (this) {
             while (this.variableValue != null)
                 this.wait();
@@ -454,6 +689,8 @@ public class JavaBox implements Closeable {
         // Execute the script
         try {
             final SnippetOutcome outcome = this.execute(script).snippetOutcomes().get(0);
+            if (outcome instanceof Interrupted)
+                throw new InterruptedException("script was interrupted while setting variable");
             if (!(outcome instanceof Successful))
                 throw new JavaBoxException("error setting variable \"" + varName + "\": " + outcome);
         } finally {
@@ -472,9 +709,13 @@ public class JavaBox implements Closeable {
      * from JShell scripts.
      *
      * @return value of variable being set if any, otherwise null
+     * @throws IllegalStateException if the current thread is not a {@link #setVariable setVariable()} script thread
      */
     public static Object variableValue() {
-        return JavaBox.getCurrent().variableValue.get();
+        return Optional.ofNullable(JavaBox.getCurrent())
+          .map(box -> box.variableValue)
+          .orElseThrow(() -> new IllegalStateException("the current thread is not a setVariable() script thread"))
+          .get();
     }
 
     private void checkVariableName(String name) {
@@ -498,118 +739,306 @@ public class JavaBox implements Closeable {
      * Execute the given script in this container.
      *
      * <p>
-     * The script is broken into individual snippets, which are executed one-at-a-time. Processing stops
-     * if any snippet fails. The results from the execution of those snippets that were attempted are in
-     * the returned {@link ScriptResult}.
+     * The script is broken into individual snippets, which are executed one at a time. Processing stops after the
+     * last snippet, or when any snippet has an outcome implementing {@link HaltsScript}. The results from the execution
+     * of all snippets attempted up to that point are then returned as a {@link ScriptResult}.
      *
      * <p>
-     * If the current thread is interrupted, then script execution will be interrupted and {@link InterruptedException}
-     * thrown. The script may have not yet started, may have only partially completed, or may have fully completed.
+     * If the current thread is interrupted, then {@link #interrupt} is implicitly invoked.
+     *
+     * <p>
+     * If the script {@link #suspend suspend()}s itself, this method returns as described above, the last outcome will
+     * be a {@link Suspended}, and the script becomes this instance's <i>suspended script</i>. The script must be
+     * {@link #resume resume()}ed before a new script can be executed. A suspended script can be {@link #interrupt}ed,
+     * in which case it will throw {@link ThreadDeath} as soon as it is resumed.
+     *
+     * <p>
+     * If this method is invoked when this instance has a suspended script, an {@link IllegalStateException} is thrown.
      *
      * @param source the script to execute
      * @return result from successful script execution
      * @throws InterruptedException if the current thread is interrupted
+     * @throws IllegalStateException if this instance has a suspended script
      * @throws IllegalStateException if this instance is not initialized or closed
      * @throws IllegalArgumentException if {@code source} is null
      */
-    public ScriptResult execute(String source) throws InterruptedException {
+    public synchronized ScriptResult execute(String source) {
 
         // Sanity check
         Preconditions.checkArgument(source != null, "null source");
 
-        // Snapshot these to avoid inconsistent synchronization warnings
-        final ExecutorService executor0;
-        final JShell jshell0;
-
-        // Allow only one execute operation at a time
-        synchronized (this) {
-            Preconditions.checkState(this.initialized, "not initialized");
-            Preconditions.checkState(!this.closed, "closed");
-            while (this.executeThread != null)
-                this.wait();
-            this.executeThread = Thread.currentThread();
-            this.executionInterrupted = false;
-            executor0 = this.executor;
-            jshell0 = this.jshell;
-        }
-        try {
-
-            // Enqueue an execute task and wait for it to complete
-            final Future<ScriptResult> future = executor0.submit(() -> this.doExecute(source));
-            while (true) {
-
-                // Get result from doExecute()
-                final ScriptResult scriptResult;
+        // Wait for previous operation to complete
+        while (true) {
+            this.checkAlive();
+            this.checkInvariants();
+            switch (this.state) {
+            case IDLE:
+                this.source = source;
+                this.newState(State.EXECUTING);
+                break;
+            case EXECUTING:
+            case RETURNING:
+            case SUSPENDING:
+            case RESUMING:
                 try {
-                    scriptResult = future.get(EXECUTE_WAIT_TIME_MILLIS, TimeUnit.MILLISECONDS);
-                } catch (TimeoutException e) {
-                    if (this.executionInterrupted)
-                        jshell0.stop();             // keep trying in case we missed it
-                    continue;
-                } catch (CancellationException e) {
-                    Preconditions.checkState(this.executionInterrupted, "internal error: not canceled");
-                    throw new InterruptedException();
-                } catch (ExecutionException e) {
-                    final Throwable error = e.getCause();
-                    throw new JavaBoxException("internal error: " + error, error);
+                    this.wait();
                 } catch (InterruptedException e) {
-                    if (!this.executionInterrupted) {
-                        jshell0.stop();
-                        future.cancel(false);
-                        this.executionInterrupted = true;
-                    }
-                    continue;
+                    this.interrupt();
                 }
-
-                // If we were canceled, disregard script return value
-                if (this.executionInterrupted)
-                    throw new InterruptedException();
-
-                // Done
-                Preconditions.checkState(scriptResult != null, "internal error: null script");
-                return scriptResult;
+                continue;
+            case SUSPENDED:
+                throw new IllegalStateException("this instance has a suspended script; it must be resumed first");
+            default:
+                throw new JavaBoxException("internal error: " + this.state);
             }
+            break;
+        }
 
-        } finally {
-            synchronized (this) {
-                this.executeThread = null;
-                this.executionInterrupted = false;
-                this.notifyAll();
+        // Start a new execution task
+        this.executor.submit(() -> {
+            try {
+                this.doExecute();
+            } catch (Throwable t) {
+                this.log.warn("error in execution task", t);
+            }
+        });
+
+        // Wait for result
+        return this.waitForResult();
+    }
+
+    /**
+     * Suspend the script executing in the current thread.
+     *
+     * <p>
+     * If a script invokes this method, the script will pause and the associated {@link #execute execute()}
+     * or {@link #resume resume()} invocation that (re)started this script's execution will return to the caller,
+     * with the corresponding snippet outcome being a {@link Suspended} containing {@code parameter}.
+     *
+     * <p>
+     * This instance will then have a <i>suspended script</i>. The suspended script must be
+     * {@link #resume resume()}ed before a new script can be {@link #execute execute()}ed. A suspended script
+     * can be {@link #interrupt}ed, in which case it will throw {@link ThreadDeath} as soon as it resumes.
+     *
+     * @param parameter value to be made available via {@link Suspended#parameter}
+     * @return the return value provided to {@link #resume resume()}
+     * @throws ThreadDeath if {@link #interrupt} or {@link #close} was invoked while suspended
+     * @throws IllegalStateException if the current thread is not a script execution thread
+     */
+    public static Object suspend(Object parameter) {
+
+        // Sanity check we are the snippet thread
+        final SnippetThreadInfo info = SNIPPET_THREAD_INFO.get();
+        Preconditions.checkState(info != null, "the current thread is not a script execution thread");
+
+        // Suspend this snippet
+        return info.box.doSuspend(parameter);
+    }
+
+    private synchronized Object doSuspend(Object parameter) {
+
+        // Update state
+        this.checkInvariants();
+        switch (this.state) {
+        case EXECUTING:
+            final CurrentSnippet snippet = this.currentSnippet.get();
+            this.suspendOutcome = new SnippetOutcomes.Suspended(this, snippet.offset, snippet.snippetSource, parameter);
+            this.newState(State.SUSPENDING);
+            break;
+        default:
+            throw new JavaBoxException("internal error: " + this.state);
+        }
+
+        // Wait for resume
+        boolean wasInterrupted = false;
+        while (true) {
+            this.checkInvariants();
+            switch (this.state) {
+            case SUSPENDED:
+            case SUSPENDING:
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    wasInterrupted = true;
+                }
+                continue;
+            case RESUMING:
+                final Object returnValue = this.resumeReturnValue;
+                this.resumeReturnValue = null;
+                this.newState(State.EXECUTING);
+                if (this.interrupted || wasInterrupted)
+                    throw new ThreadDeath();
+                return returnValue;
+            default:
+                throw new JavaBoxException("internal error: " + this.state);
             }
         }
     }
 
     /**
-     * Interrupt the execution of the script or variable access that is currently executing, if any.
+     * Resume this instance's suspended script.
      *
      * <p>
-     * This method interrupts the thread currently running in {@link #execute execute()},
-     * {@link #getVariable getVariable()}, or {@link #setVariable setVariable()}, if any.
+     * The script's earlier invocation of {@link #suspend suspend()} will return {@code returnValue}, or throw
+     * {@link ThreadDeath} if {@link #interrupt} has been invoked since it was suspended. This method will
+     * then block just like {@link #execute execute()}, i.e., until the script terminates or suspends itself
+     * again.
+     *
+     * <p>
+     * The returned {@link ScriptResult} will include the outcomes from all snippets in the original script,
+     * including those that executed before the snippet that invoked {@link #suspend suspend()}, followed by
+     * the updated outcome of the suspended snippet, followed by any additional outcomes from the script.
+     *
+     * @param returnValue the value to be returned to the script from {@link #suspend suspend()}
+     * @return the result from the script's execution
+     * @throws ThreadDeath if {@link #interrupt} or {@link #close} was invoked on the associated container
+     * @throws IllegalStateException if this instance has no currently suspended script
+     * @throws IllegalStateException if this instance is not initialized or closed
+     */
+    public synchronized ScriptResult resume(Object returnValue) {
+
+        // Resume suspended snippet
+        boolean wasInterrupted = false;
+        while (true) {
+            this.checkAlive();
+            this.checkInvariants();
+            switch (this.state) {
+            case SUSPENDING:
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    this.interrupt();
+                }
+                continue;
+            case SUSPENDED:
+                this.resumeReturnValue = returnValue;
+                this.newState(State.RESUMING);
+                break;
+            case IDLE:
+            case EXECUTING:
+            case RETURNING:
+            case RESUMING:
+                throw new IllegalStateException("this instance does not currently have a suspended script to resume");
+            default:
+                throw new JavaBoxException("internal error: " + this.state);
+            }
+            break;
+        }
+
+        // Do more execution
+        return this.waitForResult();
+    }
+
+    private ScriptResult waitForResult() {
+        assert Thread.holdsLock(this);
+        while (true) {
+            this.checkInvariants();
+            switch (this.state) {
+            case EXECUTING:
+            case RESUMING:
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    this.interrupt();
+                }
+                continue;
+            case RETURNING: {
+                final List<SnippetOutcome> outcomes = List.copyOf(this.snippetOutcomes);
+                this.snippetOutcomes.clear();
+                final ScriptResult result = new ScriptResult(this, this.source, outcomes);
+                this.source = null;
+                this.newState(State.IDLE);
+                return result;
+            }
+            case SUSPENDING: {
+                final ArrayList<SnippetOutcome> outcomes = new ArrayList<>(this.snippetOutcomes);
+                outcomes.add(this.suspendOutcome);
+                this.suspendOutcome = null;
+                this.newState(State.SUSPENDED);
+                return new ScriptResult(this, this.source, outcomes);
+            }
+            default:
+                throw new JavaBoxException("internal error: " + this.state);
+            }
+        }
+    }
+
+    /**
+     * Interrupt the current script execution, if any.
+     *
+     * <p>
+     * If there is no current execution, then nothing happens and false is returned. Otherwise, an attempt is made to stop
+     * the execution via {@link JShell#stop}. If successful, the final snippet outcome will be {@link Interrupted}.
+     * Even in this case, because this operation is asynchronous, the snippet may have actually never started, it may have only
+     * partially completed, or it may have fully completed.
+     *
+     * <p>
+     * If this instance has a currently suspeneded script, that script will awaken and throw an immediate {@link ThreadDeath}
+     * exception. Note that {@link Interrupted} is the outcome assigned to any snippet that terminates by
+     * throwing {@link ThreadDeath}.
+     *
+     * <p>
+     * If this instance is closed or not initialized, false is returned.
      *
      * @return true if execution was interrupted, false if no execution was occurring
      */
     public synchronized boolean interrupt() {
-        if (this.executeThread != null) {
-            this.executeThread.interrupt();
+        this.checkInvariants();
+        switch (this.state) {
+        case INITIAL:
+        case CLOSED:
+        case IDLE:
+        case RETURNING:
+            return false;
+        case EXECUTING:
+        case SUSPENDING:
+        case SUSPENDED:
+        case RESUMING:
+            if (this.state == State.EXECUTING)
+                this.jshell.stop();
+            this.interrupted = true;
+            this.notifyAll();
             return true;
+        default:
+            throw new JavaBoxException("internal error: " + this.state);
         }
-        return false;
     }
 
-    private synchronized ScriptResult doExecute(String source) throws Exception {
+    private void newState(State state) {
+        Preconditions.checkState(Thread.holdsLock(this));
+        this.state = state;
+        this.notifyAll();
+    }
 
-        // Sanity check
-        Preconditions.checkState(this.initialized && !this.closed && this.executeThread != null, "internal error");
+    private void checkInvariants() {
+        this.state.checkInvariants(this);
+    }
+
+    private void checkAlive() {
+        switch (this.state) {
+        case INITIAL:
+            throw new IllegalStateException("instance is not initialized");
+        case CLOSED:
+            throw new IllegalStateException("instance is closed");
+        default:
+            break;
+        }
+    }
+
+    private void doExecute() throws Exception {
+
+        // Avoid SpotBugs warnings
+        final JShell jsh;
+        String remain;
+        synchronized (this) {
+            jsh = this.jshell;
+            remain = this.source;
+        }
 
         // Break source into individual source snippets
-        final SourceCodeAnalysis sourceCodeAnalysis = this.jshell.sourceCodeAnalysis();
-        final List<SnippetOutcome> snippetOutcomes = new ArrayList<>();
+        final SourceCodeAnalysis sourceCodeAnalysis = jsh.sourceCodeAnalysis();
         LineAndColumn offset = LineAndColumn.initial();
-        for (String remain = source; !remain.isEmpty(); ) {
-
-            // Check for interrupt of execute() thread
-            if (this.executionInterrupted)
-                return null;
+        while (!remain.trim().isEmpty()) {
 
             // Scrape off the next snippet and analzye
             final CompletionInfo info = sourceCodeAnalysis.analyzeCompletion(remain);
@@ -623,6 +1052,22 @@ public class JavaBox implements Closeable {
 //                this.log.debug("execute:\n  snippet=[{}]\n  completeness={}", display, info.completeness());
 //            }
 
+            // Check for interruption
+            synchronized (this) {
+                this.checkAlive();
+                this.checkInvariants();
+                switch (this.state) {
+                case EXECUTING:
+                    break;
+                default:
+                    throw new JavaBoxException("internal error: " + this.state);
+                }
+                if (this.interrupted) {
+                    snippetOutcomes.add(new SnippetOutcomes.Interrupted(this, offset, snippetSource));
+                    break;
+                }
+            }
+
             // Analyze and execute snippet
             final SnippetOutcome outcome;
             switch (info.completeness()) {
@@ -632,17 +1077,17 @@ public class JavaBox implements Closeable {
                   Collections.singletonList(new CompilerError(offset, "incomplete trailing statement")));
                 break;
             case UNKNOWN:
-                final List<SnippetEvent> eval = this.jshell.eval(snippetSource);
+                final List<SnippetEvent> eval = jsh.eval(snippetSource);
                 final SnippetEvent event;
                 if (eval.size() != 1 || !Snippet.Status.REJECTED.equals((event = eval.get(0)).status()))
                     throw new JavaBoxException("internal error: " + eval);
                 outcome = new SnippetOutcomes.CompilerSyntaxErrors(this, offset, snippetSource,
-                  this.toErrors(snippetSource, offset, this.jshell.diagnostics(event.snippet())));
+                  JavaBox.toErrors(snippetSource, offset, jsh.diagnostics(event.snippet())));
                 break;
             case COMPLETE_WITH_SEMI:
             case COMPLETE:
             case EMPTY:
-                outcome = this.executeSnippet(snippetSource, offset);
+                outcome = this.executeSnippet(jsh, offset, snippetSource);
                 break;
             default:
                 throw new JavaBoxException("internal error");
@@ -671,7 +1116,7 @@ public class JavaBox implements Closeable {
             offset = oldOutcome.offset();
             final Snippet snippet = hasSnippet.snippet();
             SnippetOutcome newOutcome = oldOutcome;
-            switch (this.jshell.status(snippet)) {
+            switch (jsh.status(snippet)) {
             case RECOVERABLE_DEFINED:
             case RECOVERABLE_NOT_DEFINED:
                 newOutcome = new SnippetOutcomes.UnresolvedReferences(this, offset, snippet);
@@ -698,22 +1143,48 @@ public class JavaBox implements Closeable {
             snippetOutcomes.set(i, newOutcome);
         }
 
-        // Done
-        return new ScriptResult(this, source, Collections.unmodifiableList(snippetOutcomes));
+        // Finish up
+        synchronized (this) {
+
+            // Update state
+            this.checkAlive();
+            this.checkInvariants();
+            switch (this.state) {
+            case EXECUTING:
+                this.newState(State.RETURNING);
+                break;
+            default:
+                throw new JavaBoxException("internal error: " + this.state);
+            }
+
+            // If we were interrupted and the snippet threw ThreadDeath, then change the outcome to Interrupted
+            if (this.interrupted) {
+                final int lastIndex = snippetOutcomes.size() - 1;
+                if (lastIndex >= 0
+                  && snippetOutcomes.get(lastIndex) instanceof SnippetOutcomes.ExceptionThrown exceptionThrown
+                  && exceptionThrown.exception() instanceof ThreadDeath) {
+                    snippetOutcomes.set(lastIndex,
+                      new SnippetOutcomes.Interrupted(this, exceptionThrown.offset(), exceptionThrown.snippet()));
+                }
+                this.interrupted = false;
+            }
+        }
     }
 
-    private SnippetOutcome executeSnippet(String source, LineAndColumn offset) {
+    private SnippetOutcome executeSnippet(JShell jsh, LineAndColumn offset, String snippetSource) {
 
         // Invoke JShell with the snippet
         final List<SnippetEvent> events;
-        final ExecResult execResult;
+        final SnippetResult snippetResult;
         try {
-            events = this.jshell.eval(source);
-            execResult = this.currentExecResult.get();
+            this.currentSnippet.set(new CurrentSnippet(offset, snippetSource));
+            events = jsh.eval(snippetSource);
+            snippetResult = this.snippetResult.get();
         } catch (ControlViolationException e) {
-            return new SnippetOutcomes.ControlViolation(this, offset, source, e);
+            return new SnippetOutcomes.ControlViolation(this, offset, snippetSource, e);
         } finally {
-            this.currentExecResult.set(null);
+            this.snippetResult.set(null);
+            this.currentSnippet.set(null);
         }
 
         // Find the snippet event that corresponds to the new snippet; there should be exactly one such event
@@ -727,7 +1198,7 @@ public class JavaBox implements Closeable {
 
         // Debug
 //        if (this.log.isDebugEnabled())
-//            this.log.debug("execute:\n  event={}\n  result={}", event, execResult);
+//            this.log.debug("execute:\n  event={}\n  result={}", event, snippetResult);
 
         // Check snippet status
         Object returnValue = null;
@@ -736,15 +1207,15 @@ public class JavaBox implements Closeable {
         case RECOVERABLE_NOT_DEFINED:
             return new SnippetOutcomes.UnresolvedReferences(this, offset, snippet);
         case VALID:
-            Optional<Throwable> error = Optional.ofNullable(execResult)
-              .map(ExecResult::error)
+            Optional<Throwable> error = Optional.ofNullable(snippetResult)
+              .map(SnippetResult::error)
               .or(() -> Optional.of(event).map(SnippetEvent::exception));
             if (error.isPresent())
                 return new SnippetOutcomes.ExceptionThrown(this, offset, snippet, error.get());
             switch (snippet.kind()) {
             case EXPRESSION:
             case VAR:
-                returnValue = execResult.result();
+                returnValue = snippetResult.result();
                 break;
             default:
                 break;
@@ -752,17 +1223,17 @@ public class JavaBox implements Closeable {
             return new SnippetOutcomes.SuccessfulWithValue(this, offset, snippet, returnValue);
         case REJECTED:
             return new SnippetOutcomes.CompilerSemanticErrors(this, offset, snippet,
-              this.toErrors(source, offset, this.jshell.diagnostics(snippet)));
+              JavaBox.toErrors(snippetSource, offset, jsh.diagnostics(snippet)));
         default:
             throw new JavaBoxException("internal error: " + event);
         }
     }
 
-    private List<CompilerError> toErrors(String source, LineAndColumn offset, Stream<Diag> diagnostics) {
+    private static List<CompilerError> toErrors(String snippetSource, LineAndColumn offset, Stream<Diag> diagnostics) {
         final CompilerError[] array = diagnostics
           .sorted(Comparator.comparingLong(Diag::getPosition))
           .map(diag -> {
-            final LineAndColumn diagOffset = offset.advance(source.substring(0, (int)diag.getPosition()));
+            final LineAndColumn diagOffset = offset.advance(snippetSource.substring(0, (int)diag.getPosition()));
             return new CompilerError(diagOffset, diag.getMessage(Locale.ROOT));
           })
           .toArray(CompilerError[]::new);
@@ -797,7 +1268,7 @@ public class JavaBox implements Closeable {
      * @throws IllegalStateException if the current thread is not a {@link JavaBox} script execution thread
      */
     public static ExecutionContext executionContextFor(Class<? extends Control> controlType) {
-        final ExecutionInfo info = EXECUTION_INFO.get();
+        final SnippetThreadInfo info = SNIPPET_THREAD_INFO.get();
         Preconditions.checkState(info != null, "no script is currently executing in this thread");
         return info.executionContexts().stream()
           .filter(context -> context.containerContext().control().getClass().equals(controlType))
@@ -834,26 +1305,25 @@ public class JavaBox implements Closeable {
     void startExecution() {
 
         // Sanity check
-        Preconditions.checkState(this.executeThread != null, "internal error");
-        Preconditions.checkState(EXECUTION_INFO.get() == null, "internal error");
-        Preconditions.checkState(CURRENT.get() == null, "internal error");
-        Preconditions.checkState(this.currentExecResult.get() == null, "internal error");
+        Preconditions.checkState(SNIPPET_THREAD_INFO.get() == null, "internal error");
+        Preconditions.checkState(CURRENT_JAVABOX.get() == null, "internal error");
+        Preconditions.checkState(this.snippetResult.get() == null, "internal error");
 
         // Set thread name (if not already set)
         final Thread thread = Thread.currentThread();
         if (!thread.getName().startsWith(THREAD_NAME_PREFIX))
-            thread.setName(String.format("%s-%d", THREAD_NAME_PREFIX, THREAD_NAME_INDEX.incrementAndGet()));
+            thread.setName(String.format("%s-Script-%d", THREAD_NAME_PREFIX, THREAD_NAME_INDEX.incrementAndGet()));
 
         // Debug
 //        if (this.log.isDebugEnabled())
-//            this.log.debug("startExecution(): result={}", this.currentExecResult.get(), new Throwable("HERE"));
+//            this.log.debug("startExecution(): result={}", this.snippetResult.get(), new Throwable("HERE"));
 
         // Set current instance
-        CURRENT.set(this);
+        CURRENT_JAVABOX.set(this);
 
         // Initialize execution contexts
-        final ExecutionInfo info = new ExecutionInfo(this);
-        EXECUTION_INFO.set(info);
+        final SnippetThreadInfo info = new SnippetThreadInfo(this);
+        SNIPPET_THREAD_INFO.set(info);
         boolean success = false;
         try {
 
@@ -871,8 +1341,8 @@ public class JavaBox implements Closeable {
 
             // Reset thread locals if exception thrown
             if (!success) {
-                CURRENT.set(null);
-                EXECUTION_INFO.set(null);
+                CURRENT_JAVABOX.set(null);
+                SNIPPET_THREAD_INFO.set(null);
 //                if (this.log.isDebugEnabled())
 //                    this.log.debug("startExecution(): canceled due to exception");
             }
@@ -883,15 +1353,14 @@ public class JavaBox implements Closeable {
     void finishExecution(Object result, Throwable error) {
 
         // Sanity check
-        final ExecutionInfo info = EXECUTION_INFO.get();
-        Preconditions.checkState(this.executeThread != null, "internal error");
-        Preconditions.checkState(EXECUTION_INFO.get() != null, "internal error");
+        final SnippetThreadInfo info = SNIPPET_THREAD_INFO.get();
+        Preconditions.checkState(SNIPPET_THREAD_INFO.get() != null, "internal error");
         Preconditions.checkState(info != null, "internal error");
-        Preconditions.checkState(this.currentExecResult.get() == null, "internal error");
+        Preconditions.checkState(this.snippetResult.get() == null, "internal error");
         try {
 
-            // Snapshot ExecResult
-            this.currentExecResult.set(new ExecResult(result, error));
+            // Snapshot SnippetResult
+            this.snippetResult.set(new SnippetResult(result, error));
 
             // Shutdown execution contexts
             info.executionContexts().forEach(executionContext -> {
@@ -905,15 +1374,15 @@ public class JavaBox implements Closeable {
 
             // Debug
 //            if (this.log.isDebugEnabled())
-//                this.log.debug("finishExecution(): result={}", this.currentExecResult.get());
+//                this.log.debug("finishExecution(): result={}", this.snippetResult.get());
 
             // Notify subclass
             this.finishingExecution(result, error);
         } finally {
 
             // Reset thread locals
-            CURRENT.set(null);
-            EXECUTION_INFO.remove();
+            CURRENT_JAVABOX.set(null);
+            SNIPPET_THREAD_INFO.remove();
         }
     }
 
@@ -941,21 +1410,25 @@ public class JavaBox implements Closeable {
     protected void finishingExecution(Object result, Throwable error) {
     }
 
-// ExecutionInfo
+// CurrentSnippet
 
-    private record ExecutionInfo(JavaBox box, List<ExecutionContext> executionContexts) {
+    private record CurrentSnippet(LineAndColumn offset, String snippetSource) { }
 
-        ExecutionInfo(JavaBox box) {
+// SnippetThreadInfo
+
+    private record SnippetThreadInfo(JavaBox box, List<ExecutionContext> executionContexts) {
+
+        SnippetThreadInfo(JavaBox box) {
             this(box, new ArrayList<>(box.containerContexts.size()));
         }
     }
 
-// ExecResult
+// SnippetResult
 
-    private record ExecResult(Object result, Throwable error) {
+    private record SnippetResult(Object result, Throwable error) {
 
-        static ExecResult empty() {
-            return new ExecResult(null, null);
+        static SnippetResult empty() {
+            return new SnippetResult(null, null);
         }
 
         @Override

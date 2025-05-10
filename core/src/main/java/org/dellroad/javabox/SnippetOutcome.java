@@ -22,7 +22,8 @@ import jdk.jshell.Snippet;
  */
 public sealed interface SnippetOutcome
   permits SnippetOutcomes.AbstractSnippetOutcome, SnippetOutcome.CompilerErrors, SnippetOutcome.ControlViolation,
-    SnippetOutcome.UnresolvedReferences, SnippetOutcome.Overwritten, SnippetOutcome.ExceptionThrown, SnippetOutcome.Successful {
+    SnippetOutcome.UnresolvedReferences, SnippetOutcome.Overwritten, SnippetOutcome.Suspended,
+    SnippetOutcome.Interrupted, SnippetOutcome.ExceptionThrown, SnippetOutcome.Successful {
 
     /**
      * Get the associated {@link JavaBox}.
@@ -121,7 +122,7 @@ public sealed interface SnippetOutcome
      *
      * <p>
      * If this error happens, the snippet was never executed. Controls can also trigger exceptions during
-     * snippet execution; this results in an {@link ExceptionThrown} instead.
+     * snippet execution; that results in an {@link ExceptionThrown} instead.
      */
     sealed interface ControlViolation extends SnippetOutcome, HaltsScript, HasException<ControlViolationException>
       permits SnippetOutcomes.ControlViolation {
@@ -135,16 +136,45 @@ public sealed interface SnippetOutcome
      * Note: When a declaration contains unresolved references that are all subsequently resolved
      * later in the same script, it returns {@link SuccessfulNoValue}.
      */
-    sealed interface UnresolvedReferences extends SnippetOutcome, HasSnippet
-      permits SnippetOutcomes.UnresolvedReferences {
+    sealed interface UnresolvedReferences extends SnippetOutcome, HasSnippet permits SnippetOutcomes.UnresolvedReferences {
     }
 
     /**
      * Indicates that a declaration was successfully compiled, but the declaration was overwritten by
      * a later snippet in the same source.
      **/
-    sealed interface Overwritten extends SnippetOutcome, HasSnippet
-      permits SnippetOutcomes.Overwritten {
+    sealed interface Overwritten extends SnippetOutcome, HasSnippet permits SnippetOutcomes.Overwritten {
+    }
+
+    /**
+     * Indicates that the snippet invoked {@link JavaBox#suspend JavaBox.suspend()}.
+     *
+     * <p>
+     * The script will be suspended mid-execution. To restart its execution, invoke {@link JavaBox#resume resume()}
+     * with the value you want to be returned to the script from {@link JavaBox#suspend suspend()}.
+     *
+     * <p>
+     * After a snippet is resumed, a new outcome will have replaced the {@link Suspended} outcome
+     * in the next {@link ScriptResult} returned by {@link JavaBox#resume resume()}.
+     */
+    sealed interface Suspended extends SnippetOutcome, HaltsScript permits SnippetOutcomes.Suspended {
+
+        /**
+         * Get the parameter that was passed to {@link JavaBox#suspend JavaBox.suspend()}.
+         *
+         * @return suspend parameter
+         */
+        Object parameter();
+    }
+
+    /**
+     * Indicates that the snippet's execution was interrupted.
+     *
+     * <p>
+     * A script can be interrupted by interrupting the thread that is executing it,
+     * or by invoking {@link JavaBox#interrupt interrupt()} from a different thread.
+     */
+    sealed interface Interrupted extends SnippetOutcome, HaltsScript permits SnippetOutcomes.Interrupted {
     }
 
     /**

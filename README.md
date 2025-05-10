@@ -13,6 +13,8 @@ Each JavaBox instance relies on an underlying [JShell](https://docs.oracle.com/e
 
 JavaBox supports imposing restrictions on scripts using [controls](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html). Controls are allowed to intercept a script's class loading step and each execution it performs.
 
+JavaBox supports interrupting scripts in the middle of execution. It also has a suspend/resume function, which allows an application thread to block script on certain operations and regain control.
+
 ### Examples
 
 Here's a simple "Hello, World" example:

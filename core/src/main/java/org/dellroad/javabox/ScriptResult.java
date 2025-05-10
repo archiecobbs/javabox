@@ -8,6 +8,7 @@ package org.dellroad.javabox;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
+import java.util.Optional;
 
 import jdk.jshell.Snippet;
 
@@ -70,16 +71,32 @@ public class ScriptResult {
     }
 
     /**
+     * Get the outcome of the last {@link Snippet} whose execution was attempted.
+     *
+     * @return last snippet outcome, or empty if there were zero snippets
+     */
+    public Optional<SnippetOutcome> lastOutcome() {
+        return Optional.of(this.snippetOutcomes)
+          .filter(list -> !list.isEmpty())
+          .map(list -> list.get(list.size() - 1));
+    }
+
+    /**
      * Convenience method to get the return value from a script's final snippet.
      *
      * <p>
-     * This is useful in scenarios where the purpose of the script is to produce some result.
+     * This is useful in scenarios where the purpose of the script is to produce some result
+     * and you want to verify that all snippets up to and including the final snippet were successful.
+     *
+     * <p>
      * This checks that:
      * <ul>
      *  <li>The script was not empty, i.e., it contained at least one snippet
      *  <li>The outcome of every snippet in the script was {@linkplain SnippetOutcome.Successful successful}
-     *  <li>The final snippet is an expression whose value is an instance of the given type
+     *  <li>The final snippet was an expression whose value is an instance of the given type
      * </ul>
+     *
+     * <p>
      * If the above criteria are not met, a {@link ResultCheckerException} is thrown.
      *
      * @param type required return type
