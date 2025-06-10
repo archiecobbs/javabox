@@ -11,7 +11,7 @@
         <version>3.2.11.0</version>
     </parent>
     <artifactId>javabox</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>pom</packaging>
 
     <name>JavaBox Java Scripting Container</name>
