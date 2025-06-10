@@ -8,22 +8,20 @@ package org.dellroad.javabox;
 import java.util.List;
 
 import jdk.jshell.Snippet;
+import jdk.jshell.SourceCodeAnalysis;
 
 /**
  * Captures the outcome from one of the {@link Snippet}s that constitute a {@link JavaBox} script.
  *
  * <p>
- * A snippet can fail by failing to compile, compiling into bytecode that violates a {@link Control},
- * throwing an exception during execution, etc.
- *
- * <p>
- * For some outcomes that implement {@link SnippetOutcome.HasSnippet}, additional information is available
- * via the {@linkplain SnippetOutcome.HasSnippet#snippet associated JShell snippet}.
+ * A snippet can fail by failing to compile, failing to {@linkplain SnippetValidator validate}, compiling into
+ * bytecode that violates a {@link Control}, throwing an exception during execution, etc.
  */
 public sealed interface SnippetOutcome
-  permits SnippetOutcomes.AbstractSnippetOutcome, SnippetOutcome.CompilerErrors, SnippetOutcome.ControlViolation,
-    SnippetOutcome.UnresolvedReferences, SnippetOutcome.Overwritten, SnippetOutcome.Suspended,
-    SnippetOutcome.Interrupted, SnippetOutcome.ExceptionThrown, SnippetOutcome.Successful {
+  permits SnippetOutcomes.AbstractSnippetOutcome, SnippetOutcome.Skipped, SnippetOutcome.CompilerErrors,
+    SnippetOutcome.ControlViolation, SnippetOutcome.ValidationFailure, SnippetOutcome.UnresolvedReferences,
+    SnippetOutcome.Overwritten, SnippetOutcome.Suspended, SnippetOutcome.Interrupted, SnippetOutcome.ExceptionThrown,
+    SnippetOutcome.Successful {
 
     /**
      * Get the associated {@link JavaBox}.
@@ -33,38 +31,33 @@ public sealed interface SnippetOutcome
     JavaBox box();
 
     /**
-     * Get the source code of the snippet whose outcome is represented by this instance.
+     * Get the associated snippet.
      *
      * <p>
-     * This will equal the substring of the original script source starting at {@link #offset}.
+     * Note: In some cases, the {@code snippet} may be <i>unassociated</i> (as described by
+     * {@link SourceCodeAnalysis#sourceToSnippets SourceCodeAnalysis.sourceToSnippets()}). This will be the
+     * case if the snippet source code was correct enough to be parsed, but the snippet didn't get far enough
+     * to actually be executed.
      *
-     * @return snippet source
-     * @see #offset
+     * <p>
+     * The source for the associated snippet can be obtained via {@link #snippet}{@code .source()}.
+     *
+     * @return JShell snippet
      */
-    String source();
+    Snippet snippet();
 
     /**
-     * Get the position within the original script source of the {@link #source} associated with this instance.
+     * Get the position within the original script source of the source associated with this instance.
+     *
+     * <p>
+     * The source for the associated snippet can be obtained via {@link #snippet}{@code .source()}.
      *
      * @return snippet source offset in original script
-     * @see #source
+     * @see ScriptResult#source
      */
     LineAndColumn offset();
 
 // Ordinary interfaces
-
-    /**
-     * Implemented by {@link SnippetOutcome}s for which enough progress was made to define a JShell {@link Snippet}.
-     */
-    interface HasSnippet {
-
-        /**
-         * Get the associated snippet.
-         *
-         * @return JShell snippet
-         */
-        Snippet snippet();
-    }
 
     /**
      * Implemented by {@link SnippetOutcome}s for which there is an associated exception.
@@ -90,6 +83,14 @@ public sealed interface SnippetOutcome
 // SnippetOutcome permitted interfaces
 
     /**
+     * Indicates that a snippet passed initial validation (i.e., was successfully parsed and passed
+     * {@linkplain SnippetValidator validation}), but it never was executed either because a subsequent
+     * snippet in the script did not pass initial validation, or execution was disabled.
+     */
+    sealed interface Skipped extends SnippetOutcome permits SnippetOutcomes.Skipped {
+    }
+
+    /**
      * Indicates failure due to one or more compiler errors.
      */
     sealed interface CompilerErrors extends SnippetOutcome, HaltsScript
@@ -106,15 +107,13 @@ public sealed interface SnippetOutcome
     /**
      * Indicates failure due to one or more compiler parsing/syntax errors.
      */
-    sealed interface CompilerSyntaxErrors extends CompilerErrors
-      permits SnippetOutcomes.CompilerSyntaxErrors {
+    sealed interface CompilerSyntaxErrors extends CompilerErrors permits SnippetOutcomes.CompilerSyntaxErrors {
     }
 
     /**
      * Indicates failure due to one or more compiler semantic errors.
      */
-    sealed interface CompilerSemanticErrors extends CompilerErrors, HasSnippet
-      permits SnippetOutcomes.CompilerSemanticErrors {
+    sealed interface CompilerSemanticErrors extends CompilerErrors permits SnippetOutcomes.CompilerSemanticErrors {
     }
 
     /**
@@ -129,6 +128,18 @@ public sealed interface SnippetOutcome
     }
 
     /**
+     * Indicates that the {@link SnippetValidator} threw an exception when validating the snippet.
+     *
+     * <p>
+     * If this error happens, the snippet was never executed.
+     *
+     * @see JavaBox#process JavaBox.process()
+     */
+    sealed interface ValidationFailure extends SnippetOutcome, HaltsScript, HasException<SnippetValidationException>
+      permits SnippetOutcomes.ValidationFailure {
+    }
+
+    /**
      * Indicates that a declaration was successful but it contained unresolved references and those
      * references were not resolved by any subsequent snippets in the same source.
      *
@@ -136,14 +147,14 @@ public sealed interface SnippetOutcome
      * Note: When a declaration contains unresolved references that are all subsequently resolved
      * later in the same script, it returns {@link SuccessfulNoValue}.
      */
-    sealed interface UnresolvedReferences extends SnippetOutcome, HasSnippet permits SnippetOutcomes.UnresolvedReferences {
+    sealed interface UnresolvedReferences extends SnippetOutcome permits SnippetOutcomes.UnresolvedReferences {
     }
 
     /**
      * Indicates that a declaration was successfully compiled, but the declaration was overwritten by
      * a later snippet in the same source.
      **/
-    sealed interface Overwritten extends SnippetOutcome, HasSnippet permits SnippetOutcomes.Overwritten {
+    sealed interface Overwritten extends SnippetOutcome permits SnippetOutcomes.Overwritten {
     }
 
     /**
@@ -152,6 +163,10 @@ public sealed interface SnippetOutcome
      * <p>
      * The script will be suspended mid-execution. To restart its execution, invoke {@link JavaBox#resume resume()}
      * with the value you want to be returned to the script from {@link JavaBox#suspend suspend()}.
+     *
+     * <p>
+     * Because the snippet execution has not yet completed, the associated {@link #snippet} will be <i>unassociated</i>
+     * (as described by {@link SourceCodeAnalysis#sourceToSnippets SourceCodeAnalysis.sourceToSnippets()}).
      *
      * <p>
      * After a snippet is resumed, a new outcome will have replaced the {@link Suspended} outcome
@@ -180,14 +195,14 @@ public sealed interface SnippetOutcome
     /**
      * Indicates an exception was thrown during the execution of the snippet.
      */
-    sealed interface ExceptionThrown extends SnippetOutcome, HasSnippet, HaltsScript, HasException<Throwable>
+    sealed interface ExceptionThrown extends SnippetOutcome, HaltsScript, HasException<Throwable>
       permits SnippetOutcomes.ExceptionThrown {
     }
 
     /**
      * Indicates a successful outcome.
      */
-    sealed interface Successful extends SnippetOutcome, HasSnippet
+    sealed interface Successful extends SnippetOutcome
       permits SnippetOutcomes.AbstractSuccessful, SnippetOutcome.SuccessfulNoValue, SnippetOutcome.SuccessfulWithValue {
     }
 

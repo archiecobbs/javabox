@@ -64,7 +64,7 @@ public class JavaBoxTest extends TestSupport {
         Assert.assertEquals(snippetOutcomes.size(), 1);
         final SnippetOutcome snippetOutcome = snippetOutcomes.get(0);
         Assert.assertEquals(snippetOutcome.box(), theBox);
-        Assert.assertEquals(snippetOutcome.source(), source);
+        Assert.assertEquals(snippetOutcome.snippet().source(), source);
         Assert.assertTrue(snippetOutcome instanceof SuccessfulWithValue);
         final SuccessfulWithValue s = (SuccessfulWithValue)snippetOutcome;
         Assert.assertEquals(s.snippet().kind(), Snippet.Kind.VAR);

@@ -8,4 +8,8 @@
         <Method name="doExecute"/>
         <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
     </Match>
+    <Match>
+        <Class name="org.dellroad.javabox.SnippetOutcomes$AbstractHasException"/>
+        <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
+    </Match>
 </FindBugsFilter>
