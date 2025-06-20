@@ -124,19 +124,22 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  <p><b>Overview</b>
 
  <p>
- Each <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance relies on an underlying <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance configured for to parse and execute
- scripts, and to hold its state, i.e., the variables, methods, and classes declared by those scripts.
+ Each <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance relies on an underlying <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> instance to parse and execute
+ scripts and to hold its state, i.e., the variables, methods, and classes declared by those scripts.
  The <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance is configured for <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html" title="class or interface in jdk.jshell.execution" class="external-link">local execution</a>, so scripts
  run within the same virtual machine.
 
  <p>
- Bevcause <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instances always run in local execution mode, they support the direct transfer of Java objects
+ Because <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instances always run in local execution mode, they support the direct transfer of Java objects
  between the container and the outside world:
  <ul>
   <li>Return values from script execution are returned to the caller
-  <li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> variables can be read and written directly (via <a href="#getVariable(java.lang.String)"><code>getVariable()</code></a>
+  <li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> variables can be read and written directly (see <a href="#getVariable(java.lang.String)"><code>getVariable()</code></a>
       and <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>).
  </ul>
+
+ Each <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance uses a separate <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link"><code>ClassLoader</code></a>, so generated classes can be garbage
+ collected when the container is closed.
 
  <p><b>Lifecycle</b>
 
@@ -162,7 +165,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 
  <p>
  It is also possible to validate and compile a script without executing it. This allows the caller to gather some basic
- information about the script and control which types of snippets are allowed.
+ information about the script and control which types of snippets are allowed. See <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process</code></a> for details.
 
  <p><b>Suspend and Resume</b>
 
@@ -174,20 +177,22 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  outcome will be overwritten with its new, updated outcome.
 
  <p>
- If there is a suspended script associated with an instance, any new invocation of <a href="#execute(java.lang.String)"><code>execute()</code></a> will fail.
+ As long as there is a suspended script associated with an instance, new invocations of <a href="#execute(java.lang.String)"><code>execute()</code></a> will fail.
  Instead, suspeneded scripts must be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate (even if interrupted;
  see below).
 
  <p><b>Interruption</b>
 
  <p>
- Both <a href="#execute(java.lang.String)"><code>execute()</code></a> and <a href="#resume(java.lang.Object)"><code>resume()</code></a> block the calling thread until the script terminates
+ Both methods <a href="#execute(java.lang.String)"><code>execute()</code></a> and <a href="#resume(java.lang.Object)"><code>resume()</code></a> block the calling thread until the script terminates
  or suspends itself. Another thread can interrupt that execution by interrupting the calling thread, or equivalently
- by invoking <a href="#interrupt()"><code>interrupt()</code></a>. If a snippet's execution is interrrupted, its outcome is <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
+ by invoking <a href="#interrupt()"><code>interrupt()</code></a>. If a snippet's execution is interrrupted, its outcome will be
+ <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
  <p>
- A suspended script can also be interrupted, but the script does not awaken immediately. Instead, upon the next call to
- <a href="#resume(java.lang.Object)"><code>resume()</code></a>, it will terminate immediately with outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
+ A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed first
+ before the interrupt can take effect. Upon the next call to <a href="#resume(java.lang.Object)"><code>resume()</code></a>, it will terminate immediately with
+ outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
  <p><b>Controls</b>
 
@@ -269,7 +274,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="JavaBox.ProcessMode.html" class="type-name-link" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Specifies the snippet processing mode to <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process(java.lang.String, org.dellroad.javabox.JavaBox.ProcessMode, org.dellroad.javabox.SnippetValidator)</code></a>.</div>
+<div class="block">Specifies the snippet processing mode to use when invoking <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process()</code></a>.</div>
 </div>
 </div>
 </section>
