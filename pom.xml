@@ -358,12 +358,6 @@
                         <link>https://guava.dev/releases/${guava.version}/api/docs/</link>
                         <link>https://www.slf4j.org/apidocs/</link>
                     </links>
-                    <offlineLinks>
-                        <offlineLink>
-                            <url>https://vaadin.com/api/platform/${vaadin.version}</url>
-                            <location>${project.basedir}/src/javadoc/vaadin</location>
-                        </offlineLink>
-                    </offlineLinks>
                 </configuration>
                 <reportSets>
                     <reportSet>
