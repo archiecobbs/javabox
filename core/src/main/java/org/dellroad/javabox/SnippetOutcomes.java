@@ -6,7 +6,9 @@
 package org.dellroad.javabox;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import jdk.jshell.Diag;
 import jdk.jshell.Snippet;
 
 final class SnippetOutcomes {
@@ -19,13 +21,15 @@ final class SnippetOutcomes {
     abstract static sealed class AbstractSnippetOutcome implements SnippetOutcome {
 
         private final JavaBox box;
-        private final LineAndColumn offset;
+        private final int offset;
         private final Snippet snippet;
+        private final List<Diag> diagnostics;
 
-        AbstractSnippetOutcome(JavaBox box, LineAndColumn offset, Snippet snippet) {
+        AbstractSnippetOutcome(JavaBox box, JavaBox.SnippetInfo info) {
             this.box = box;
-            this.offset = offset;
-            this.snippet = snippet;
+            this.offset = info.offset();
+            this.snippet = info.snippet().get();
+            this.diagnostics = info.diagnostics();
         }
 
         @Override
@@ -34,7 +38,7 @@ final class SnippetOutcomes {
         }
 
         @Override
-        public LineAndColumn offset() {
+        public int offset() {
             return this.offset;
         }
 
@@ -44,33 +48,13 @@ final class SnippetOutcomes {
         }
 
         @Override
+        public List<Diag> diagnostics() {
+            return this.diagnostics;
+        }
+
+        @Override
         public String toString() {
             return this.getClass().getSimpleName();
-        }
-    }
-
-    abstract static sealed class AbstractCompilerErrors extends AbstractSnippetOutcome implements SnippetOutcome.CompilerErrors {
-
-        private final List<CompilerError> compilerErrors;
-
-        AbstractCompilerErrors(JavaBox box, LineAndColumn offset, Snippet snippet, List<CompilerError> compilerErrors) {
-            super(box, offset, snippet);
-            this.compilerErrors = compilerErrors;
-        }
-
-        @Override
-        public List<CompilerError> compilerErrors() {
-            return this.compilerErrors;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder buf = new StringBuilder();
-            buf.append(super.toString()).append(':');
-            this.compilerErrors.stream()
-              .map(e -> "\n  " + e)
-              .forEach(buf::append);
-            return buf.toString();
         }
     }
 
@@ -79,8 +63,8 @@ final class SnippetOutcomes {
 
         private final T exception;
 
-        AbstractHasException(JavaBox box, LineAndColumn offset, Snippet snippet, T exception) {
-            super(box, offset, snippet);
+        AbstractHasException(JavaBox box, JavaBox.SnippetInfo info, T exception) {
+            super(box, info);
             this.exception = exception;
         }
 
@@ -97,62 +81,51 @@ final class SnippetOutcomes {
 
 // Concrete classes
 
-    static final class Skipped extends AbstractSnippetOutcome implements SnippetOutcome.Skipped {
+    static final class CompilerError extends AbstractSnippetOutcome implements SnippetOutcome.CompilerError {
 
-        Skipped(JavaBox box, LineAndColumn offset, Snippet snippet) {
-            super(box, offset, snippet);
-        }
-    }
-
-    static final class CompilerSyntaxErrors extends AbstractCompilerErrors implements SnippetOutcome.CompilerSyntaxErrors {
-
-        CompilerSyntaxErrors(JavaBox box, LineAndColumn offset, Snippet snippet, List<CompilerError> compilerErrors) {
-            super(box, offset, snippet, compilerErrors);
-        }
-    }
-
-    static final class CompilerSemanticErrors extends AbstractCompilerErrors implements SnippetOutcome.CompilerSemanticErrors {
-
-        private final Snippet snippet;
-
-        CompilerSemanticErrors(JavaBox box, LineAndColumn offset, Snippet snippet, List<CompilerError> compilerErrors) {
-            super(box, offset, snippet, compilerErrors);
-            this.snippet = snippet;
+        CompilerError(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
         }
 
         @Override
-        public Snippet snippet() {
-            return this.snippet;
+        public String toString() {
+            StringBuilder buf = new StringBuilder();
+            buf.append(super.toString())
+              .append(':')
+              .append(this.diagnostics().stream()
+                .map(d -> d.getMessage(null))
+                .collect(Collectors.joining("\n")));
+            return buf.toString();
         }
     }
 
     static final class ControlViolation extends AbstractHasException<ControlViolationException>
       implements SnippetOutcome.ControlViolation {
 
-        ControlViolation(JavaBox box, LineAndColumn offset, Snippet snippet, ControlViolationException exception) {
-            super(box, offset, snippet, exception);
+        ControlViolation(JavaBox box, JavaBox.SnippetInfo info, ControlViolationException exception) {
+            super(box, info, exception);
         }
     }
 
     static final class ValidationFailure extends AbstractHasException<SnippetValidationException>
       implements SnippetOutcome.ValidationFailure {
 
-        ValidationFailure(JavaBox box, LineAndColumn offset, Snippet snippet, SnippetValidationException exception) {
-            super(box, offset, snippet, exception);
+        ValidationFailure(JavaBox box, JavaBox.SnippetInfo info, SnippetValidationException exception) {
+            super(box, info, exception);
         }
     }
 
     static final class UnresolvedReferences extends AbstractSnippetOutcome implements SnippetOutcome.UnresolvedReferences {
 
-        UnresolvedReferences(JavaBox box, LineAndColumn offset, Snippet snippet) {
-            super(box, offset, snippet);
+        UnresolvedReferences(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
         }
     }
 
     static final class Overwritten extends AbstractSnippetOutcome implements SnippetOutcome.Overwritten {
 
-        Overwritten(JavaBox box, LineAndColumn offset, Snippet snippet) {
-            super(box, offset, snippet);
+        Overwritten(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
         }
     }
 
@@ -160,8 +133,8 @@ final class SnippetOutcomes {
 
         private final Object parameter;
 
-        Suspended(JavaBox box, LineAndColumn offset, Snippet snippet, Object parameter) {
-            super(box, offset, snippet);
+        Suspended(JavaBox box, JavaBox.SnippetInfo info, Object parameter) {
+            super(box, info);
             this.parameter = parameter;
         }
 
@@ -178,8 +151,15 @@ final class SnippetOutcomes {
 
     static final class Interrupted extends AbstractSnippetOutcome implements SnippetOutcome.Interrupted {
 
-        Interrupted(JavaBox box, LineAndColumn offset, Snippet snippet) {
-            super(box, offset, snippet);
+        Interrupted(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
+        }
+    }
+
+    static final class Skipped extends AbstractSnippetOutcome implements SnippetOutcome.Skipped {
+
+        Skipped(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
         }
     }
 
@@ -187,8 +167,8 @@ final class SnippetOutcomes {
 
         private final Throwable exception;
 
-        ExceptionThrown(JavaBox box, LineAndColumn offset, Snippet snippet, Throwable exception) {
-            super(box, offset, snippet);
+        ExceptionThrown(JavaBox box, JavaBox.SnippetInfo info, Throwable exception) {
+            super(box, info);
             this.exception = exception;
         }
 
@@ -205,15 +185,15 @@ final class SnippetOutcomes {
 
     abstract static sealed class AbstractSuccessful extends AbstractSnippetOutcome implements SnippetOutcome.Successful {
 
-        AbstractSuccessful(JavaBox box, LineAndColumn offset, Snippet snippet) {
-            super(box, offset, snippet);
+        AbstractSuccessful(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
         }
     }
 
     static final class SuccessfulNoValue extends AbstractSuccessful implements SnippetOutcome.SuccessfulNoValue {
 
-        SuccessfulNoValue(JavaBox box, LineAndColumn offset, Snippet snippet) {
-            super(box, offset, snippet);
+        SuccessfulNoValue(JavaBox box, JavaBox.SnippetInfo info) {
+            super(box, info);
         }
     }
 
@@ -221,8 +201,8 @@ final class SnippetOutcomes {
 
         private final Object returnValue;
 
-        SuccessfulWithValue(JavaBox box, LineAndColumn offset, Snippet snippet, Object returnValue) {
-            super(box, offset, snippet);
+        SuccessfulWithValue(JavaBox box, JavaBox.SnippetInfo info, Object returnValue) {
+            super(box, info);
             this.returnValue = returnValue;
         }
 

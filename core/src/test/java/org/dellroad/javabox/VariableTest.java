@@ -44,4 +44,19 @@ public class VariableTest extends TestSupport {
             Assert.assertTrue(result.snippetOutcomes().get(0) instanceof SuccessfulWithValue s && s.returnValue().equals(38));
         }
     }
+
+    @Test
+    public void testUnknown() throws Exception {
+        Config config = Config.builder().build();
+        try (JavaBox box = new JavaBox(config)) {
+            box.initialize();
+
+            try {
+                box.getVariable("foo");
+                throw new AssertionError();
+            } catch (IllegalArgumentException e) {
+                // expected
+            }
+        }
+    }
 }

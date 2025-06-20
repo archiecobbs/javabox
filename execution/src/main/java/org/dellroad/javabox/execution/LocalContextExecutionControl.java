@@ -117,8 +117,13 @@ public class LocalContextExecutionControl extends LocalExecutionControl {
      * the decoding of its result (via {@link #valueStringWithContext valueStringWithContext()}).
      * The decoded result is wrapped in a {@link StringWrapper} to prevent duplicate decoding by JShell.
      *
+     * <p>
+     * If {@link #enterContext} itself throws an exception, {@link #leaveContext leaveContext()} is not invoked.
+     *
      * @param method static snippet method
-     * @return result from snippet execution
+     * @return non-null result from snippet execution stringified by {@link #valueStringWithContext valueStringWithContext()}
+     *  and wrapped in a {@link StringWrapper}, or null if result is null
+     * @throws Throwable if an exception occurs
      */
     protected Object invokeWithContext(Method method) throws Throwable {
         if (!this.executing.compareAndSet(false, true))

@@ -29,7 +29,7 @@ public class SuspendResumeTest extends TestSupport {
             // Check result - suspend parameter should be "abc"
             Assert.assertEquals(result.snippetOutcomes().size(), 2);
             SnippetOutcome outcome = result.lastOutcome().get();
-            Assert.assertTrue(outcome instanceof Suspended);
+            Assert.assertTrue(outcome instanceof Suspended, "outcome = " + outcome);
             final Suspended suspended = (Suspended)outcome;
             Assert.assertEquals(suspended.parameter(), "abc");
 

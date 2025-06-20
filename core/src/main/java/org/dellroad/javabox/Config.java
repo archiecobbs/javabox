@@ -20,6 +20,10 @@ import jdk.jshell.JShell;
 /**
  * Configuration object for {@link JavaBox} instances.
  *
+ * <p>
+ * New instances are created via {@link Config.Builder#build}; new {@link Config.Builder} instances are created
+ * via {@link #builder()}.
+ *
  * @param jshellBuilder The {@link JShell.Builder} associated with this instance
  * @param delegateLoader The delegate {@link ClassLoader} associated with this instance
  * @param controls The list of {@link Control}s associated with this instance

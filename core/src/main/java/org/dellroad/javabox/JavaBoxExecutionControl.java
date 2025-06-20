@@ -5,6 +5,8 @@
 
 package org.dellroad.javabox;
 
+import java.lang.reflect.Method;
+
 import jdk.jshell.execution.LoaderDelegate;
 import jdk.jshell.execution.LocalExecutionControl;
 
@@ -30,6 +32,13 @@ public class JavaBoxExecutionControl extends LocalContextExecutionControl {
     }
 
 // LocalContextExecutionControl
+
+    @Override
+    protected Object invokeWithContext(Method method) throws Throwable {
+        if (this.box.isCompileOnly())
+            throw new Throwable("compile only");
+        return super.invokeWithContext(method);
+    }
 
     @Override
     public void load(ClassBytecodes[] cbcs) throws ClassInstallException, NotImplementedException, EngineTerminationException {
