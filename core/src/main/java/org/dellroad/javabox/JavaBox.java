@@ -65,7 +65,7 @@ import static org.dellroad.javabox.SnippetOutcome.ValidationFailure;
  * Because {@link JavaBox} instances always run in local execution mode, they support the direct transfer of Java objects
  * between the container and the outside world:
  * <ul>
- *  <li>Return values from script execution are returned to the caller
+ *  <li>Return values from script execution are returned to the caller.
  *  <li>{@link JShell} variables can be read and written directly (see {@link #getVariable getVariable()}
  *      and {@link #setVariable setVariable()}).
  * </ul>
@@ -110,7 +110,7 @@ import static org.dellroad.javabox.SnippetOutcome.ValidationFailure;
  *
  * <p>
  * As long as there is a suspended script associated with an instance, new invocations of {@link #execute execute()} will fail.
- * Instead, suspeneded scripts must be resumed via {@link #resume resume()} and allowed to terminate (even if interrupted;
+ * Instead, suspended scripts must be resumed via {@link #resume resume()} and allowed to terminate (even if interrupted;
  * see below).
  *
  * <p><b>Interruption</b>
@@ -1106,9 +1106,8 @@ public class JavaBox implements Closeable {
      * partially completed, or it may have fully completed.
      *
      * <p>
-     * If this instance has a currently suspeneded script, that script will awaken and throw an immediate {@link ThreadDeath}
-     * exception. Note that {@link Interrupted} is the outcome assigned to any snippet that terminates by
-     * throwing {@link ThreadDeath}.
+     * If this instance has a currently suspended script, that script will awaken, throw an immediate {@link ThreadDeath}
+     * exception, and return an {@link Interrupted} outcome.
      *
      * <p>
      * If this instance is closed or not initialized, false is returned.
