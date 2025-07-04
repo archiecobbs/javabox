@@ -84,9 +84,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#setVariable(java.lang.String,java.lang.Object)" tabindex="0">setVariable(String, Object)</a></li>
 <li><a href="#setVariable(java.lang.String,java.lang.String,java.lang.Object)" tabindex="0">setVariable(String, String, Object)</a></li>
 <li><a href="#variableValue()" tabindex="0">variableValue()</a></li>
+<li><a href="#validate(java.lang.String)" tabindex="0">validate(String)</a></li>
 <li><a href="#compile(java.lang.String)" tabindex="0">compile(String)</a></li>
 <li><a href="#execute(java.lang.String)" tabindex="0">execute(String)</a></li>
-<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)" tabindex="0">process(String, JavaBox.ProcessMode, SnippetValidator)</a></li>
+<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)" tabindex="0">process(String, JavaBox.ProcessMode)</a></li>
 <li><a href="#suspend(java.lang.Object)" tabindex="0">suspend(Object)</a></li>
 <li><a href="#resume(java.lang.Object)" tabindex="0">resume(Object)</a></li>
 <li><a href="#interrupt()" tabindex="0">interrupt()</a></li>
@@ -133,7 +134,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  Because <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instances always run in local execution mode, they support the direct transfer of Java objects
  between the container and the outside world:
  <ul>
-  <li>Return values from script execution are returned to the caller
+  <li>Return values from script execution are returned to the caller.
   <li><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/JShell.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell</code></a> variables can be read and written directly (see <a href="#getVariable(java.lang.String)"><code>getVariable()</code></a>
       and <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>).
  </ul>
@@ -165,7 +166,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 
  <p>
  It is also possible to validate and compile a script without executing it. This allows the caller to gather some basic
- information about the script and control which types of snippets are allowed. See <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process</code></a> for details.
+ information about the script and control which types of snippets are allowed. See <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process</code></a> for details.
 
  <p><b>Suspend and Resume</b>
 
@@ -178,7 +179,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 
  <p>
  As long as there is a suspended script associated with an instance, new invocations of <a href="#execute(java.lang.String)"><code>execute()</code></a> will fail.
- Instead, suspeneded scripts must be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate (even if interrupted;
+ Instead, suspended scripts must be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate (even if interrupted;
  see below).
 
  <p><b>Interruption</b>
@@ -274,7 +275,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="JavaBox.ProcessMode.html" class="type-name-link" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Specifies the snippet processing mode to use when invoking <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process()</code></a>.</div>
+<div class="block">Specifies the snippet processing mode to use when invoking <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a>.</div>
 </div>
 </div>
 </section>
@@ -383,9 +384,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="block">Determine if this instance has a suspended script.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)" class="member-name-link">process</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source,
- <a href="JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a>&nbsp;mode,
- <a href="SnippetValidator.html" title="interface in org.dellroad.javabox">SnippetValidator</a>&nbsp;validator)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)" class="member-name-link">process</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source,
+ <a href="JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a>&nbsp;mode)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Process the given script in this container.</div>
 </div>
@@ -417,9 +417,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Suspend the script that is currently executing in the current thread.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#variableValue()" class="member-name-link">variableValue</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validate(java.lang.String)" class="member-name-link">validate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Validate the given script is parseable.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#variableValue()" class="member-name-link">variableValue</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Obtain the value of a variable being set by <a href="#setVariable(java.lang.String,java.lang.Object)"><code>setVariable()</code></a>.</div>
 </div>
 </div>
@@ -725,15 +730,15 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="compile(java.lang.String)">
-<h3>compile</h3>
+<section class="detail" id="validate(java.lang.String)">
+<h3>validate</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span>&nbsp;<span class="element-name">compile</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</span></div>
-<div class="block">Compile the given script but do not execute it.
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span>&nbsp;<span class="element-name">validate</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</span></div>
+<div class="block">Validate the given script is parseable.
 
  <p>
  This is a convenience method, equivalent to:
-  <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process</code></a><code>(source, </code><a href="JavaBox.ProcessMode.html#COMPILE"><code>JavaBox.ProcessMode.COMPILE</code></a><code>, null)</code>.
+  <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process</code></a><code>(source, </code><a href="JavaBox.ProcessMode.html#COMPILE"><code>JavaBox.ProcessMode.COMPILE</code></a><code>)</code>.
  If compilation is successful, all outcomes will be <a href="SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.SuccessfulNoValue</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -743,7 +748,33 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process()</code></a></li>
+<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="compile(java.lang.String)">
+<h3>compile</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span>&nbsp;<span class="element-name">compile</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</span></div>
+<div class="block">Compile the given script but do not execute it.
+
+ <p>
+ This is a convenience method, equivalent to:
+  <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process</code></a><code>(source, </code><a href="JavaBox.ProcessMode.html#COMPILE"><code>JavaBox.ProcessMode.COMPILE</code></a><code>)</code>.
+ If compilation is successful, all outcomes will be <a href="SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.SuccessfulNoValue</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>source</code> - the script to execute</dd>
+<dt>Returns:</dt>
+<dd>result from script compilation</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -759,7 +790,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 
  <p>
  This is a convenience method, equivalent to:
-  <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process</code></a><code>(source, </code><a href="JavaBox.ProcessMode.html#EXECUTE"><code>JavaBox.ProcessMode.EXECUTE</code></a><code>, null)</code>.</div>
+  <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process</code></a><code>(source, </code><a href="JavaBox.ProcessMode.html#EXECUTE"><code>JavaBox.ProcessMode.EXECUTE</code></a><code>)</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>source</code> - the script to execute</dd>
@@ -768,7 +799,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process()</code></a></li>
+<li><a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -776,12 +807,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)">
+<section class="detail" id="process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)">
 <h3>process</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></span>&nbsp;<span class="element-name">process</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source,
- <a href="JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a>&nbsp;mode,
- <a href="SnippetValidator.html" title="interface in org.dellroad.javabox">SnippetValidator</a>&nbsp;validator)</span></div>
+ <a href="JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a>&nbsp;mode)</span></div>
 <div class="block">Process the given script in this container.
 
  <p>
@@ -791,37 +821,34 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  <p><b>Initial Validation</b>
 
  <p>
- In all <a href="JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox"><code>JavaBox.ProcessMode</code></a>s, an initial basic structural validation of all snippets is first performed: each
- snippet must be parseable. In addition, if <code>validator</code> is non-null, then it is included in this basic validation
- step for each snpipet. This validation step does not require loading any generated classes or executing any code.
- It is useful, for example, if you want to filter snippets by <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind</code></a> or otherwise inspect individual snippets.
+ In all <a href="JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox"><code>JavaBox.ProcessMode</code></a>s, an initial basic structural validation of all snippets is first performed, i.e., each
+ snippet is parsed.
 
  <p>
- Snippets that fail to parse will have a <a href="SnippetOutcome.CompilerError.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.CompilerError</code></a> outcome. Otherwise, if <code>validator</code> is non-null,
- each snippet is supplied to it; if it throws a <a href="SnippetValidationException.html" title="class in org.dellroad.javabox"><code>SnippetValidationException</code></a>, that snippet's outcome is set to
- <a href="SnippetOutcome.ValidationFailure.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.ValidationFailure</code></a>. The snippets that <code>validator</code> sees will be <i>unassociated</i> (as described by
- <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/SourceCodeAnalysis.html#sourceToSnippets(java.lang.String)" title="class or interface in jdk.jshell" class="external-link"><code>SourceCodeAnalysis.sourceToSnippets()</code></a>). Snippets that successfully parse
- and validate will have a <a href="SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.SuccessfulNoValue</code></a> outcome.
+ If <code>mode</code> is <a href="JavaBox.ProcessMode.html#VALIDATE"><code>JavaBox.ProcessMode.VALIDATE</code></a>, or any snippet fails to parse, then processing stops after this step
+ and all snippet outcomes are returned. Snippets that fail to parse will have a <a href="SnippetOutcome.CompilerError.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.CompilerError</code></a> outcome; snippets
+ that successfully parse will have a <a href="SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.SuccessfulNoValue</code></a> outcome.
 
  <p>
- If <code>mode</code> is <a href="JavaBox.ProcessMode.html#VALIDATE"><code>JavaBox.ProcessMode.VALIDATE</code></a> then processing stops after all snippets are validated and their
- outcomes are returned. This mode can be used to gather basic information about a script, including how many snippets
- it contains, their source code offsets, their <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind</code></a>, etc.
+ <a href="JavaBox.ProcessMode.html#VALIDATE"><code>JavaBox.ProcessMode.VALIDATE</code></a> can be used to quickly gather basic information about a script, including how many snippets
+ it contains, their source code offsets, their <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.Kind.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet.Kind</code></a>, etc. Note however that in this mode <a href="SnippetOutcome.html#snippet()">the returned snippets</a> contain only limited information; in particular, they will be
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/SourceCodeAnalysis.html#sourceToSnippets(java.lang.String)" title="class or interface in jdk.jshell" class="external-link">unassociated</a>.
 
  <p><b>Compilation</b>
 
  <p>
- If <code>mode</code> is <a href="JavaBox.ProcessMode.html#COMPILE"><code>JavaBox.ProcessMode.COMPILE</code></a>, then after initial validation each snippet is fully compiled into
- bytecode and loaded (so that any configured <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s are given a chance to veto it), but no execution of
- any snippet's generated bytecode occurs.
+ If <code>mode</code> is <a href="JavaBox.ProcessMode.html#COMPILE"><code>JavaBox.ProcessMode.COMPILE</code></a>, then after a successful initial validation each snippet is compiled
+ into bytecode and loaded, which gives any configured <a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s a chance to veto it, but no execution of any
+ snippet's generated bytecode occurs. All snippet outcomes are then returned; snippets that compile successfully
+ will have a <a href="SnippetOutcome.SuccessfulNoValue.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.SuccessfulNoValue</code></a> outcome.
 
  <p><b>Execution</b>
 
  <p>
- If <code>mode</code> is <a href="JavaBox.ProcessMode.html#EXECUTE"><code>JavaBox.ProcessMode.EXECUTE</code></a>, then after initial validation each snippet is compiled, loaded,
- and executed, one at a time. Processing stops if compilation or execution of any snippet results in an error,
- i.e., it has an outcome implementing <a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.HaltsScript</code></a>. If this happens, subsequent snippets will have outcome
- <a href="SnippetOutcome.Skipped.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Skipped</code></a>.
+ If <code>mode</code> is <a href="JavaBox.ProcessMode.html#EXECUTE"><code>JavaBox.ProcessMode.EXECUTE</code></a>, then after a successful initial validation each snippet is compiled,
+ loaded, and executed, one at a time. Processing stops if compilation or execution of any snippet results in an error,
+ i.e., it has an outcome implementing <a href="SnippetOutcome.HaltsScript.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.HaltsScript</code></a>. If this happens, subsequent snippets are not executed and
+ will have outcome <a href="SnippetOutcome.Skipped.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Skipped</code></a>.
 
  <p><b>Suspend/Resume</b>
 
@@ -847,7 +874,6 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
 <dt>Parameters:</dt>
 <dd><code>source</code> - the script to process</dd>
 <dd><code>mode</code> - processing mode</dd>
-<dd><code>validator</code> - if not null, invoked to perform initial validation of each snippet in <code>source</code></dd>
 <dt>Returns:</dt>
 <dd>result from script processing</dd>
 <dt>Throws:</dt>
@@ -931,9 +957,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  partially completed, or it may have fully completed.
 
  <p>
- If this instance has a currently suspeneded script, that script will awaken and throw an immediate <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a>
- exception. Note that <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a> is the outcome assigned to any snippet that terminates by
- throwing <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a>.
+ If this instance has a currently suspended script, that script will awaken, throw an immediate <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a>
+ exception, and return an <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a> outcome.
 
  <p>
  If this instance is closed or not initialized, false is returned.</div>

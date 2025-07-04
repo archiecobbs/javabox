@@ -101,7 +101,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="org/dellroad/javabox/JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab3">
-<div class="block">Specifies the snippet processing mode to use when invoking <a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process()</code></a>.</div>
+<div class="block">Specifies the snippet processing mode to use when invoking <a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a>.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
@@ -201,28 +201,16 @@ loadScripts(document, 'script');</script>
 <div class="block">Indicates that a declaration was successful but it contained unresolved references and those
  references were not resolved by any subsequent snippets in the same source.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetOutcome.ValidationFailure.html" title="interface in org.dellroad.javabox">SnippetOutcome.ValidationFailure</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Indicates that the <a href="org/dellroad/javabox/SnippetValidator.html" title="interface in org.dellroad.javabox"><code>SnippetValidator</code></a> threw an exception when validating the snippet.</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/SnippetValidationException.html" title="class in org.dellroad.javabox">SnippetValidationException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
-<div class="block">Thrown by a <a href="org/dellroad/javabox/SnippetValidator.html" title="interface in org.dellroad.javabox"><code>SnippetValidator</code></a> passed to <a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>JavaBox.process()</code></a> when validation fails.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org/dellroad/javabox/SnippetValidator.html" title="interface in org.dellroad.javabox">SnippetValidator</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Validator for snippets.</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/execution/StringWrapper.html" title="class in org.dellroad.javabox.execution">StringWrapper</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">This is a simple wrapper around a <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> in which <a href="org/dellroad/javabox/execution/StringWrapper.html#toString()"><code>StringWrapper.toString()</code></a> returns the wrapped <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control">TimeLimitControl</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">A JavaBox <a href="org/dellroad/javabox/Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a> that limits the amount of time that a script snippet may execute.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/TimeLimitExceededException.html" title="class in org.dellroad.javabox.control">TimeLimitExceededException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org/dellroad/javabox/control/TimeLimitExceededException.html" title="class in org.dellroad.javabox.control">TimeLimitExceededException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Exception thrown when a script exceeds the time limit imposed by a <a href="org/dellroad/javabox/control/TimeLimitControl.html" title="class in org.dellroad.javabox.control"><code>TimeLimitControl</code></a>.</div>
 </div>
 </div>

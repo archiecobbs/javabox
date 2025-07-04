@@ -396,8 +396,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/JavaBoxException.html#initCause(java.lang.Throwable)" class="member-name-link">initCause(Throwable)</a> - Method in exception class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBoxException.html" title="class in org.dellroad.javabox">JavaBoxException</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/dellroad/javabox/SnippetValidationException.html#initCause(java.lang.Throwable)" class="member-name-link">initCause(Throwable)</a> - Method in exception class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetValidationException.html" title="class in org.dellroad.javabox">SnippetValidationException</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/dellroad/javabox/JavaBox.html#initialize()" class="member-name-link">initialize()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
 <div class="block">Initialize this instance.</div>
@@ -455,7 +453,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBox.ProcessMode.html" class="type-name-link" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a> - Enum Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
-<div class="block">Specifies the snippet processing mode to use when invoking <a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>process()</code></a>.</div>
+<div class="block">Specifies the snippet processing mode to use when invoking <a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a>.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBoxException.html" class="type-name-link" title="class in org.dellroad.javabox">JavaBoxException</a> - Exception Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
 <dd>
@@ -582,7 +580,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the parameter that was passed to <a href="org/dellroad/javabox/JavaBox.html#suspend(java.lang.Object)"><code>JavaBox.suspend()</code></a>.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)" class="member-name-link">process(String, JavaBox.ProcessMode, SnippetValidator)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
+<dt><a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)" class="member-name-link">process(String, JavaBox.ProcessMode)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
 <div class="block">Process the given script in this container.</div>
 </dd>
@@ -726,27 +724,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Indicates that a declaration was successful but it contained unresolved references and those
  references were not resolved by any subsequent snippets in the same source.</div>
 </dd>
-<dt><a href="org/dellroad/javabox/SnippetOutcome.ValidationFailure.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetOutcome.ValidationFailure</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
-<dd>
-<div class="block">Indicates that the <a href="org/dellroad/javabox/SnippetValidator.html" title="interface in org.dellroad.javabox"><code>SnippetValidator</code></a> threw an exception when validating the snippet.</div>
-</dd>
 <dt><a href="org/dellroad/javabox/ScriptResult.html#snippetOutcomes()" class="member-name-link">snippetOutcomes()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
 <dd>
 <div class="block">Get the outcomes of the individual JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s created from the script.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetValidationException.html" class="type-name-link" title="class in org.dellroad.javabox">SnippetValidationException</a> - Exception Class in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
-<dd>
-<div class="block">Thrown by a <a href="org/dellroad/javabox/SnippetValidator.html" title="interface in org.dellroad.javabox"><code>SnippetValidator</code></a> passed to <a href="org/dellroad/javabox/JavaBox.html#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode,org.dellroad.javabox.SnippetValidator)"><code>JavaBox.process()</code></a> when validation fails.</div>
-</dd>
-<dt><a href="org/dellroad/javabox/SnippetValidationException.html#%3Cinit%3E(java.lang.String)" class="member-name-link">SnippetValidationException(String)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetValidationException.html" title="class in org.dellroad.javabox">SnippetValidationException</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/dellroad/javabox/SnippetValidationException.html#%3Cinit%3E(java.lang.String,java.lang.Throwable)" class="member-name-link">SnippetValidationException(String, Throwable)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetValidationException.html" title="class in org.dellroad.javabox">SnippetValidationException</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/dellroad/javabox/SnippetValidationException.html#%3Cinit%3E(java.lang.Throwable)" class="member-name-link">SnippetValidationException(Throwable)</a> - Constructor for exception class org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetValidationException.html" title="class in org.dellroad.javabox">SnippetValidationException</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/dellroad/javabox/SnippetValidator.html" class="type-name-link" title="interface in org.dellroad.javabox">SnippetValidator</a> - Interface in <a href="org/dellroad/javabox/package-summary.html">org.dellroad.javabox</a></dt>
-<dd>
-<div class="block">Validator for snippets.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/ScriptResult.html#source()" class="member-name-link">source()</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/ScriptResult.html" title="class in org.dellroad.javabox">ScriptResult</a></dt>
 <dd>
@@ -830,9 +810,9 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:V">V</h2>
 <dl class="index">
-<dt><a href="org/dellroad/javabox/SnippetValidator.html#validate(jdk.jshell.Snippet)" class="member-name-link">validate(Snippet)</a> - Method in interface org.dellroad.javabox.<a href="org/dellroad/javabox/SnippetValidator.html" title="interface in org.dellroad.javabox">SnippetValidator</a></dt>
+<dt><a href="org/dellroad/javabox/JavaBox.html#validate(java.lang.String)" class="member-name-link">validate(String)</a> - Method in class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.html" title="class in org.dellroad.javabox">JavaBox</a></dt>
 <dd>
-<div class="block">Validate a snippet.</div>
+<div class="block">Validate the given script is parseable.</div>
 </dd>
 <dt><a href="org/dellroad/javabox/JavaBox.ProcessMode.html#VALIDATE" class="member-name-link">VALIDATE</a> - Enum constant in enum class org.dellroad.javabox.<a href="org/dellroad/javabox/JavaBox.ProcessMode.html" title="enum class in org.dellroad.javabox">JavaBox.ProcessMode</a></dt>
 <dd>
