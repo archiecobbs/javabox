@@ -15,7 +15,7 @@ Each JavaBox instance relies on an underlying [JShell](https://docs.oracle.com/e
 
 JavaBox supports imposing restrictions on scripts using [Controls](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html). Controls are allowed to [intercept](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)) a script's class loading step and [each time](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html#startExecution(org.dellroad.javabox.Control.ContainerContext)) it executes.
 
-JavaBox supports [interrupting](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#interrupt()) scripts in the middle of execution if necessary, and it also has [suspend](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#suspend(java.lang.Object)) and [resume](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#resume(java.lang.Object)) functions, allowing an application thread to block scripts on certain operations to regain control.
+JavaBox supports [interrupting](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#interrupt()) scripts in the middle of execution if necessary, and it also has [suspend](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#suspend(java.lang.Object)) and [resume](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#resume(java.lang.Object)) functions, allowing an application thread to suspend scripts on certain operations and regain control.
 
 ### Examples
 
