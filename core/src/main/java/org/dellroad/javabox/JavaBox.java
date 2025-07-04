@@ -44,7 +44,6 @@ import static org.dellroad.javabox.SnippetOutcome.Skipped;
 import static org.dellroad.javabox.SnippetOutcome.SuccessfulNoValue;
 import static org.dellroad.javabox.SnippetOutcome.SuccessfulWithValue;
 import static org.dellroad.javabox.SnippetOutcome.Suspended;
-import static org.dellroad.javabox.SnippetOutcome.ValidationFailure;
 
 /**
  * A container for scripts written in the Java language.
@@ -228,15 +227,13 @@ public class JavaBox implements Closeable {
             JShell jshell,                          // a copy of JavaBox.jshell
             String source,                          // the script we are executing
             ProcessMode mode,                       // process() processing mode
-            SnippetValidator validator,             // process() initial validator
             AtomicInteger snippetIndex,             // the index (in "infos" list) of the currently executing snippet, or -1
             AtomicBoolean interrupted,              // whether there is a pending interrupt
             AtomicReference<Object> resumeReturn,   // return value from suspend() (state RESUMING only)
             List<SnippetInfo> infos) {              // infomation about each snippets
 
-        ProcessInfo(JShell jshell, String source, ProcessMode mode, SnippetValidator validator) {
-            this(jshell, source, mode, validator, new AtomicInteger(-1),
-            new AtomicBoolean(), new AtomicReference<>(), new ArrayList<>());
+        ProcessInfo(JShell jshell, String source, ProcessMode mode) {
+            this(jshell, source, mode, new AtomicInteger(-1), new AtomicBoolean(), new AtomicReference<>(), new ArrayList<>());
         }
 
         List<SnippetOutcome> copyOutcomes() {
@@ -763,19 +760,35 @@ public class JavaBox implements Closeable {
 // Script Execution
 
     /**
-     * Compile the given script but do not execute it.
+     * Validate the given script is parseable.
      *
      * <p>
      * This is a convenience method, equivalent to:
-     *  {@link #process process}{@code (source, }{@link ProcessMode#COMPILE}{@code , null)}.
+     *  {@link #process process}{@code (source, }{@link ProcessMode#COMPILE}{@code )}.
      * If compilation is successful, all outcomes will be {@link SuccessfulNoValue}.
      *
      * @param source the script to execute
      * @return result from script validation
      * @see #process process()
      */
+    public synchronized ScriptResult validate(String source) {
+        return this.process(source, ProcessMode.VALIDATE);
+    }
+
+    /**
+     * Compile the given script but do not execute it.
+     *
+     * <p>
+     * This is a convenience method, equivalent to:
+     *  {@link #process process}{@code (source, }{@link ProcessMode#COMPILE}{@code )}.
+     * If compilation is successful, all outcomes will be {@link SuccessfulNoValue}.
+     *
+     * @param source the script to execute
+     * @return result from script compilation
+     * @see #process process()
+     */
     public synchronized ScriptResult compile(String source) {
-        return this.process(source, ProcessMode.COMPILE, null);
+        return this.process(source, ProcessMode.COMPILE);
     }
 
     /**
@@ -783,14 +796,14 @@ public class JavaBox implements Closeable {
      *
      * <p>
      * This is a convenience method, equivalent to:
-     *  {@link #process process}{@code (source, }{@link ProcessMode#EXECUTE}{@code , null)}.
+     *  {@link #process process}{@code (source, }{@link ProcessMode#EXECUTE}{@code )}.
      *
      * @param source the script to execute
      * @return result from script execution
      * @see #process process()
      */
     public synchronized ScriptResult execute(String source) {
-        return this.process(source, ProcessMode.EXECUTE, null);
+        return this.process(source, ProcessMode.EXECUTE);
     }
 
     /**
@@ -803,37 +816,35 @@ public class JavaBox implements Closeable {
      * <p><b>Initial Validation</b>
      *
      * <p>
-     * In all {@link ProcessMode}s, an initial basic structural validation of all snippets is first performed: each
-     * snippet must be parseable. In addition, if {@code validator} is non-null, then it is included in this basic validation
-     * step for each snpipet. This validation step does not require loading any generated classes or executing any code.
-     * It is useful, for example, if you want to filter snippets by {@link Snippet.Kind} or otherwise inspect individual snippets.
+     * In all {@link ProcessMode}s, an initial basic structural validation of all snippets is first performed, i.e., each
+     * snippet is parsed.
      *
      * <p>
-     * Snippets that fail to parse will have a {@link CompilerError} outcome. Otherwise, if {@code validator} is non-null,
-     * each snippet is supplied to it; if it throws a {@link SnippetValidationException}, that snippet's outcome is set to
-     * {@link ValidationFailure}. The snippets that {@code validator} sees will be <i>unassociated</i> (as described by
-     * {@link SourceCodeAnalysis#sourceToSnippets SourceCodeAnalysis.sourceToSnippets()}). Snippets that successfully parse
-     * and validate will have a {@link SuccessfulNoValue} outcome.
+     * If {@code mode} is {@link ProcessMode#VALIDATE}, or any snippet fails to parse, then processing stops after this step
+     * and all snippet outcomes are returned. Snippets that fail to parse will have a {@link CompilerError} outcome; snippets
+     * that successfully parse will have a {@link SuccessfulNoValue} outcome.
      *
      * <p>
-     * If {@code mode} is {@link ProcessMode#VALIDATE} then processing stops after all snippets are validated and their
-     * outcomes are returned. This mode can be used to gather basic information about a script, including how many snippets
-     * it contains, their source code offsets, their {@link Snippet.Kind}, etc.
+     * {@link ProcessMode#VALIDATE} can be used to quickly gather basic information about a script, including how many snippets
+     * it contains, their source code offsets, their {@link Snippet.Kind}, etc. Note however that in this mode {@linkplain
+     * SnippetOutcome#snippet the returned snippets} contain only limited information; in particular, they will be
+     * {@linkplain SourceCodeAnalysis#sourceToSnippets unassociated}.
      *
      * <p><b>Compilation</b>
      *
      * <p>
-     * If {@code mode} is {@link ProcessMode#COMPILE}, then after initial validation each snippet is fully compiled into
-     * bytecode and loaded (so that any configured {@link Control}s are given a chance to veto it), but no execution of
-     * any snippet's generated bytecode occurs.
+     * If {@code mode} is {@link ProcessMode#COMPILE}, then after a successful initial validation each snippet is compiled
+     * into bytecode and loaded, which gives any configured {@link Control}s a chance to veto it, but no execution of any
+     * snippet's generated bytecode occurs. All snippet outcomes are then returned; snippets that compile successfully
+     * will have a {@link SuccessfulNoValue} outcome.
      *
      * <p><b>Execution</b>
      *
      * <p>
-     * If {@code mode} is {@link ProcessMode#EXECUTE}, then after initial validation each snippet is compiled, loaded,
-     * and executed, one at a time. Processing stops if compilation or execution of any snippet results in an error,
-     * i.e., it has an outcome implementing {@link HaltsScript}. If this happens, subsequent snippets will have outcome
-     * {@link Skipped}.
+     * If {@code mode} is {@link ProcessMode#EXECUTE}, then after a successful initial validation each snippet is compiled,
+     * loaded, and executed, one at a time. Processing stops if compilation or execution of any snippet results in an error,
+     * i.e., it has an outcome implementing {@link HaltsScript}. If this happens, subsequent snippets are not executed and
+     * will have outcome {@link Skipped}.
      *
      * <p><b>Suspend/Resume</b>
      *
@@ -858,14 +869,13 @@ public class JavaBox implements Closeable {
      *
      * @param source the script to process
      * @param mode processing mode
-     * @param validator if not null, invoked to perform initial validation of each snippet in {@code source}
      * @return result from script processing
      * @throws InterruptedException if the current thread is interrupted or {@link #interrupt} is invoked
      * @throws IllegalStateException if this instance has a suspended script
      * @throws IllegalStateException if this instance is not initialized or closed
      * @throws IllegalArgumentException if {@code source} or {@code mode} is null
      */
-    public synchronized ScriptResult process(String source, ProcessMode mode, SnippetValidator validator) {
+    public synchronized ScriptResult process(String source, ProcessMode mode) {
 
         // Sanity check
         Preconditions.checkArgument(source != null, "null source");
@@ -877,7 +887,7 @@ public class JavaBox implements Closeable {
             this.checkInvariants();
             switch (this.state) {
             case IDLE:
-                this.processInfo = new ProcessInfo(this.jshell, source, mode, validator);
+                this.processInfo = new ProcessInfo(this.jshell, source, mode);
                 this.newState(State.EXECUTING);
                 break;
             case EXECUTING:
@@ -939,7 +949,8 @@ public class JavaBox implements Closeable {
          * Perform initial validation of each snippet, load generated classes, and execute code as needed.
          *
          * <p>
-         * This is peforms the normal JShell full evaluation of each snippet.
+         * This is peforms the normal JShell full evaluation of each snippet until a snipet has an outcome
+         * implementing {@link HaltsScript}.
          */
         EXECUTE;
     }
@@ -1231,20 +1242,6 @@ public class JavaBox implements Closeable {
                 info.outcome.set(new SnippetOutcomes.CompilerError(this, info));
                 break;
             case COMPLETE:
-
-                // Parse was successful; next apply validator, if any
-                if (pinfo.validator != null) {
-                    try {
-                        pinfo.validator.validate(info.snippet.get());
-                    } catch (SnippetValidationException e) {
-                        info.outcome.set(new SnippetOutcomes.ValidationFailure(this, info, e));
-                        break;
-                    } catch (Throwable t) {
-                        info.outcome.set(new SnippetOutcomes.ValidationFailure(this, info,
-                          new SnippetValidationException("validator threw unexpected exception", t)));
-                        break;
-                    }
-                }
 
                 // OK
                 info.outcome.set(new SnippetOutcomes.SuccessfulNoValue(this, info));

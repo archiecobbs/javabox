@@ -107,14 +107,6 @@ final class SnippetOutcomes {
         }
     }
 
-    static final class ValidationFailure extends AbstractHasException<SnippetValidationException>
-      implements SnippetOutcome.ValidationFailure {
-
-        ValidationFailure(JavaBox box, JavaBox.SnippetInfo info, SnippetValidationException exception) {
-            super(box, info, exception);
-        }
-    }
-
     static final class UnresolvedReferences extends AbstractSnippetOutcome implements SnippetOutcome.UnresolvedReferences {
 
         UnresolvedReferences(JavaBox box, JavaBox.SnippetInfo info) {

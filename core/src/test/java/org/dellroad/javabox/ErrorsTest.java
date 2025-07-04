@@ -10,7 +10,6 @@ import jdk.jshell.Snippet;
 import org.dellroad.javabox.SnippetOutcome.CompilerError;
 import org.dellroad.javabox.SnippetOutcome.SuccessfulNoValue;
 import org.dellroad.javabox.SnippetOutcome.SuccessfulWithValue;
-import org.dellroad.javabox.SnippetOutcome.ValidationFailure;
 import org.dellroad.stuff.test.TestSupport;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,48 +40,45 @@ public class ErrorsTest extends TestSupport {
                 """;
 
             // Test 1
-            ScriptResult r1 = box.process(script, JavaBox.ProcessMode.VALIDATE, null);
+            ScriptResult r1 = box.validate(script);
             this.log.info("r1: {}", r1.snippetOutcomes());
             Assert.assertEquals(r1.snippetOutcomes().size(), 5);
             Assert.assertTrue(r1.isSuccessful());
+            Assert.assertTrue(r1.snippetOutcomes().get(0) instanceof SuccessfulNoValue);
+            Assert.assertTrue(r1.snippetOutcomes().get(1) instanceof SuccessfulNoValue);
+            Assert.assertTrue(r1.snippetOutcomes().get(2) instanceof SuccessfulNoValue);
+            Assert.assertTrue(r1.snippetOutcomes().get(3) instanceof SuccessfulNoValue);
+            Assert.assertTrue(r1.snippetOutcomes().get(4) instanceof SuccessfulNoValue);
 
             // Test 2
-            ScriptResult r2 = box.process(script, JavaBox.ProcessMode.VALIDATE, snippet -> {
-                if (snippet.kind() == Snippet.Kind.ERRONEOUS)
-                    throw new SnippetValidationException("erroneous");
-            });
+            ScriptResult r2 = box.compile(script);
             this.log.info("r2: {}", r2.snippetOutcomes());
             Assert.assertEquals(r2.snippetOutcomes().size(), 5);
+            Assert.assertTrue(!r2.isSuccessful());
             Assert.assertTrue(r2.snippetOutcomes().get(0) instanceof SuccessfulNoValue);
             Assert.assertTrue(r2.snippetOutcomes().get(1) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r2.snippetOutcomes().get(2) instanceof ValidationFailure vf
-              && vf.exception().getMessage().equals("erroneous"));
+            Assert.assertTrue(r2.snippetOutcomes().get(2) instanceof CompilerError ce
+              && ce.diagnostics().stream().anyMatch(d -> d.getMessage(null).contains("cannot find symbol")));
             Assert.assertTrue(r2.snippetOutcomes().get(3) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r2.snippetOutcomes().get(4) instanceof ValidationFailure vf
-              && vf.exception().getMessage().equals("erroneous"));
+            Assert.assertTrue(r2.snippetOutcomes().get(4) instanceof SuccessfulNoValue);
 
             // Test 3
-            ScriptResult r3 = box.process(script, JavaBox.ProcessMode.COMPILE, null);
+            ScriptResult r3 = box.execute(script);
             this.log.info("r3: {}", r3.snippetOutcomes());
             Assert.assertEquals(r3.snippetOutcomes().size(), 5);
+            Assert.assertTrue(r3.isSuccessful());
             Assert.assertTrue(r3.snippetOutcomes().get(0) instanceof SuccessfulNoValue);
+            Assert.assertEquals(r3.snippetOutcomes().get(0).snippet().subKind(), Snippet.SubKind.CLASS_SUBKIND);
             Assert.assertTrue(r3.snippetOutcomes().get(1) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r3.snippetOutcomes().get(2) instanceof CompilerError ce
-              && ce.diagnostics().stream().anyMatch(d -> d.getMessage(null).contains("cannot find symbol")));
-            Assert.assertTrue(r3.snippetOutcomes().get(3) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r3.snippetOutcomes().get(4) instanceof SuccessfulNoValue);
-
-            // Test 4
-            ScriptResult r4 = box.process(script, JavaBox.ProcessMode.EXECUTE, null);
-            this.log.info("r4: {}", r4.snippetOutcomes());
-            Assert.assertEquals(r4.snippetOutcomes().size(), 5);
-            Assert.assertTrue(r4.snippetOutcomes().get(0) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r4.snippetOutcomes().get(1) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r4.snippetOutcomes().get(2) instanceof SuccessfulWithValue swv
+            Assert.assertEquals(r3.snippetOutcomes().get(1).snippet().subKind(), Snippet.SubKind.CLASS_SUBKIND);
+            Assert.assertTrue(r3.snippetOutcomes().get(2) instanceof SuccessfulWithValue swv
               && swv.returnValue().getClass().getSimpleName().equals("Bar"));
-            Assert.assertTrue(r4.snippetOutcomes().get(3) instanceof SuccessfulNoValue);
-            Assert.assertTrue(r4.snippetOutcomes().get(4) instanceof SuccessfulWithValue swv
+            Assert.assertEquals(r3.snippetOutcomes().get(2).snippet().subKind(), Snippet.SubKind.TEMP_VAR_EXPRESSION_SUBKIND);
+            Assert.assertTrue(r3.snippetOutcomes().get(3) instanceof SuccessfulNoValue);
+            Assert.assertEquals(r3.snippetOutcomes().get(3).snippet().subKind(), Snippet.SubKind.CLASS_SUBKIND);
+            Assert.assertTrue(r3.snippetOutcomes().get(4) instanceof SuccessfulWithValue swv
               && swv.returnValue().getClass().getSimpleName().equals("Jam"));
+            Assert.assertEquals(r3.snippetOutcomes().get(4).snippet().subKind(), Snippet.SubKind.TEMP_VAR_EXPRESSION_SUBKIND);
         }
     }
 }

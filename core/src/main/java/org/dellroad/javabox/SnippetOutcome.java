@@ -15,13 +15,13 @@ import jdk.jshell.SourceCodeAnalysis;
  * Captures the outcome from one of the {@link Snippet}s that constitute a {@link JavaBox} script.
  *
  * <p>
- * A snippet can fail by failing to compile, failing to {@linkplain SnippetValidator validate}, compiling into
- * bytecode that violates a {@link Control}, throwing an exception during execution, etc.
+ * A snippet can fail by failing to compile, compiling into bytecode that violates a {@link Control},
+ * throwing an exception during execution, etc.
  */
 public sealed interface SnippetOutcome
-  permits SnippetOutcomes.AbstractSnippetOutcome, SnippetOutcome.ValidationFailure, SnippetOutcome.CompilerError,
-    SnippetOutcome.ControlViolation, SnippetOutcome.UnresolvedReferences, SnippetOutcome.Overwritten, SnippetOutcome.Suspended,
-    SnippetOutcome.Interrupted, SnippetOutcome.Skipped, SnippetOutcome.ExceptionThrown, SnippetOutcome.Successful {
+  permits SnippetOutcomes.AbstractSnippetOutcome, SnippetOutcome.CompilerError, SnippetOutcome.ControlViolation,
+    SnippetOutcome.UnresolvedReferences, SnippetOutcome.Overwritten, SnippetOutcome.Suspended, SnippetOutcome.Interrupted,
+    SnippetOutcome.Skipped, SnippetOutcome.ExceptionThrown, SnippetOutcome.Successful {
 
     /**
      * Get the associated {@link JavaBox}.
@@ -104,18 +104,6 @@ public sealed interface SnippetOutcome
     }
 
 // SnippetOutcome permitted interfaces
-
-    /**
-     * Indicates that the {@link SnippetValidator} threw an exception when validating the snippet.
-     *
-     * <p>
-     * If this error happens, the snippet was never executed.
-     *
-     * @see JavaBox#process JavaBox.process()
-     */
-    sealed interface ValidationFailure extends SnippetOutcome, HaltsScript, HasException<SnippetValidationException>
-      permits SnippetOutcomes.ValidationFailure {
-    }
 
     /**
      * Indicates failure due to one or more compiler errors.
