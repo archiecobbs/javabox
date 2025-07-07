@@ -21,12 +21,14 @@ final class SnippetOutcomes {
     abstract static sealed class AbstractSnippetOutcome implements SnippetOutcome {
 
         private final JavaBox box;
+        private final String scriptSource;
         private final int offset;
         private final Snippet snippet;
         private final List<Diag> diagnostics;
 
         AbstractSnippetOutcome(JavaBox box, JavaBox.SnippetInfo info) {
             this.box = box;
+            this.scriptSource = info.source();
             this.offset = info.offset();
             this.snippet = info.snippet().get();
             this.diagnostics = info.diagnostics();
@@ -35,6 +37,11 @@ final class SnippetOutcomes {
         @Override
         public JavaBox box() {
             return this.box;
+        }
+
+        @Override
+        public String scriptSource() {
+            return this.scriptSource;
         }
 
         @Override

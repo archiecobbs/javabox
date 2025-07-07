@@ -76,9 +76,12 @@ public class ScriptResult {
      * @return last snippet outcome, or empty if there were zero snippets
      */
     public Optional<SnippetOutcome> lastOutcome() {
-        return Optional.of(this.snippetOutcomes)
-          .filter(list -> !list.isEmpty())
-          .map(list -> list.get(list.size() - 1));
+        SnippetOutcome outcome = null;
+        for (int index = this.snippetOutcomes.size() - 1; index >= 0; index--) {
+            if (!((outcome = this.snippetOutcomes.get(index)) instanceof SnippetOutcome.Skipped))
+                break;
+        }
+        return Optional.ofNullable(outcome);
     }
 
     /**

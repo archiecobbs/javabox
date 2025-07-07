@@ -31,13 +31,12 @@ public sealed interface SnippetOutcome
     JavaBox box();
 
     /**
-     * Get the character offset within the original script source of the source for the associated snippet.
+     * Get the character offset within the original {@linkplain #scriptSource script source}
+     * of the associated {@linkplain #snippetSource snippet source}.
      *
-     * <p>
-     * The source for the associated snippet can be obtained via {@link #snippet}{@code .source()}.
-     *
-     * @return snippet source offset in original script
-     * @see ScriptResult#source
+     * @return snippet's character offset in the original script
+     * @see #scriptSource
+     * @see #snippetSource
      */
     int offset();
 
@@ -45,27 +44,26 @@ public sealed interface SnippetOutcome
      * Get the associated snippet.
      *
      * <p>
-     * Note: In some cases, the {@code snippet} may be <i>unassociated</i> (as described by
-     * {@link SourceCodeAnalysis#sourceToSnippets SourceCodeAnalysis.sourceToSnippets()}). This will be the
-     * case if the snippet source code was correct enough to be parsed, but the snippet didn't get far enough
-     * to actually be executed.
-     *
-     * <p>
-     * The source for the associated snippet can be obtained via {@link #snippet}{@code .source()}.
+     * Note: In some cases, the {@code snippet} may be {@linkplain SourceCodeAnalysis#sourceToSnippets unassociated}.
+     * This will be the case, for example, if the snippet could not be successfully parsed.
      *
      * @return JShell snippet
      */
     Snippet snippet();
 
     /**
-     * Get the source code of the associated snippet.
+     * Get the source code of the entire original script that contained the snippet.
      *
-     * <p>
-     * The implementation in {@link SnippetOutcome} just returns {@link #snippet}{@code .source()}.
+     * @return original script source
+     */
+    String scriptSource();
+
+    /**
+     * Get the source code of the associated snippet.
      *
      * @return snippet source
      */
-    default String source() {
+    default String snippetSource() {
         return snippet().source();
     }
 
@@ -149,8 +147,8 @@ public sealed interface SnippetOutcome
      * with the value you want to be returned to the script from {@link JavaBox#suspend suspend()}.
      *
      * <p>
-     * Because the snippet execution has not yet completed, the associated {@link #snippet} will be <i>unassociated</i>
-     * (as described by {@link SourceCodeAnalysis#sourceToSnippets SourceCodeAnalysis.sourceToSnippets()}).
+     * Because the snippet execution has not yet completed, the associated {@link #snippet} will be
+     * {@linkplain SourceCodeAnalysis#sourceToSnippets unassociated}.
      *
      * <p>
      * After a snippet is resumed, a new outcome will have replaced the {@link Suspended} outcome
