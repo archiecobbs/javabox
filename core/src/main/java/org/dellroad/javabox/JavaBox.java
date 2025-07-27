@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import jdk.jshell.DeclarationSnippet;
 import jdk.jshell.Diag;
 import jdk.jshell.JShell;
 import jdk.jshell.Snippet;
@@ -95,8 +96,9 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * <p><b>Script Validation</b>
  *
  * <p>
- * It is also possible to validate and compile a script without executing it. This allows the caller to gather some basic
- * information about the script and control which types of snippets are allowed. See {@link #process process} for details.
+ * It is also possible to do basic validationt and/or fully compile a script without executing it. This allows the caller to
+ * gather some basic information about the script and the snippets it contains, and verify correctness.
+ * See {@link #process process()} for details.
  *
  * <p><b>Suspend and Resume</b>
  *
@@ -108,22 +110,22 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * outcome will be overwritten with its new, updated outcome.
  *
  * <p>
- * As long as there is a suspended script associated with an instance, new invocations of {@link #execute execute()} will fail.
- * Instead, suspended scripts must be resumed via {@link #resume resume()} and allowed to terminate (even if interrupted;
- * see below).
+ * As long as there is a suspended script associated with an instance, additional invocations of {@link #execute execute()}
+ * will fail. Instead, suspended scripts must first be resumed via {@link #resume resume()} and allowed to terminate
+ * (even if they are interrupted; see below).
  *
  * <p><b>Interruption</b>
  *
  * <p>
  * Both methods {@link #execute execute()} and {@link #resume resume()} block the calling thread until the script terminates
  * or suspends itself. Another thread can interrupt that execution by interrupting the calling thread, or equivalently
- * by invoking {@link #interrupt}. If a snippet's execution is interrrupted, its outcome will be
- * {@link SnippetOutcome.Interrupted}.
+ * by invoking {@link #interrupt}. If a snippet's execution is interrrupted, the original thread will return and the snippet's
+ * outcome will be {@link SnippetOutcome.Interrupted}.
  *
  * <p>
  * A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed first
- * before the interrupt can take effect. Upon the next call to {@link #resume resume()}, it will terminate immediately with
- * outcome {@link SnippetOutcome.Interrupted}.
+ * before the interrupt can take effect. Upon the next call to {@link #resume resume()}, the script will terminate immediately
+ * and the interrupted snippet will have outcome {@link SnippetOutcome.Interrupted}.
  *
  * <p><b>Controls</b>
  *
@@ -132,6 +134,7 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * {@link Config}. Controls can do the following things:
  * <ul>
  *  <li>Inspect and modify all of the bytecode generated from scripts
+ *  <li>Veto a snippet before or during execution by throwing a {@link ControlViolationException}
  *  <li>Keep state associated with each {@link JavaBox} instance
  *  <li>Keep state associated with each {@link JavaBox} snippet execution
  * </ul>
@@ -991,7 +994,7 @@ public class JavaBox implements Closeable {
         case EXECUTING:
             final int snippetIndex = this.processInfo.snippetIndex.get();
             final SnippetInfo info = this.processInfo.infos.get(snippetIndex);
-            info.outcome.set(new SnippetOutcomes.Suspended(this, info, parameter));
+            info.outcome.set(new SnippetOutcomes.Suspended(this, info, new Throwable(), parameter));
             this.newState(State.SUSPENDING);
             break;
         default:
@@ -1170,26 +1173,14 @@ public class JavaBox implements Closeable {
 
 // SnippetInfo
 
-    record SnippetInfo(String source, int offset, CompletionInfo completionInfo,
+    record SnippetInfo(String scriptSource, int index, int offset, CompletionInfo completionInfo,
       AtomicReference<Snippet> snippet, ArrayList<Diag> diagnostics, AtomicReference<SnippetOutcome> outcome) {
 
-        SnippetInfo(JShell jshell, int offset, String source) {
-            this(jshell, offset, source, jshell.sourceCodeAnalysis().analyzeCompletion(source));
-        }
-
-        SnippetInfo(JShell jshell, int offset, String source, CompletionInfo completionInfo) {
-            this(SnippetInfo.fixupSource(completionInfo), offset, completionInfo,
-              new AtomicReference<>(), new ArrayList<>(), new AtomicReference<>());
-            final List<Snippet> snippets = jshell.sourceCodeAnalysis().sourceToSnippets(completionInfo.source());
+        SnippetInfo(ProcessInfo pinfo, int index, int offset, CompletionInfo completionInfo) {
+            this(pinfo.source, index, offset, completionInfo, new AtomicReference<>(), new ArrayList<>(), new AtomicReference<>());
+            final List<Snippet> snippets = pinfo.jshell.sourceCodeAnalysis().sourceToSnippets(completionInfo.source());
             Preconditions.checkState(snippets.size() == 1, "internal error");
-            this.updateSnippet(jshell, snippets.get(0));
-        }
-
-        private static String fixupSource(CompletionInfo info) {
-            String source = info.source();
-            if (info.completeness() == Completeness.COMPLETE_WITH_SEMI)
-                source = source.substring(0, source.length() - 1);
-            return source;
+            this.updateSnippet(pinfo.jshell, snippets.get(0));
         }
 
         public void updateSnippet(JShell jshell, Snippet snippet) {
@@ -1197,6 +1188,10 @@ public class JavaBox implements Closeable {
             diagnostics.clear();
             if (!snippet.id().equals(UNASSOCIATED_SNIPPET_ID))
                 jshell.diagnostics(snippet).forEach(diagnostics::add);
+        }
+
+        public String source() {
+            return this.snippet.get().source();
         }
     }
 
@@ -1214,14 +1209,14 @@ public class JavaBox implements Closeable {
         Preconditions.checkArgument(pinfo.snippetIndex.get() == -1, "internal error");
 
         // Break script into individual source snippets and create corresponding SnippetInfo's
-        int offset = 0;
-        String remain = pinfo.source;
-        while (!remain.isEmpty()) {
-            final SnippetInfo info = new SnippetInfo(pinfo.jshell, offset, remain);
-            if (info.completionInfo.completeness() != Completeness.EMPTY)   // elide comments
+        int index = 0;
+        CompletionInfo completionInfo;
+        for (String remain = pinfo.source; !remain.isEmpty(); remain = completionInfo.remaining()) {
+            completionInfo = pinfo.jshell.sourceCodeAnalysis().analyzeCompletion(remain);
+            final int offset = pinfo.source.length() - remain.length();
+            final SnippetInfo info = new SnippetInfo(pinfo, index++, offset, completionInfo);
+            if (completionInfo.completeness() != Completeness.EMPTY)   // elide comments
                 pinfo.infos.add(info);
-            offset += info.source.length();
-            remain = info.completionInfo.remaining();
         }
 
         // Peform initial validation of each snippet
@@ -1234,7 +1229,7 @@ public class JavaBox implements Closeable {
             case COMPLETE_WITH_SEMI:
 
                 // Parse failed, so full compilation will fail also; so try to evaluate it to generate some diagnostics
-                final List<SnippetEvent> eval = pinfo.jshell.eval(info.source);
+                final List<SnippetEvent> eval = pinfo.jshell.eval(info.source());
                 final SnippetEvent event;
                 if (eval.size() != 1 || !Snippet.Status.REJECTED.equals((event = eval.get(0)).status()))
                     throw new JavaBoxException("internal error: " + eval);
@@ -1306,7 +1301,7 @@ public class JavaBox implements Closeable {
         pinfo.snippetIndex.set(executeIndex);
         final SnippetInfo executeInfo = pinfo.infos.get(executeIndex);
         try {
-            events = pinfo.jshell.eval(executeInfo.source);
+            events = pinfo.jshell.eval(executeInfo.source());
             snippetReturn = this.snippetReturn.get();
         } catch (ControlViolationException e) {
             executeInfo.outcome.set(new SnippetOutcomes.ControlViolation(this, executeInfo, e));
@@ -1339,7 +1334,8 @@ public class JavaBox implements Closeable {
                 break;
             case RECOVERABLE_DEFINED:
             case RECOVERABLE_NOT_DEFINED:
-                outcome = new SnippetOutcomes.UnresolvedReferences(this, info);
+                outcome = new SnippetOutcomes.UnresolvedReferences(this, info,
+                  pinfo.jshell.unresolvedDependencies((DeclarationSnippet)snippet));
                 break;
             case OVERWRITTEN:
                 outcome = new SnippetOutcomes.Overwritten(this, info);
@@ -1360,8 +1356,8 @@ public class JavaBox implements Closeable {
                         final Throwable exception = error.get();
 
                         // If we were interrupted and the snippet threw ThreadDeath, then change its outcome to Interrupted
-                        outcome = exception instanceof ThreadDeath && pinfo.interrupted.compareAndSet(true, false) ?
-                          new SnippetOutcomes.Interrupted(this, info) :
+                        outcome = exception instanceof ThreadDeath threadDeath && pinfo.interrupted.compareAndSet(true, false) ?
+                          new SnippetOutcomes.Interrupted(this, info, threadDeath) :
                           new SnippetOutcomes.ExceptionThrown(this, info, exception);
                         break;
                     }

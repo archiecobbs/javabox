@@ -7,6 +7,7 @@ package org.dellroad.javabox;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jdk.jshell.Diag;
 import jdk.jshell.Snippet;
@@ -22,13 +23,15 @@ final class SnippetOutcomes {
 
         private final JavaBox box;
         private final String scriptSource;
+        private final int index;
         private final int offset;
         private final Snippet snippet;
         private final List<Diag> diagnostics;
 
         AbstractSnippetOutcome(JavaBox box, JavaBox.SnippetInfo info) {
             this.box = box;
-            this.scriptSource = info.source();
+            this.scriptSource = info.scriptSource();
+            this.index = info.index();
             this.offset = info.offset();
             this.snippet = info.snippet().get();
             this.diagnostics = info.diagnostics();
@@ -42,6 +45,11 @@ final class SnippetOutcomes {
         @Override
         public String scriptSource() {
             return this.scriptSource;
+        }
+
+        @Override
+        public int index() {
+            return this.index;
         }
 
         @Override
@@ -82,7 +90,7 @@ final class SnippetOutcomes {
 
         @Override
         public String toString() {
-            return String.format("%s: %s", super.toString(), this.exception.getMessage());
+            return String.format("%s: %s", super.toString(), this.exception);
         }
     }
 
@@ -116,8 +124,21 @@ final class SnippetOutcomes {
 
     static final class UnresolvedReferences extends AbstractSnippetOutcome implements SnippetOutcome.UnresolvedReferences {
 
-        UnresolvedReferences(JavaBox box, JavaBox.SnippetInfo info) {
+        private final List<String> references;
+
+        UnresolvedReferences(JavaBox box, JavaBox.SnippetInfo info, Stream<String> references) {
             super(box, info);
+            this.references = references.collect(Collectors.toList());
+        }
+
+        @Override
+        public List<String> references() {
+            return this.references;
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + ": " + this.references.stream().collect(Collectors.joining(", "));
         }
     }
 
@@ -128,12 +149,12 @@ final class SnippetOutcomes {
         }
     }
 
-    static final class Suspended extends AbstractSnippetOutcome implements SnippetOutcome.Suspended {
+    static final class Suspended extends AbstractHasException<Throwable> implements SnippetOutcome.Suspended {
 
         private final Object parameter;
 
-        Suspended(JavaBox box, JavaBox.SnippetInfo info, Object parameter) {
-            super(box, info);
+        Suspended(JavaBox box, JavaBox.SnippetInfo info, Throwable exception, Object parameter) {
+            super(box, info, exception);
             this.parameter = parameter;
         }
 
@@ -148,10 +169,10 @@ final class SnippetOutcomes {
         }
     }
 
-    static final class Interrupted extends AbstractSnippetOutcome implements SnippetOutcome.Interrupted {
+    static final class Interrupted extends AbstractHasException<ThreadDeath> implements SnippetOutcome.Interrupted {
 
-        Interrupted(JavaBox box, JavaBox.SnippetInfo info) {
-            super(box, info);
+        Interrupted(JavaBox box, JavaBox.SnippetInfo info, ThreadDeath exception) {
+            super(box, info, exception);
         }
     }
 
@@ -162,23 +183,10 @@ final class SnippetOutcomes {
         }
     }
 
-    static final class ExceptionThrown extends AbstractSnippetOutcome implements SnippetOutcome.ExceptionThrown {
-
-        private final Throwable exception;
+    static final class ExceptionThrown extends AbstractHasException<Throwable> implements SnippetOutcome.ExceptionThrown {
 
         ExceptionThrown(JavaBox box, JavaBox.SnippetInfo info, Throwable exception) {
-            super(box, info);
-            this.exception = exception;
-        }
-
-        @Override
-        public Throwable exception() {
-            return this.exception;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s: %s", super.toString(), this.exception);
+            super(box, info, exception);
         }
     }
 

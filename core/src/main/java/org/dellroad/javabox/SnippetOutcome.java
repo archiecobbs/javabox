@@ -31,6 +31,13 @@ public sealed interface SnippetOutcome
     JavaBox box();
 
     /**
+     * Get the index of this snippet as a member of the list of snippets contained in the the associated script.
+     *
+     * @return snippet index, zero-based
+     */
+    int index();
+
+    /**
      * Get the character offset within the original {@linkplain #scriptSource script source}
      * of the associated {@linkplain #snippetSource snippet source}.
      *
@@ -130,6 +137,13 @@ public sealed interface SnippetOutcome
      * later in the same script, it returns {@link SuccessfulNoValue}.
      */
     sealed interface UnresolvedReferences extends SnippetOutcome permits SnippetOutcomes.UnresolvedReferences {
+
+        /**
+         * Get the list of unresolved references.
+         *
+         * @return unresolved references
+         */
+        List<String> references();
     }
 
     /**
@@ -153,8 +167,12 @@ public sealed interface SnippetOutcome
      * <p>
      * After a snippet is resumed, a new outcome will have replaced the {@link Suspended} outcome
      * in the next {@link ScriptResult} returned by {@link JavaBox#resume resume()}.
+     *
+     * <p>
+     * These outcomes carry an associated {@link #exception} whose stack trace captures the point of suspension.
      */
-    sealed interface Suspended extends SnippetOutcome, HaltsScript permits SnippetOutcomes.Suspended {
+    sealed interface Suspended extends SnippetOutcome, HaltsScript, HasException<Throwable>
+      permits SnippetOutcomes.Suspended {
 
         /**
          * Get the parameter that was passed to {@link JavaBox#suspend JavaBox.suspend()}.
@@ -170,8 +188,12 @@ public sealed interface SnippetOutcome
      * <p>
      * A script can be interrupted by interrupting the thread that is executing it,
      * or by invoking {@link JavaBox#interrupt interrupt()} from a different thread.
+     *
+     * <p>
+     * These outcomes carry an associated {@link #exception} whose stack trace captures the point of interruption.
      */
-    sealed interface Interrupted extends SnippetOutcome, HaltsScript permits SnippetOutcomes.Interrupted {
+    sealed interface Interrupted extends SnippetOutcome, HaltsScript, HasException<ThreadDeath>
+      permits SnippetOutcomes.Interrupted {
     }
 
     /**

@@ -71,48 +71,43 @@ public class ScriptResult {
     }
 
     /**
-     * Get the outcome of the last {@link Snippet} whose execution was attempted.
+     * Get the outcome of the first {@link Snippet} whose outcome was not an instance of {@link SnippetOutcome.Successful}.
+     *
+     * @return last snippet outcome, or empty if there were zero snippets
+     */
+    public Optional<SnippetOutcome> firstUnsuccessful() {
+        return this.snippetOutcomes.stream()
+          .filter(outcome -> !(outcome instanceof SnippetOutcome.Successful))
+          .findFirst();
+    }
+
+    /**
+     * Get the outcome of the last {@link Snippet}.
      *
      * @return last snippet outcome, or empty if there were zero snippets
      */
     public Optional<SnippetOutcome> lastOutcome() {
+        if (this.snippetOutcomes.isEmpty())
+            return Optional.empty();
+        return Optional.of(this.snippetOutcomes.get(this.snippetOutcomes.size() - 1));
+    }
+
+    /**
+     * Get the outcome of the last {@link Snippet} whose execution was attempted.
+     *
+     * <p>
+     * This returns the last outcome which is not an instance of {@link SnippetOutcome.Skipped}.
+     *
+     * @return last snippet outcome, or empty if there were zero snippets
+     */
+    public Optional<SnippetOutcome> lastAttempted() {
+        // TODO: In JDK 21+, can use this.snippetOutcomes.reversed().stream()...
         SnippetOutcome outcome = null;
         for (int index = this.snippetOutcomes.size() - 1; index >= 0; index--) {
             if (!((outcome = this.snippetOutcomes.get(index)) instanceof SnippetOutcome.Skipped))
                 break;
         }
         return Optional.ofNullable(outcome);
-    }
-
-    /**
-     * Convenience method to get the return value from a script's final snippet.
-     *
-     * <p>
-     * This is useful in scenarios where the purpose of the script is to produce some result
-     * and you want to verify that all snippets up to and including the final snippet were successful.
-     *
-     * <p>
-     * This checks that:
-     * <ul>
-     *  <li>The script was not empty, i.e., it contained at least one snippet
-     *  <li>The outcome of every snippet in the script was {@linkplain SnippetOutcome.Successful successful}
-     *  <li>The final snippet was an expression whose value is an instance of the given type
-     * </ul>
-     *
-     * <p>
-     * If the above criteria are not met, a {@link ResultCheckerException} is thrown.
-     *
-     * @param type required return type
-     * @return script return value (possibly null)
-     * @throws IllegalArgumentException if {@code type} is null or primitive
-     * @throws ResultCheckerException if script failed or did not return a value
-     * @see ResultChecker#returns
-     */
-    public <T> T returnValue(Class<T> type) {
-        ResultChecker.returns(type, true).check(this);
-        final SnippetOutcome outcome = this.snippetOutcomes.get(this.snippetOutcomes.size() - 1);
-        final SnippetOutcome.SuccessfulWithValue success = (SnippetOutcome.SuccessfulWithValue)outcome;
-        return type.cast(success.returnValue());
     }
 
     /**

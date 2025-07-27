@@ -47,7 +47,7 @@ public class InterruptTest extends TestSupport {
             // Check result
             Assert.assertTrue(interruptResult.get());
             Assert.assertEquals(result.snippetOutcomes().size(), 1);
-            final SnippetOutcome outcome = result.lastOutcome().get();
+            final SnippetOutcome outcome = result.lastAttempted().get();
             Assert.assertTrue(outcome instanceof Interrupted);
 
             // Check interrupting nothing
@@ -69,7 +69,7 @@ public class InterruptTest extends TestSupport {
 
             // Check result - suspend parameter should be "abc"
             Assert.assertEquals(result.snippetOutcomes().size(), 1);
-            SnippetOutcome outcome = result.lastOutcome().get();
+            SnippetOutcome outcome = result.lastAttempted().get();
             Assert.assertTrue(outcome instanceof Suspended);
             Assert.assertEquals(((Suspended)outcome).parameter(), "abc");
 
@@ -82,7 +82,7 @@ public class InterruptTest extends TestSupport {
 
             // Check result - should be interrupted
             Assert.assertEquals(result.snippetOutcomes().size(), 1);
-            outcome = result.lastOutcome().get();
+            outcome = result.lastAttempted().get();
             Assert.assertTrue(outcome instanceof Interrupted);
         }
     }

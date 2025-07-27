@@ -28,7 +28,7 @@ public class SuspendResumeTest extends TestSupport {
 
             // Check result - suspend parameter should be "abc"
             Assert.assertEquals(result.snippetOutcomes().size(), 2);
-            SnippetOutcome outcome = result.lastOutcome().get();
+            SnippetOutcome outcome = result.lastAttempted().get();
             Assert.assertTrue(outcome instanceof Suspended, "outcome = " + outcome);
             final Suspended suspended = (Suspended)outcome;
             Assert.assertEquals(suspended.parameter(), "abc");
@@ -38,7 +38,7 @@ public class SuspendResumeTest extends TestSupport {
 
             // Check result - should have returned "def"
             Assert.assertEquals(result.snippetOutcomes().size(), 2);
-            outcome = result.lastOutcome().get();
+            outcome = result.lastAttempted().get();
             Assert.assertTrue(outcome instanceof SuccessfulWithValue);
             final SuccessfulWithValue successful = (SuccessfulWithValue)outcome;
             Assert.assertEquals(successful.returnValue(), "def");
