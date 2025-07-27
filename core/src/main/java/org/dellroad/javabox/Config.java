@@ -79,7 +79,7 @@ public record Config(JShell.Builder jshellBuilder, ClassLoader delegateLoader, L
          * @throws IllegalArgumentException if {@code jshellBuilder} is null
          */
         public synchronized Builder withJShellMods(Consumer<? super JShell.Builder> configurer) {
-            Preconditions.checkArgument(jshellBuilder != null, "null builderConfigurer");
+            Preconditions.checkArgument(configurer != null, "null configurer");
             this.builderMods.add(configurer);
             return this;
         }
