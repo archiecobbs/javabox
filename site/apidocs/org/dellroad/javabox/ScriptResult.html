@@ -67,8 +67,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#box()" tabindex="0">box()</a></li>
 <li><a href="#source()" tabindex="0">source()</a></li>
 <li><a href="#snippetOutcomes()" tabindex="0">snippetOutcomes()</a></li>
+<li><a href="#firstUnsuccessful()" tabindex="0">firstUnsuccessful()</a></li>
 <li><a href="#lastOutcome()" tabindex="0">lastOutcome()</a></li>
-<li><a href="#returnValue(java.lang.Class)" tabindex="0">returnValue(Class)</a></li>
+<li><a href="#lastAttempted()" tabindex="0">lastAttempted()</a></li>
 <li><a href="#isSuccessful()" tabindex="0">isSuccessful()</a></li>
 </ol>
 </li>
@@ -119,29 +120,34 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the associated <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuccessful()" class="member-name-link">isSuccessful</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#firstUnsuccessful()" class="member-name-link">firstUnsuccessful</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the outcome of the first <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> whose outcome was not an instance of <a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Successful</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuccessful()" class="member-name-link">isSuccessful</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Determine whether the script exeuction was successful.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lastAttempted()" class="member-name-link">lastAttempted</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the outcome of the last <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> whose execution was attempted.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lastOutcome()" class="member-name-link">lastOutcome</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the outcome of the last <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> whose execution was attempted.</div>
+<div class="block">Get the outcome of the last <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#returnValue(java.lang.Class)" class="member-name-link">returnValue</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#snippetOutcomes()" class="member-name-link">snippetOutcomes</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Convenience method to get the return value from a script's final snippet.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#snippetOutcomes()" class="member-name-link">snippetOutcomes</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the outcomes of the individual JShell <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>s created from the script.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the original script source.</div>
 </div>
 </div>
@@ -201,11 +207,11 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="lastOutcome()">
-<h3>lastOutcome</h3>
+<section class="detail" id="firstUnsuccessful()">
+<h3>firstUnsuccessful</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</span>&nbsp;<span class="element-name">lastOutcome</span>()</div>
-<div class="block">Get the outcome of the last <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> whose execution was attempted.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</span>&nbsp;<span class="element-name">firstUnsuccessful</span>()</div>
+<div class="block">Get the outcome of the first <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> whose outcome was not an instance of <a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Successful</code></a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>last snippet outcome, or empty if there were zero snippets</dd>
@@ -214,40 +220,30 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="returnValue(java.lang.Class)">
-<h3>returnValue</h3>
+<section class="detail" id="lastOutcome()">
+<h3>lastOutcome</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">returnValue</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type)</span></div>
-<div class="block">Convenience method to get the return value from a script's final snippet.
-
- <p>
- This is useful in scenarios where the purpose of the script is to produce some result
- and you want to verify that all snippets up to and including the final snippet were successful.
-
- <p>
- This checks that:
- <ul>
-  <li>The script was not empty, i.e., it contained at least one snippet
-  <li>The outcome of every snippet in the script was <a href="SnippetOutcome.Successful.html" title="interface in org.dellroad.javabox">successful</a>
-  <li>The final snippet was an expression whose value is an instance of the given type
- </ul>
-
- <p>
- If the above criteria are not met, a <a href="ResultCheckerException.html" title="class in org.dellroad.javabox"><code>ResultCheckerException</code></a> is thrown.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</span>&nbsp;<span class="element-name">lastOutcome</span>()</div>
+<div class="block">Get the outcome of the last <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a>.</div>
 <dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>type</code> - required return type</dd>
 <dt>Returns:</dt>
-<dd>script return value (possibly null)</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>type</code> is null or primitive</dd>
-<dd><code><a href="ResultCheckerException.html" title="class in org.dellroad.javabox">ResultCheckerException</a></code> - if script failed or did not return a value</dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><a href="ResultChecker.html#returns(java.lang.Class,boolean)"><code>ResultChecker.returns(java.lang.Class&lt;?&gt;, boolean)</code></a></li>
-</ul>
-</dd>
+<dd>last snippet outcome, or empty if there were zero snippets</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lastAttempted()">
+<h3>lastAttempted</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="SnippetOutcome.html" title="interface in org.dellroad.javabox">SnippetOutcome</a>&gt;</span>&nbsp;<span class="element-name">lastAttempted</span>()</div>
+<div class="block">Get the outcome of the last <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link"><code>Snippet</code></a> whose execution was attempted.
+
+ <p>
+ This returns the last outcome which is not an instance of <a href="SnippetOutcome.Skipped.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Skipped</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>last snippet outcome, or empty if there were zero snippets</dd>
 </dl>
 </div>
 </section>

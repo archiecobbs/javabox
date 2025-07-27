@@ -165,8 +165,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  <p><b>Script Validation</b>
 
  <p>
- It is also possible to validate and compile a script without executing it. This allows the caller to gather some basic
- information about the script and control which types of snippets are allowed. See <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process</code></a> for details.
+ It is also possible to do basic validationt and/or fully compile a script without executing it. This allows the caller to
+ gather some basic information about the script and the snippets it contains, and verify correctness.
+ See <a href="#process(java.lang.String,org.dellroad.javabox.JavaBox.ProcessMode)"><code>process()</code></a> for details.
 
  <p><b>Suspend and Resume</b>
 
@@ -178,22 +179,22 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  outcome will be overwritten with its new, updated outcome.
 
  <p>
- As long as there is a suspended script associated with an instance, new invocations of <a href="#execute(java.lang.String)"><code>execute()</code></a> will fail.
- Instead, suspended scripts must be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate (even if interrupted;
- see below).
+ As long as there is a suspended script associated with an instance, additional invocations of <a href="#execute(java.lang.String)"><code>execute()</code></a>
+ will fail. Instead, suspended scripts must first be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate
+ (even if they are interrupted; see below).
 
  <p><b>Interruption</b>
 
  <p>
  Both methods <a href="#execute(java.lang.String)"><code>execute()</code></a> and <a href="#resume(java.lang.Object)"><code>resume()</code></a> block the calling thread until the script terminates
  or suspends itself. Another thread can interrupt that execution by interrupting the calling thread, or equivalently
- by invoking <a href="#interrupt()"><code>interrupt()</code></a>. If a snippet's execution is interrrupted, its outcome will be
- <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
+ by invoking <a href="#interrupt()"><code>interrupt()</code></a>. If a snippet's execution is interrrupted, the original thread will return and the snippet's
+ outcome will be <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
  <p>
  A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed first
- before the interrupt can take effect. Upon the next call to <a href="#resume(java.lang.Object)"><code>resume()</code></a>, it will terminate immediately with
- outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
+ before the interrupt can take effect. Upon the next call to <a href="#resume(java.lang.Object)"><code>resume()</code></a>, the script will terminate immediately
+ and the interrupted snippet will have outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
  <p><b>Controls</b>
 
@@ -202,6 +203,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base
  <a href="Config.html" title="class in org.dellroad.javabox"><code>Config</code></a>. Controls can do the following things:
  <ul>
   <li>Inspect and modify all of the bytecode generated from scripts
+  <li>Veto a snippet before or during execution by throwing a <a href="ControlViolationException.html" title="class in org.dellroad.javabox"><code>ControlViolationException</code></a>
   <li>Keep state associated with each <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance
   <li>Keep state associated with each <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> snippet execution
  </ul>

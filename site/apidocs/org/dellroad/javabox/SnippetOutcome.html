@@ -66,9 +66,11 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#box()" tabindex="0">box()</a></li>
+<li><a href="#index()" tabindex="0">index()</a></li>
 <li><a href="#offset()" tabindex="0">offset()</a></li>
 <li><a href="#snippet()" tabindex="0">snippet()</a></li>
-<li><a href="#source()" tabindex="0">source()</a></li>
+<li><a href="#scriptSource()" tabindex="0">scriptSource()</a></li>
+<li><a href="#snippetSource()" tabindex="0">snippetSource()</a></li>
 <li><a href="#diagnostics()" tabindex="0">diagnostics()</a></li>
 </ol>
 </li>
@@ -200,9 +202,20 @@ loadScripts(document, 'script');</script>
 <div class="block">Get diagnostics associated with the evaluation of the snippet.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#offset()" class="member-name-link">offset</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#index()" class="member-name-link">index</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Get the character offset within the original script source of the source for the associated snippet.</div>
+<div class="block">Get the index of this snippet as a member of the list of snippets contained in the the associated script.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#offset()" class="member-name-link">offset</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Get the character offset within the original <a href="#scriptSource()">script source</a>
+ of the associated <a href="#snippetSource()">snippet source</a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#scriptSource()" class="member-name-link">scriptSource</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Get the source code of the entire original script that contained the snippet.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/Snippet.html" title="class or interface in jdk.jshell" class="external-link">Snippet</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#snippet()" class="member-name-link">snippet</a>()</code></div>
@@ -210,7 +223,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Get the associated snippet.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#snippetSource()" class="member-name-link">snippetSource</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Get the source code of the associated snippet.</div>
 </div>
@@ -242,21 +255,33 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="index()">
+<h3>index</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">index</span>()</div>
+<div class="block">Get the index of this snippet as a member of the list of snippets contained in the the associated script.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>snippet index, zero-based</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="offset()">
 <h3>offset</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">offset</span>()</div>
-<div class="block">Get the character offset within the original script source of the source for the associated snippet.
-
- <p>
- The source for the associated snippet can be obtained via <a href="#snippet()"><code>snippet()</code></a><code>.source()</code>.</div>
+<div class="block">Get the character offset within the original <a href="#scriptSource()">script source</a>
+ of the associated <a href="#snippetSource()">snippet source</a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>snippet source offset in original script</dd>
+<dd>snippet's character offset in the original script</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><code>ScriptResult.source</code></li>
+<li><a href="#scriptSource()"><code>scriptSource()</code></a></li>
+<li><a href="#snippetSource()"><code>snippetSource()</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -271,13 +296,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Get the associated snippet.
 
  <p>
- Note: In some cases, the <code>snippet</code> may be <i>unassociated</i> (as described by
- <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/SourceCodeAnalysis.html#sourceToSnippets(java.lang.String)" title="class or interface in jdk.jshell" class="external-link"><code>SourceCodeAnalysis.sourceToSnippets()</code></a>). This will be the
- case if the snippet source code was correct enough to be parsed, but the snippet didn't get far enough
- to actually be executed.
-
- <p>
- The source for the associated snippet can be obtained via <a href="#snippet()"><code>snippet()</code></a><code>.source()</code>.</div>
+ Note: In some cases, the <code>snippet</code> may be <a href="https://docs.oracle.com/en/java/javase/24/docs/api/jdk.jshell/jdk/jshell/SourceCodeAnalysis.html#sourceToSnippets(java.lang.String)" title="class or interface in jdk.jshell" class="external-link">unassociated</a>.
+ This will be the case, for example, if the snippet could not be successfully parsed.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>JShell snippet</dd>
@@ -286,14 +306,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="source()">
-<h3>source</h3>
+<section class="detail" id="scriptSource()">
+<h3>scriptSource</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">source</span>()</div>
-<div class="block">Get the source code of the associated snippet.
-
- <p>
- The implementation in <a href="SnippetOutcome.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome</code></a> just returns <a href="#snippet()"><code>snippet()</code></a><code>.source()</code>.</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">scriptSource</span>()</div>
+<div class="block">Get the source code of the entire original script that contained the snippet.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>original script source</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="snippetSource()">
+<h3>snippetSource</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">snippetSource</span>()</div>
+<div class="block">Get the source code of the associated snippet.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>snippet source</dd>
