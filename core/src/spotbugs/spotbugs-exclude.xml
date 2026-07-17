@@ -12,4 +12,12 @@
         <Class name="org.dellroad.javabox.SnippetOutcomes$AbstractHasException"/>
         <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
     </Match>
+    <Match>
+        <Class name="org.dellroad.javabox.Config$Builder"/>
+        <Bug pattern="USO_UNSAFE_METHOD_SYNCHRONIZATION"/>
+    </Match>
+    <Match>
+        <Class name="org.dellroad.javabox.JavaBox"/>
+        <Bug pattern="USO_UNSAFE_METHOD_SYNCHRONIZATION"/>
+    </Match>
 </FindBugsFilter>

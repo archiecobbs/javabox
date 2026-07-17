@@ -61,6 +61,7 @@
 
         <!-- Plugin versions -->
         <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -227,7 +228,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.21.4</version>
+                        <version>11.0.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
