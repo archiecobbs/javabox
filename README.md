@@ -5,17 +5,17 @@ _Scripting in Java, by Java, for Java_
 
 JavaBox tries to answer the question, "Where is the thing that will let me run scripts written in Java within my Java application?"
 
-JavaBox is a simple container ("sandbox") for executing scripts written in Java. JavaBox does **not** provide a secure sandbox; it's not safe for untrusted code.
+JavaBox is a simple container ("sandbox") for executing scripts written as Java source code snippets. JavaBox does **not** provide a secure sandbox; it's not safe for untrusted code.
 
 Instead, it provides a basic sandbox that allows you to impose simple controls like time limits, instruction count limits, and restrictions on accessible classes. This allows, for example, an application to use Java as a runtime configuration language while having the ability to restrict unwanted functionality like network I/O, `System.exit()`, etc.
 
 ### How does it Work?
 
-Each JavaBox instance relies on an underlying [JShell](https://docs.oracle.com/en/java/javase/24/jshell/introduction-jshell.html) instance configured for local execution mode. That means JavaBox scripts are really JShell scripts that happen to be executing on the same JVM instance. Unlike normal JShell scripts, which can only return strings, JavaBox scripts can return arbitrary Java objects, and those objects can then be used outside of the scripting environment.
+Each JavaBox instance relies on an underlying [JShell](https://docs.oracle.com/en/java/javase/25/jshell/introduction-jshell.html) instance configured for [local execution mode](https://docs.oracle.com/en/java/javase/25/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html). That means JavaBox scripts are really JShell scripts that happen to be executing on the same JVM instance. Unlike normal JShell scripts, which can only return strings, JavaBox scripts can return arbitrary Java objects, and those objects can then be used outside of the scripting environment.
 
-JavaBox supports imposing restrictions on scripts using [Controls](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html). Controls are allowed to [intercept](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)) a script's class loading step and [each time](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html#startExecution(org.dellroad.javabox.Control.ContainerContext)) it executes.
+JavaBox supports imposing restrictions on scripts using [Controls](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html). Controls are allowed to [intercept](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html#modifyBytecode(java.lang.constant.ClassDesc,byte%5B%5D)) a script's class loading step as well as [each time](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/Control.html#startExecution(org.dellroad.javabox.Control.ContainerContext)) it executes.
 
-JavaBox supports [interrupting](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#interrupt()) scripts in the middle of execution if necessary, and it also has [suspend](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#suspend(java.lang.Object)) and [resume](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#resume(java.lang.Object)) functions, allowing an application thread to suspend scripts on certain operations and regain control.
+JavaBox supports [interrupting](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#interrupt()) scripts in the middle of execution if necessary, and it also has [suspend](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#suspend(java.lang.Object)) and [resume](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/JavaBox.html#resume(java.lang.Object)) functions, allowing an application thread to suspend scripts on certain operations and forcibly regain control.
 
 ### Examples
 
@@ -38,21 +38,24 @@ Config config = Config.builder()
   .withControl(new TimeLimitControl(Duration.ofSeconds(5)))
   .build();
 
-// Execute script
+// A script that takes too long
+String script = """
+    while (true) {
+        Thread.yield();
+    }
+""";
+
+// Execute the script
 ScriptResult result;
 try (JavaBox box = new JavaBox(config)) {
     box.initialize();
-    result = box.execute("""
-        while (true) {
-            Thread.yield();
-        }
-    """);
+    result = box.execute(script);
 }
 
-// Check result
+// Check the result of script execution
 switch (result.snippetOutcomes().get(0)) {
-case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExceededException
-  -> System.out.println("script was taking too long");
+    case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExceededException
+      -> System.out.println("script was taking too long");
 }
 ```
 
