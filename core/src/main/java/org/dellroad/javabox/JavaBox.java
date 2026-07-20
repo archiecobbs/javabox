@@ -96,7 +96,7 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * <p><b>Script Validation</b>
  *
  * <p>
- * It is also possible to do basic validationt and/or fully compile a script without executing it. This allows the caller to
+ * It is also possible to do basic validation and/or fully compile a script without executing it. This allows the caller to
  * gather some basic information about the script and the snippets it contains, and verify correctness.
  * See {@link #process process()} for details.
  *
@@ -106,8 +106,9 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * If a script invokes {@link #suspend suspend()}, then {@link #execute execute()} returns to the caller with the
  * last snippet outcome being an instance of {@link Suspended}. The script can be restarted later by invoking
  * {@link #resume resume()}, which behaves just like {@link #execute execute()}, except that it continues the previous
- * script instead of starting a new one. On the next return, the previously suspended snippet's earlier {@link Suspended}
- * outcome will be overwritten with its new, updated outcome.
+ * script (after returning the provided return value) instead of starting a new one. On the eventual return from
+ * {@link #resume resume()}, the previously suspended snippet's earlier {@link Suspended} outcome will be overwritten
+ * with its new, updated outcome.
  *
  * <p>
  * As long as there is a suspended script associated with an instance, additional invocations of {@link #execute execute()}
@@ -117,10 +118,13 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * <p><b>Interruption</b>
  *
  * <p>
- * Both methods {@link #execute execute()} and {@link #resume resume()} block the calling thread until the script terminates
- * or suspends itself. Another thread can interrupt that execution by interrupting the calling thread, or equivalently
- * by invoking {@link #interrupt}. If a snippet's execution is interrrupted, the original thread will return and the snippet's
- * outcome will be {@link SnippetOutcome.Interrupted}.
+ * Whether execution was started via {@link #execute execute()} or restarted via {@link #resume resume()}, that method
+ * will block the calling thread until the script terminates or suspends itself. During this time, another thread may
+ * interrupt that execution, either by interrupting the original blocked thread via {@link Thread#interrupt}, or by
+ * invoking {@link #interrupt}. This causes the executing script to immediately terminate. Note this is not the same
+ * thing as interrupting the script thread via {@link Thread#interrupt}; instead, this is forcibly halts the script thread.
+ * If a snippet's execution is interrrupted in this way, the calling thread will return and the snippet's outcome will be
+ * {@link SnippetOutcome.Interrupted}.
  *
  * <p>
  * A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed first
@@ -137,6 +141,7 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  *  <li>Veto a snippet before or during execution by throwing a {@link ControlViolationException}
  *  <li>Keep state associated with each {@link JavaBox} instance
  *  <li>Keep state associated with each {@link JavaBox} snippet execution
+ *  <li>Access that state when the script invokes some static method
  * </ul>
  *
  * <p>
