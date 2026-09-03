@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.dellroad.javabox"},{"l":"org.dellroad.javabox.control"},{"l":"org.dellroad.javabox.execution"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"org.dellroad.javabox"},{"l":"org.dellroad.javabox.control"},{"l":"org.dellroad.javabox.execution"}];updateSearchResults();
