@@ -20,9 +20,49 @@ import jdk.jshell.JShell;
 /**
  * Configuration object for {@link JavaBox} instances.
  *
+ * <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/prism.min.js"></script>
+ * <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/components/prism-java.min.js"></script>
+ * <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/themes/prism.min.css" rel="stylesheet"/>
+ *
  * <p>
  * New instances are created via {@link Config.Builder#build}; new {@link Config.Builder} instances are created
  * via {@link #builder()}.
+ *
+ * <p><b>Making Classes Accessible</b>
+ *
+ * <p>
+ * In Java, classes are accessible using symbolic references at three levels:
+ * <ul>
+ *  <li>At the source level during compilation
+ *  <li>At the bytecode level during runtime class loading and linking
+ *  <li>Via reflection at any time during execution
+ * </ul>
+ *
+ * <p>
+ * The classes visible at runtime are determined by the {@link #delegateLoader}, which is by default the context class loader
+ * of the current thread when the {@link Config.Builder} is created. That takes care of the second and third bullet points above.
+ * {@link Control}s may also affect which classes are available at runtime.
+ *
+ * <p>
+ * Compile-time is trickier. With JShell, the normal separation between compile-time and runtime, with their independent
+ * classpath specifications, is lost, and it's not always possible to automatically reverse-engineer an appropriate
+ * compile-time classpath given only the information available at runtime.
+ *
+ * <p>
+ * The {@link JavaBoxExecutionControlProvider}, which is by default configured into the {@link JShell.Builder}, attempts
+ * to do this, based on the current runtime classpath. This effort may or may not work depending on your deployment.
+ *
+ * <p>
+ * If not, first try starting your JVM with * {@code --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED} (but replace
+ * {@code ALL-UNNAMED} with {@code org.dellroad.javabox.execution} if using {@code --module-path} instead of {@code --class-path}).
+ *
+ * <p>
+ * If that fails, you can always just add classes manually to the compile-time classpath by customizing your {@link Config.Builder}:
+ * <pre><code class="language-java">
+ *  Config config = Config.builder()
+ *    .withJShellMods(jb -&gt; jb.compilerOptions("--class-path", "/tmp/myclasses.jar"))
+ *    .build();
+ * </code></pre>
  *
  * @param jshellBuilder The {@link JShell.Builder} associated with this instance
  * @param delegateLoader The delegate {@link ClassLoader} associated with this instance

@@ -112,8 +112,8 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  *
  * <p>
  * As long as there is a suspended script associated with an instance, additional invocations of {@link #execute execute()}
- * will fail. Instead, suspended scripts must first be resumed via {@link #resume resume()} and allowed to terminate
- * (even if they are interrupted; see below).
+ * will fail. Instead, the suspended script must first be resumed via {@link #resume resume()} and allowed to terminate
+ * (even if {@link #interrupt} has also been invoked; see below).
  *
  * <p><b>Interruption</b>
  *
@@ -124,12 +124,12 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * invoking {@link #interrupt}. This causes the executing script to immediately terminate. Note this is not the same
  * thing as interrupting the script thread via {@link Thread#interrupt}; instead, this is forcibly halts the script thread.
  * If a snippet's execution is interrrupted in this way, the calling thread will return and the snippet's outcome will be
- * {@link SnippetOutcome.Interrupted}.
+ * {@link Interrupted}.
  *
  * <p>
- * A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed first
+ * A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed
  * before the interrupt can take effect. Upon the next call to {@link #resume resume()}, the script will terminate immediately
- * and the interrupted snippet will have outcome {@link SnippetOutcome.Interrupted}.
+ * and the interrupted snippet will have outcome {@link Interrupted}.
  *
  * <p><b>Controls</b>
  *
@@ -149,6 +149,9 @@ import static org.dellroad.javabox.SnippetOutcome.Suspended;
  * Controls can modify script bytecode to insert method calls into the control itself, where it can then utilize its
  * state to decide what to do, etc. To access its state from within an executing snippet, a control invokes
  * {@link #executionContextFor executionContextFor()}.
+ *
+ * <p>
+ * See {@link Config} for details on how to control which Java classes are made accessible to scripts.
  *
  * <p><b>Examples</b>
  *
@@ -860,14 +863,13 @@ public class JavaBox implements Closeable {
      * If an executing script suspends itself by invoking {@link #suspend suspend()}, this method immediately returns,
      * the corresponding snippet outcome is {@link Suspended}, and the script then becomes this instance's <i>suspended script</i>.
      * The script must be {@link #resume resume()}ed before a new script can be processed. A suspended script can also be
-     * {@link #interrupt}ed, in which case it will throw {@link ThreadDeath} as soon as it is resumed.
+     * {@link #interrupt}ed, in which case it will throw {@link ThreadDeath} as soon as it is resumed. It's not possible
+     * to suspend a script from the outside; only the thread actually executing the script can invoke {@link #suspend suspend()}.
+     * If any other thread invokes {@link #suspend suspend()}, an {@link IllegalStateException} is thrown.
      *
      * <p>
      * When this method returns early due to suspension, subsequent snippets will have outcome {@link Skipped}. If the script
-     * is later {@link #resume resume()}ed, these outcomes are updated accordingly in the return value from that method.
-     *
-     * <p>
-     * If this method is invoked when this instance already has a suspended script, an {@link IllegalStateException} is thrown.
+     * is later {@link #resume resume()}ed, these outcomes are updated accordingly when returned from that method.
      *
      * <p><b>Interruption</b>
      *
@@ -972,13 +974,16 @@ public class JavaBox implements Closeable {
      * and the corresponding snippet outcome will be a {@link Suspended} containing the given {@code parameter}.
      *
      * <p>
-     * This instance will then have a <i>suspended script</i>; it must be {@link #resume resume()}ed before a
-     * new script can be {@link #execute execute()}ed. A suspended script can be {@link #interrupt}ed, in which
-     * case it will throw {@link ThreadDeath} as soon as it resumes.
+     * The {@link JavaBox} instance will then have a <i>suspended script</i>; it must be {@link #resume resume()}ed
+     * before a new script can be {@link #execute execute()}ed.
+     *
+     * <p>
+     * A suspended script can be {@link #interrupt}ed, in which case this method will throw {@link ThreadDeath}
+     * as soon as it is resumed. This causes the executing snippet to have outcome {@link Interrupted}.
      *
      * @param parameter value to be made available via {@link Suspended#parameter}
      * @return the return value provided to {@link #resume resume()}
-     * @throws ThreadDeath if {@link #interrupt} or {@link #close} was invoked while suspended
+     * @throws ThreadDeath if {@link #interrupt} or {@link #close} is invoked while suspended
      * @throws IllegalStateException if the current thread is not a script execution thread
      */
     public static Object suspend(Object parameter) {
@@ -1125,8 +1130,9 @@ public class JavaBox implements Closeable {
      * partially completed, or it may have fully completed.
      *
      * <p>
-     * If this instance has a currently suspended script, that script will awaken, throw an immediate {@link ThreadDeath}
-     * exception, and return an {@link Interrupted} outcome.
+     * If this instance has a currently suspended script, that script will not awaken immediately. Instead, it must be resumed
+     * before the interrupt can take effect. Upon the next call to {@link #resume resume()}, the script will then terminate
+     * immediately and the interrupted snippet will have outcome {@link Interrupted}.
      *
      * <p>
      * If this instance is closed or not initialized, false is returned.
