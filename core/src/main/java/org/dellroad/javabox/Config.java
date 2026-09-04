@@ -46,14 +46,14 @@ import jdk.jshell.JShell;
  * <p>
  * Compile-time is trickier. With JShell, the normal separation between compile-time and runtime, with their independent
  * classpath specifications, is lost, and it's not always possible to automatically reverse-engineer an appropriate
- * compile-time classpath given only the information available at runtime.
+ * compile-time classpath given the information available at runtime.
  *
  * <p>
  * The {@link JavaBoxExecutionControlProvider}, which is by default configured into the {@link JShell.Builder}, attempts
  * to do this, based on the current runtime classpath. This effort may or may not work depending on your deployment.
  *
  * <p>
- * If not, first try starting your JVM with * {@code --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED} (but replace
+ * If not, first try starting your JVM with {@code --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED} (but replace
  * {@code ALL-UNNAMED} with {@code org.dellroad.javabox.execution} if using {@code --module-path} instead of {@code --class-path}).
  *
  * <p>
