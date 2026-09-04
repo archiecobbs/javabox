@@ -174,8 +174,8 @@ with its new, updated outcome.
 
 <p>
 As long as there is a suspended script associated with an instance, additional invocations of <a href="#execute(java.lang.String)"><code>execute()</code></a>
-will fail. Instead, suspended scripts must first be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate
-(even if they are interrupted; see below).
+will fail. Instead, the suspended script must first be resumed via <a href="#resume(java.lang.Object)"><code>resume()</code></a> and allowed to terminate
+(even if <a href="#interrupt()"><code>interrupt()</code></a> has also been invoked; see below).
 
 <p><b>Interruption</b>
 
@@ -189,7 +189,7 @@ If a snippet's execution is interrrupted in this way, the calling thread will re
 <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
 <p>
-A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed first
+A suspended script can also be interrupted, but the script does not awaken immediately. Instead, it must be resumed
 before the interrupt can take effect. Upon the next call to <a href="#resume(java.lang.Object)"><code>resume()</code></a>, the script will terminate immediately
 and the interrupted snippet will have outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
@@ -211,6 +211,9 @@ Every control is given a per-container <a href="Control.ContainerContext.html" t
 Controls can modify script bytecode to insert method calls into the control itself, where it can then utilize its
 state to decide what to do, etc. To access its state from within an executing snippet, a control invokes
 <a href="#executionContextFor(java.lang.Class)"><code>executionContextFor()</code></a>.
+
+<p>
+See <a href="Config.html" title="class in org.dellroad.javabox"><code>Config</code></a> for details on how to control which Java classes are made accessible to scripts.
 
 <p><b>Examples</b>
 
@@ -854,14 +857,13 @@ will have outcome <a href="SnippetOutcome.Skipped.html" title="interface in org.
 If an executing script suspends itself by invoking <a href="#suspend(java.lang.Object)"><code>suspend()</code></a>, this method immediately returns,
 the corresponding snippet outcome is <a href="SnippetOutcome.Suspended.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Suspended</code></a>, and the script then becomes this instance's <i>suspended script</i>.
 The script must be <a href="#resume(java.lang.Object)"><code>resume()</code></a>ed before a new script can be processed. A suspended script can also be
-<a href="#interrupt()"><code>interrupt()</code></a>ed, in which case it will throw <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a> as soon as it is resumed.
+<a href="#interrupt()"><code>interrupt()</code></a>ed, in which case it will throw <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a> as soon as it is resumed. It's not possible
+to suspend a script from the outside; only the thread actually executing the script can invoke <a href="#suspend(java.lang.Object)"><code>suspend()</code></a>.
+If any other thread invokes <a href="#suspend(java.lang.Object)"><code>suspend()</code></a>, an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> is thrown.
 
 <p>
 When this method returns early due to suspension, subsequent snippets will have outcome <a href="SnippetOutcome.Skipped.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Skipped</code></a>. If the script
-is later <a href="#resume(java.lang.Object)"><code>resume()</code></a>ed, these outcomes are updated accordingly in the return value from that method.
-
-<p>
-If this method is invoked when this instance already has a suspended script, an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> is thrown.
+is later <a href="#resume(java.lang.Object)"><code>resume()</code></a>ed, these outcomes are updated accordingly when returned from that method.
 
 <p><b>Interruption</b>
 
@@ -896,16 +898,19 @@ or <a href="#resume(java.lang.Object)"><code>resume()</code></a> invocation that
 and the corresponding snippet outcome will be a <a href="SnippetOutcome.Suspended.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Suspended</code></a> containing the given <code>parameter</code>.
 
 <p>
-This instance will then have a <i>suspended script</i>; it must be <a href="#resume(java.lang.Object)"><code>resume()</code></a>ed before a
-new script can be <a href="#execute(java.lang.String)"><code>execute()</code></a>ed. A suspended script can be <a href="#interrupt()"><code>interrupt()</code></a>ed, in which
-case it will throw <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a> as soon as it resumes.</div>
+The <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instance will then have a <i>suspended script</i>; it must be <a href="#resume(java.lang.Object)"><code>resume()</code></a>ed
+before a new script can be <a href="#execute(java.lang.String)"><code>execute()</code></a>ed.
+
+<p>
+A suspended script can be <a href="#interrupt()"><code>interrupt()</code></a>ed, in which case this method will throw <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a>
+as soon as it is resumed. This causes the executing snippet to have outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>parameter</code> - value to be made available via <a href="SnippetOutcome.Suspended.html#parameter()"><code>SnippetOutcome.Suspended.parameter()</code></a></dd>
 <dt>Returns:</dt>
 <dd>the return value provided to <a href="#resume(java.lang.Object)"><code>resume()</code></a></dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link">ThreadDeath</a></code> - if <a href="#interrupt()"><code>interrupt()</code></a> or <a href="#close()"><code>close()</code></a> was invoked while suspended</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link">ThreadDeath</a></code> - if <a href="#interrupt()"><code>interrupt()</code></a> or <a href="#close()"><code>close()</code></a> is invoked while suspended</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the current thread is not a script execution thread</dd>
 </dl>
 </div>
@@ -955,8 +960,9 @@ Even in this case, because this operation is asynchronous, the snippet may have 
 partially completed, or it may have fully completed.
 
 <p>
-If this instance has a currently suspended script, that script will awaken, throw an immediate <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadDeath.html" title="class or interface in java.lang" class="external-link"><code>ThreadDeath</code></a>
-exception, and return an <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a> outcome.
+If this instance has a currently suspended script, that script will not awaken immediately. Instead, it must be resumed
+before the interrupt can take effect. Upon the next call to <a href="#resume(java.lang.Object)"><code>resume()</code></a>, the script will then terminate
+immediately and the interrupted snippet will have outcome <a href="SnippetOutcome.Interrupted.html" title="interface in org.dellroad.javabox"><code>SnippetOutcome.Interrupted</code></a>.
 
 <p>
 If this instance is closed or not initialized, false is returned.</div>

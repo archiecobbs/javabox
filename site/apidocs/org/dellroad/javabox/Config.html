@@ -98,9 +98,48 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Configuration object for <a href="JavaBox.html" title="class in org.dellroad.javabox"><code>JavaBox</code></a> instances.
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/components/prism-java.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/themes/prism.min.css" rel="stylesheet"/>
+
 <p>
 New instances are created via <a href="Config.Builder.html#build()"><code>Config.Builder.build()</code></a>; new <a href="Config.Builder.html" title="class in org.dellroad.javabox"><code>Config.Builder</code></a> instances are created
-via <a href="#builder()"><code>builder()</code></a>.</div>
+via <a href="#builder()"><code>builder()</code></a>.
+
+<p><b>Making Classes Accessible</b>
+
+<p>
+In Java, classes are accessible using symbolic references at three levels:
+<ul>
+ <li>At the source level during compilation
+ <li>At the bytecode level during runtime class loading and linking
+ <li>Via reflection at any time during execution
+</ul>
+
+<p>
+The classes visible at runtime are determined by the <code>delegateLoader</code>, which is by default the context class loader
+of the current thread when the <a href="Config.Builder.html" title="class in org.dellroad.javabox"><code>Config.Builder</code></a> is created. That takes care of the second and third bullet points above.
+<a href="Control.html" title="interface in org.dellroad.javabox"><code>Control</code></a>s may also affect which classes are available at runtime.
+
+<p>
+Compile-time is trickier. With JShell, the normal separation between compile-time and runtime, with their independent
+classpath specifications, is lost, and it's not always possible to automatically reverse-engineer an appropriate
+compile-time classpath given only the information available at runtime.
+
+<p>
+The <a href="JavaBoxExecutionControlProvider.html" title="class in org.dellroad.javabox"><code>JavaBoxExecutionControlProvider</code></a>, which is by default configured into the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/jdk.jshell/jdk/jshell/JShell.Builder.html" title="class or interface in jdk.jshell" class="external-link"><code>JShell.Builder</code></a>, attempts
+to do this, based on the current runtime classpath. This effort may or may not work depending on your deployment.
+
+<p>
+If not, first try starting your JVM with * <code>--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED</code> (but replace
+<code>ALL-UNNAMED</code> with <code>org.dellroad.javabox.execution</code> if using <code>--module-path</code> instead of <code>--class-path</code>).
+
+<p>
+If that fails, you can always just add classes manually to the compile-time classpath by customizing your <a href="Config.Builder.html" title="class in org.dellroad.javabox"><code>Config.Builder</code></a>:
+<pre><code class="language-java"> Config config = Config.builder()
+   .withJShellMods(jb -&gt; jb.compilerOptions("--class-path", "/tmp/myclasses.jar"))
+   .build();
+</code></pre></div>
 </div>
 </section>
 <section class="summary">
