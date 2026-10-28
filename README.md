@@ -25,12 +25,22 @@ Here's a "Hello, World" example:
 ```java
 Object returnValue;
 try (JavaBox box = new JavaBox(Config.builder().build())) {
+
+    // Setup engine
     box.initialize();
     box.setVariable("target", "World");
+
+    // Execute script
     String script = """
         String.format("Hello, %s", target);
     """;
-    returnValue = box.execute(script).returnValue();
+    SnippetOutcome outcome = box.execute(script).lastOutcome().get();
+
+    // Obtain result
+    returnValue = switch (outcome) {
+        case SnippetOutcome.SuccessfulWithValue ov -> ov.returnValue();
+        default -> throw new RuntimeException("unexpected: " + outcome);
+    };
 }
 System.out.println(returnValue);     // prints "Hello, World!"
 ```
@@ -60,6 +70,8 @@ try (JavaBox box = new JavaBox(config)) {
 switch (result.snippetOutcomes().get(0)) {
     case SnippetOutcome.ExceptionThrown e when e.exception() instanceof TimeLimitExceededException
       -> System.out.println("script was taking too long");
+    default
+      -> System.out.println("something else: " + result.snippetOutcomes());
 }
 ```
 
