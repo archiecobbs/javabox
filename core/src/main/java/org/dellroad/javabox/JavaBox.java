@@ -1391,7 +1391,7 @@ public class JavaBox implements Closeable {
         }
 
         // Done
-        return pinfo.mode != ProcessMode.EXECUTE || !(pinfo.infos.get(executeIndex).outcome instanceof HaltsScript);
+        return pinfo.mode != ProcessMode.EXECUTE || !(pinfo.infos.get(executeIndex).outcome.get() instanceof HaltsScript);
     }
 
     synchronized boolean isCompileOnly() {
