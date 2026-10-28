@@ -35,6 +35,7 @@ import jdk.jshell.spi.ExecutionControl.ClassBytecodes;
 
 import org.dellroad.javabox.Control.ContainerContext;
 import org.dellroad.javabox.Control.ExecutionContext;
+import org.dellroad.stuff.java.Primitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.dellroad.javabox.SnippetOutcome.CompilerError;
@@ -663,9 +664,10 @@ public class JavaBox implements Closeable {
      * <ul>
      *  <li>The actual type of {@code varValue} (expressed as a string) will be used;
      *      this type name must be accessible in the generated script
-     *  <li>If {@code varValue} is a non-null primitive wrapper type, the corresponding primitive type is used
      *  <li>If {@code varValue} is null, {@code var} will be used
      * </ul>
+     * This heuristic doesn't work in all cases. For example, a {@code List} object's actual type might
+     * be some anonymous inner class like {@code ImmutableCollections$List$1} or something.
      *
      * <p>
      * Using the narrowest possible type for {@code varType} is advantageous because it eliminates the need
@@ -690,23 +692,15 @@ public class JavaBox implements Closeable {
         this.checkIdent(varName, "variable name");
 
         // Auto-generate type if needed
-        if (varType == null) {
-            varType = varValue == null      ? Object.class.getName() :
-              varValue instanceof Boolean   ? "boolean" :
-              varValue instanceof Byte      ? "byte" :
-              varValue instanceof Character ? "char" :
-              varValue instanceof Short     ? "short" :
-              varValue instanceof Integer   ? "int" :
-              varValue instanceof Float     ? "float" :
-              varValue instanceof Long      ? "long" :
-              varValue instanceof Double    ? "double" : varValue.getClass().getName();
-        }
+        if (varType == null)
+            varType = varValue == null ? "var" : this.autogenTypeName(varValue.getClass());
 
         // Sanity check
         this.checkVariableType(varType);
 
         // Create a script that sets the variable
-        final String script = String.format("%s %s = (%s)%s.variableValue();", varType, varName, varType, JavaBox.class.getName());
+        final String cast = !varType.equals("var") ? String.format("(%s)", varType) : "";
+        final String script = String.format("%s %s = %s%s.variableValue();", varType, varName, cast, JavaBox.class.getName());
 
         // Ensure there is only one use of variableValue() at a time
         synchronized (this) {
@@ -730,6 +724,17 @@ public class JavaBox implements Closeable {
         }
     }
 
+    private String autogenTypeName(Class<?> type) {
+        if (type.isPrimitive())
+            return type.getName();
+        final Primitive<?> primitive = Primitive.get(type);
+        if (primitive != null)
+            return primitive.getLongName();
+        if (type.isArray())
+            return this.autogenTypeName(type.getComponentType()) + "[]";
+        return type.getName();
+    }
+
     /**
      * Obtain the value of a variable being set by {@link #setVariable setVariable()}.
      *
@@ -748,7 +753,7 @@ public class JavaBox implements Closeable {
     }
 
     private void checkVariableType(String type) {
-        for (String ident : type.split("\\.", -1)) {
+        for (String ident : type.replaceAll("(\\[\\])+$", "").split("\\.", -1)) {
             try {
                 this.checkIdent(ident, "type name component");
             } catch (IllegalArgumentException e) {
