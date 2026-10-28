@@ -1,3 +1,10 @@
+Version Next
+
+    - Fix bug where executeSnippet() wasn't properly checking the outcome.
+    - Fix ClassReferenceControl to handle NameAndType entries.
+    - Improve setVariable() when variable type is not explicitly given.
+    - Handle backward branches in switch instructions in TimeLimitControl.
+
 Version 1.3.0 Released July 27, 2025
 
     - Some refactoring of ScriptResult and SnippetOutcome classes.
