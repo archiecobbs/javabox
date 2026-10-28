@@ -15,10 +15,14 @@ import java.lang.classfile.CodeTransform;
 import java.lang.classfile.Label;
 import java.lang.classfile.instruction.BranchInstruction;
 import java.lang.classfile.instruction.LabelTarget;
+import java.lang.classfile.instruction.LookupSwitchInstruction;
+import java.lang.classfile.instruction.SwitchCase;
+import java.lang.classfile.instruction.TableSwitchInstruction;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import org.dellroad.javabox.Control;
 import org.dellroad.javabox.JavaBox;
@@ -94,7 +98,21 @@ public record TimeLimitControl(Duration timeLimit) implements Control {
         public void accept(CodeBuilder builder, CodeElement element) {
             switch (element) {
                 case LabelTarget target -> priorLabels.add(target.label());
-                case BranchInstruction branch when priorLabels.contains(branch.target()) -> checkTimeLimit(builder);
+                case BranchInstruction branch
+                    when priorLabels.contains(branch.target())
+                    -> checkTimeLimit(builder);
+                case TableSwitchInstruction table
+                    when Stream.concat(
+                        Stream.of(table.defaultTarget()),
+                        table.cases().stream().map(SwitchCase::target))
+                      .anyMatch(priorLabels::contains)
+                    -> checkTimeLimit(builder);
+                case LookupSwitchInstruction lookup
+                    when Stream.concat(
+                        Stream.of(lookup.defaultTarget()),
+                        lookup.cases().stream().map(SwitchCase::target))
+                      .anyMatch(priorLabels::contains)
+                    -> checkTimeLimit(builder);
                 default -> { }
             }
             builder.with(element);
