@@ -732,7 +732,7 @@ public class JavaBox implements Closeable {
             return primitive.getLongName();
         if (type.isArray())
             return this.autogenTypeName(type.getComponentType()) + "[]";
-        return type.getName();
+        return Optional.ofNullable(type.getCanonicalName()).orElseGet(type::getName);
     }
 
     /**
