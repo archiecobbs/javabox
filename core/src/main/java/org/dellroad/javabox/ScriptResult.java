@@ -123,4 +123,55 @@ public class ScriptResult {
         return this.snippetOutcomes.stream()
           .allMatch(SnippetOutcome.Successful.class::isInstance);
     }
+
+    /**
+     * Obtain the value returned by the final snippet.
+     *
+     * <p>
+     * This method is equivalent to: {@link #returnValue(Class)}{@code (Object.class)}.
+     *
+     * @return the {@linkplain SnippetOutcome.SuccessfulWithValue#returnValue return value} of the last snippet,
+     *  or null if it has outcome {@link SnippetOutcome.SuccessfulNoValue}
+     * @throws IllegalArgumentException if the script contained zero snippets
+     * @throws RuntimeException if the outcome of the last snippet is neither {@link SnippetOutcome.SuccessfulWithValue}
+     *  nor {@link SnippetOutcome.SuccessfulNoValue}
+     */
+    public Object returnValue() {
+        return this.returnValue(Object.class);
+    }
+
+    /**
+     * Obtain the value returned by the final snippet.
+     *
+     * <p>
+     * This is a convenience method for simple evaluation scenarios where you expect successful execution.
+     * Specifically, this method does the following:
+     * <ul>
+     *  <li>Verify that the script contained at least one snippet
+     *  <li>Verify that the outcome of the last snippet is either {@link SnippetOutcome.SuccessfulWithValue}
+     *      or {@link SnippetOutcome.SuccessfulNoValue}
+     *  <li>If the outcome of the last snippet is {@link SnippetOutcome.SuccessfulWithValue}, cast its
+     *      {@linkplain SnippetOutcome.SuccessfulWithValue#returnValue return value} to {@code expectedType}.
+     * </ul>
+     * This method returns the last snippet's return value, if any, otherwise null.
+     *
+     * @param expectedType the expected type of the final snippet
+     * @return the {@linkplain SnippetOutcome.SuccessfulWithValue#returnValue return value} of the last snippet,
+     *  or null if it has outcome {@link SnippetOutcome.SuccessfulNoValue}
+     * @throws IllegalArgumentException if the script contained zero snippets
+     * @throws RuntimeException if the outcome of the last snippet is neither {@link SnippetOutcome.SuccessfulWithValue}
+     *  nor {@link SnippetOutcome.SuccessfulNoValue}
+     * @throws ClassCastException if the return value of the last snippet is not compatible with {@code expectedType}
+     * @throws IllegalArgumentException if {@code expectedType} is null
+     */
+    public <T> T returnValue(Class<T> expectedType) {
+        final SnippetOutcome outcome = this.lastOutcome().orElse(null);
+        if (outcome == null)
+            throw new IllegalArgumentException("script contained zero snippets");
+        if (outcome instanceof SnippetOutcome.SuccessfulNoValue)
+            return null;
+        if (outcome instanceof SnippetOutcome.SuccessfulWithValue withValue)
+            return expectedType.cast(withValue.returnValue());
+        throw new RuntimeException("unexpected outcome: " + outcome);
+    }
 }

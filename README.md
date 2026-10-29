@@ -34,13 +34,7 @@ try (JavaBox box = new JavaBox(Config.builder().build())) {
     String script = """
         String.format("Hello, %s", target);
     """;
-    SnippetOutcome outcome = box.execute(script).lastOutcome().get();
-
-    // Obtain result
-    returnValue = switch (outcome) {
-        case SnippetOutcome.SuccessfulWithValue ov -> ov.returnValue();
-        default -> throw new RuntimeException("unexpected: " + outcome);
-    };
+    returnValue = box.execute(script).returnValue();
 }
 System.out.println(returnValue);     // prints "Hello, World!"
 ```
