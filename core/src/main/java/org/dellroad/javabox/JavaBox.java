@@ -1286,6 +1286,7 @@ public class JavaBox implements Closeable {
             this.checkInvariants();
             switch (this.state) {
             case EXECUTING:
+                this.processInfo.interrupted.set(false);        // sorry, you just missed us
                 this.newState(State.RETURNING);
                 break;
             default:
