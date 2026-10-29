@@ -30,6 +30,12 @@ public class ClassReferenceControl extends ConstantPoolControl {
     /**
      * Constructor.
      *
+     * <p>
+     * References to Java classes found in bytecode are validity checked using the given predicate.
+     * References to array types are allowed when the base type is allowed; references to primitive
+     * types are always allowed. Therefore, the {@code test} may assume that {@link ClassDesc#isClassOrInterface}
+     * always returns true for the types it sees.
+     *
      * @param test returns true if the provided class reference is allowed
      * @throws IllegalArgumentException if {@code test} is null
      */
@@ -55,11 +61,17 @@ public class ClassReferenceControl extends ConstantPoolControl {
      * @param poolEntry originating constant pool entry
      * @param desc class reference
      * @throws IllegalPoolEntryException if disallowed
-     * @throws NullPointerException if either parameter is null
+     * @throws IllegalArgumentException if either parameter is null
      */
     protected void checkClassDesc(ClassDesc desc, PoolEntry poolEntry) {
         Preconditions.checkArgument(desc != null, "null desc");
         Preconditions.checkArgument(poolEntry != null, "null poolEntry");
+        if (desc.isPrimitive())
+            return;
+        if (desc.isArray()) {
+            this.checkClassDesc(desc.componentType(), poolEntry);
+            return;
+        }
         if (!this.test.test(desc))
             throw new IllegalPoolEntryException(poolEntry);
     }
