@@ -153,18 +153,17 @@ public class ScriptResult {
      * Specifically, this method does the following:
      * <ul>
      *  <li>Verify that the script contained at least one snippet
-     *  <li>Verify that the every snippet outcome is an instance of {@link Successful}
+     *  <li>Verify that every snippet outcome is an instance of {@link Successful}
      *  <li>If the outcome of the last snippet is {@link SuccessfulWithValue}, cast its
      *      {@linkplain SuccessfulWithValue#returnValue return value} to {@code expectedType}.
      * </ul>
      * This method returns the last snippet's return value, if any, otherwise null.
      *
-     * @param expectedType the expected type of the final snippet
+     * @param expectedType the expected type of the final snippet's return value
      * @return the {@linkplain SuccessfulWithValue#returnValue return value} of the last snippet,
      *  or null if it has outcome {@link SuccessfulNoValue}
      * @throws IllegalArgumentException if the script contained zero snippets
-     * @throws RuntimeException if the outcome of the last snippet is neither {@link SuccessfulWithValue}
-     *  nor {@link SuccessfulNoValue}
+     * @throws RuntimeException if the outcome of any snippet not an instance of {@link Successful}
      * @throws ClassCastException if the return value of the last snippet is not compatible with {@code expectedType}
      * @throws IllegalArgumentException if {@code expectedType} is null
      */
@@ -174,7 +173,7 @@ public class ScriptResult {
         for (int index = 0; index < this.snippetOutcomes.size(); index++) {
             final SnippetOutcome outcome = this.snippetOutcomes.get(index);
             if (!(outcome instanceof Successful successful))
-                throw new IllegalArgumentException(String.format("snippet at index %d was not successful: %s", index, outcome));
+                throw new RuntimeException(String.format("snippet at index %d was not successful: %s", index, outcome));
             lastOutcome = successful;
         }
         if (lastOutcome == null)
