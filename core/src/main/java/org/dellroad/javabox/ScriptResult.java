@@ -12,6 +12,11 @@ import java.util.Optional;
 
 import jdk.jshell.Snippet;
 
+import org.dellroad.javabox.SnippetOutcome.Skipped;
+import org.dellroad.javabox.SnippetOutcome.Successful;
+import org.dellroad.javabox.SnippetOutcome.SuccessfulNoValue;
+import org.dellroad.javabox.SnippetOutcome.SuccessfulWithValue;
+
 /**
  * The result from executing a script in a {@link JavaBox}.
  *
@@ -71,13 +76,13 @@ public class ScriptResult {
     }
 
     /**
-     * Get the outcome of the first {@link Snippet} whose outcome was not an instance of {@link SnippetOutcome.Successful}.
+     * Get the outcome of the first {@link Snippet} whose outcome was not an instance of {@link Successful}.
      *
      * @return last snippet outcome, or empty if there were zero snippets
      */
     public Optional<SnippetOutcome> firstUnsuccessful() {
         return this.snippetOutcomes.stream()
-          .filter(outcome -> !(outcome instanceof SnippetOutcome.Successful))
+          .filter(outcome -> !(outcome instanceof Successful))
           .findFirst();
     }
 
@@ -96,7 +101,7 @@ public class ScriptResult {
      * Get the outcome of the last {@link Snippet} whose execution was attempted.
      *
      * <p>
-     * This returns the last outcome which is not an instance of {@link SnippetOutcome.Skipped}.
+     * This returns the last outcome which is not an instance of {@link Skipped}.
      *
      * @return last snippet outcome, or empty if there were zero snippets
      */
@@ -104,7 +109,7 @@ public class ScriptResult {
         // TODO: In JDK 21+, can use this.snippetOutcomes.reversed().stream()...
         SnippetOutcome outcome = null;
         for (int index = this.snippetOutcomes.size() - 1; index >= 0; index--) {
-            if (!((outcome = this.snippetOutcomes.get(index)) instanceof SnippetOutcome.Skipped))
+            if (!((outcome = this.snippetOutcomes.get(index)) instanceof Skipped))
                 break;
         }
         return Optional.ofNullable(outcome);
@@ -115,13 +120,13 @@ public class ScriptResult {
      *
      * <p>
      * A successful script execution is one in which all of the individual {@link #snippetOutcomes}
-     * are instances of {@link SnippetOutcome.Successful}.
+     * are instances of {@link Successful}.
      *
      * @return script snippet outcomes
      */
     public boolean isSuccessful() {
         return this.snippetOutcomes.stream()
-          .allMatch(SnippetOutcome.Successful.class::isInstance);
+          .allMatch(Successful.class::isInstance);
     }
 
     /**
@@ -130,11 +135,11 @@ public class ScriptResult {
      * <p>
      * This method is equivalent to: {@link #returnValue(Class)}{@code (Object.class)}.
      *
-     * @return the {@linkplain SnippetOutcome.SuccessfulWithValue#returnValue return value} of the last snippet,
-     *  or null if it has outcome {@link SnippetOutcome.SuccessfulNoValue}
+     * @return the {@linkplain SuccessfulWithValue#returnValue return value} of the last snippet,
+     *  or null if it has outcome {@link SuccessfulNoValue}
      * @throws IllegalArgumentException if the script contained zero snippets
-     * @throws RuntimeException if the outcome of the last snippet is neither {@link SnippetOutcome.SuccessfulWithValue}
-     *  nor {@link SnippetOutcome.SuccessfulNoValue}
+     * @throws RuntimeException if the outcome of the last snippet is neither {@link SuccessfulWithValue}
+     *  nor {@link SuccessfulNoValue}
      */
     public Object returnValue() {
         return this.returnValue(Object.class);
@@ -148,19 +153,18 @@ public class ScriptResult {
      * Specifically, this method does the following:
      * <ul>
      *  <li>Verify that the script contained at least one snippet
-     *  <li>Verify that the outcome of the last snippet is either {@link SnippetOutcome.SuccessfulWithValue}
-     *      or {@link SnippetOutcome.SuccessfulNoValue}
-     *  <li>If the outcome of the last snippet is {@link SnippetOutcome.SuccessfulWithValue}, cast its
-     *      {@linkplain SnippetOutcome.SuccessfulWithValue#returnValue return value} to {@code expectedType}.
+     *  <li>Verify that the outcome of the last snippet is either {@link SuccessfulWithValue} or {@link SuccessfulNoValue}
+     *  <li>If the outcome of the last snippet is {@link SuccessfulWithValue}, cast its
+     *      {@linkplain SuccessfulWithValue#returnValue return value} to {@code expectedType}.
      * </ul>
      * This method returns the last snippet's return value, if any, otherwise null.
      *
      * @param expectedType the expected type of the final snippet
-     * @return the {@linkplain SnippetOutcome.SuccessfulWithValue#returnValue return value} of the last snippet,
-     *  or null if it has outcome {@link SnippetOutcome.SuccessfulNoValue}
+     * @return the {@linkplain SuccessfulWithValue#returnValue return value} of the last snippet,
+     *  or null if it has outcome {@link SuccessfulNoValue}
      * @throws IllegalArgumentException if the script contained zero snippets
-     * @throws RuntimeException if the outcome of the last snippet is neither {@link SnippetOutcome.SuccessfulWithValue}
-     *  nor {@link SnippetOutcome.SuccessfulNoValue}
+     * @throws RuntimeException if the outcome of the last snippet is neither {@link SuccessfulWithValue}
+     *  nor {@link SuccessfulNoValue}
      * @throws ClassCastException if the return value of the last snippet is not compatible with {@code expectedType}
      * @throws IllegalArgumentException if {@code expectedType} is null
      */
@@ -168,9 +172,9 @@ public class ScriptResult {
         final SnippetOutcome outcome = this.lastOutcome().orElse(null);
         if (outcome == null)
             throw new IllegalArgumentException("script contained zero snippets");
-        if (outcome instanceof SnippetOutcome.SuccessfulNoValue)
+        if (outcome instanceof SuccessfulNoValue)
             return null;
-        if (outcome instanceof SnippetOutcome.SuccessfulWithValue withValue)
+        if (outcome instanceof SuccessfulWithValue withValue)
             return expectedType.cast(withValue.returnValue());
         throw new RuntimeException("unexpected outcome: " + outcome);
     }
