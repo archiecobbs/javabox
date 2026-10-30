@@ -153,7 +153,7 @@ public class ScriptResult {
      * Specifically, this method does the following:
      * <ul>
      *  <li>Verify that the script contained at least one snippet
-     *  <li>Verify that the outcome of the last snippet is either {@link SuccessfulWithValue} or {@link SuccessfulNoValue}
+     *  <li>Verify that the every snippet outcome is an instance of {@link Successful}
      *  <li>If the outcome of the last snippet is {@link SuccessfulWithValue}, cast its
      *      {@linkplain SuccessfulWithValue#returnValue return value} to {@code expectedType}.
      * </ul>
@@ -170,13 +170,19 @@ public class ScriptResult {
      */
     public <T> T returnValue(Class<T> expectedType) {
         Preconditions.checkArgument(expectedType != null, "null expectedType");
-        final SnippetOutcome outcome = this.lastOutcome().orElse(null);
-        if (outcome == null)
+        Successful lastOutcome = null;
+        for (int index = 0; index < this.snippetOutcomes.size(); index++) {
+            final SnippetOutcome outcome = this.snippetOutcomes.get(index);
+            if (!(outcome instanceof Successful successful))
+                throw new IllegalArgumentException(String.format("snippet at index %d was not successful: %s", index, outcome));
+            lastOutcome = successful;
+        }
+        if (lastOutcome == null)
             throw new IllegalArgumentException("script contained zero snippets");
-        if (outcome instanceof SuccessfulNoValue)
+        if (lastOutcome instanceof SuccessfulNoValue)
             return null;
-        if (outcome instanceof SuccessfulWithValue withValue)
+        if (lastOutcome instanceof SuccessfulWithValue withValue)
             return expectedType.cast(withValue.returnValue());
-        throw new RuntimeException("unexpected outcome: " + outcome);
+        throw new RuntimeException("impossible");
     }
 }
