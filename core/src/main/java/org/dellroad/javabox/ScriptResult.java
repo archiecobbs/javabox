@@ -169,6 +169,7 @@ public class ScriptResult {
      * @throws IllegalArgumentException if {@code expectedType} is null
      */
     public <T> T returnValue(Class<T> expectedType) {
+        Preconditions.checkArgument(expectedType != null, "null expectedType");
         final SnippetOutcome outcome = this.lastOutcome().orElse(null);
         if (outcome == null)
             throw new IllegalArgumentException("script contained zero snippets");
